@@ -115,6 +115,7 @@ def send_email(request, recipient, sender, subject, text):  # pragma: no cover
 
 
 class Validator(cerberus.Validator):
+    """Extended Validator that can check whether two fields match."""
 
     def _validate_matches(self, other, field, value):
         if other not in self.document:
