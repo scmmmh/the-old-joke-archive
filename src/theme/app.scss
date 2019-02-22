@@ -1,0 +1,13 @@
+/* Load Foundation */
+@import 'foundation';
+@import 'settings';
+
+@include foundation-everything;
+/* Include Foundation Components */
+/*@include foundation-global-styles;
+@include foundation-xy-grid-classes;
+@include foundation-typography;
+@include foundation-visibility-classes;
+@include foundation-float-classes;
+
+@include foundation-forms;*/

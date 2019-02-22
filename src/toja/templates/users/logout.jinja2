@@ -1,0 +1,12 @@
+{% extends "../centred_narrow_layout.jinja2" %}
+{% import "../macros/form.jinja2" as form with context %}
+
+{% block title %}The Old Joke Archive - Logout{% endblock title %}
+{% block content %}
+  <form action="{{ request.route_url('users.logout') }}" method="post" novalidate>
+    <h1>Logout</h1>
+    <div class="text-right">
+      {{ form.buttons('Logout', "Don't Logout", request.route_url('root')) }}
+    </div>
+  </form>
+{% endblock content %}

@@ -1,0 +1,14 @@
+{% extends "../centred_narrow_layout.jinja2" %}
+{% import "../macros/form.jinja2" as form with context %}
+
+{% block title %}The Old Joke Archive - Register{% endblock title %}
+{% block content %}
+  <form action="{{ request.route_url('users.register') }}" method="post" novalidate>
+    <h1>Register</h1>
+    <div>{{ form.field('email', 'email', 'E-Mail Address', attributes={'required': 'required'}) }}</div>
+    <div>{{ form.field('name', 'text', 'Name', attributes={'required': 'required'}) }}</div>
+    <div class="text-right">
+      {{ form.buttons('Register', "Don't Register", request.route_url('root')) }}
+    </div>
+  </form>
+{% endblock content %}

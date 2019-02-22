@@ -1,0 +1,11 @@
+{% macro field(name, type, label, attributes={}) %}
+  <label{% if errors is defined and name in errors %} class="is-invalid-label"{% endif %}>{{ label }}
+    <input type="{{ type }}" name="{{ name }}" {% for key, value in attributes.items() %}{{ key }}="{{ value }}"{% endfor %} {% if errors is defined and name in errors %} class="is-invalid-label"{% endif %} {% if values is defined and name in values %}value="{{ values[name] }}"{% endif %}/>
+    {% if errors is defined and name in errors %}<span class="form-error is-visible">{{ errors[name]|join(' ') }}</span>{% endif %}
+  </label>
+{% endmacro %}
+
+{% macro buttons(ok_label, cancel_label, cancel_url) %}
+  <a href="{{ cancel_url }}" class="button secondary">{{ cancel_label }}</a>
+  <button class="button">{{ ok_label }}</button>
+{% endmacro %}
