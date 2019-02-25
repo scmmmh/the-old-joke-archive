@@ -3,12 +3,12 @@
 
 {% block title %}The Old Joke Archive - Register{% endblock title %}
 {% block content %}
-  <form action="{{ request.route_url('users.register') }}" method="post" novalidate>
+  <form action="{{ 'users.register'|route_url() }}" method="post" novalidate>
     <h1>Register</h1>
     <div>{{ form.field('email', 'email', 'E-Mail Address', attributes={'required': 'required'}) }}</div>
     <div>{{ form.field('name', 'text', 'Name', attributes={'required': 'required'}) }}</div>
     <div class="text-right">
-      {{ form.buttons('Register', "Don't Register", request.route_url('root')) }}
+      {{ form.buttons('Register', "Don't Register", 'root'|route_url()) }}
     </div>
   </form>
 {% endblock content %}

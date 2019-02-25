@@ -1,3 +1,6 @@
+from pyramid_jinja2.filters import route_url_filter, static_url_filter
+
+
 def includeme(config):
     config.add_static_view('static', 'static', cache_max_age=3600)
 
@@ -7,3 +10,6 @@ def includeme(config):
     config.add_route('users.confirm', '/users/confirm/:email/:token')
     config.add_route('users.login', '/users/login')
     config.add_route('users.logout', '/users/logout')
+
+    config.get_jinja2_environment().filters['static_url'] = static_url_filter
+    config.get_jinja2_environment().filters['route_url'] = route_url_filter

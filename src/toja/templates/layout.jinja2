@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{% block title %}The Old Joke Archive{% endblock title %}</title>
-  <link href="{{request.static_url('toja:static/theme.css')}}" rel="stylesheet">
+  <link href="{{ 'toja:static/theme.css'|static_url() }}" rel="stylesheet">
   {% block head_scripts %}{% endblock head_scripts %}
 </head>
 <body>
@@ -14,10 +14,10 @@
       <div>{{ message }}</div>
     {% endfor %}
   {% endif %}
-  {% if request.current_user is none %}
-    <div><a href="{{ request.route_url('users.login') }}">Login</a></div>
+  {% if request|logged_in() %}
+    <div><a href="{{ 'users.logout'|route_url() }}" data-post-link="">Logout</a></div>
   {% else %}
-    <div><a href="{{ request.route_url('users.logout') }}" data-post-link="">Logout</a></div>
+    <div><a href="{{ 'users.login'|route_url() }}">Login</a></div>
   {% endif %}
   {% block body %}{% endblock body %}
   {% block body_scripts %}{% endblock body_scripts %}

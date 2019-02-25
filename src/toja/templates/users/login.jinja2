@@ -3,12 +3,12 @@
 
 {% block title %}The Old Joke Archive - Login{% endblock title %}
 {% block content %}
-  <form action="{{ request.route_url('users.login') }}" method="post" novalidate>
+  <form action="{{ 'users.login'|route_url() }}" method="post" novalidate>
     <h1>Login</h1>
     <div>{{ form.field('email', 'email', 'E-Mail Address', attributes={'required': 'required'}) }}</div>
     <div>{{ form.field('password', 'password', 'Password', attributes={'required': 'required'}) }}</div>
     <div class="text-right">
-      {{ form.buttons('Login', "Don't Login", request.route_url('root')) }}
+      {{ form.buttons('Login', "Don't Login", 'root'|route_url()) }}
     </div>
   </form>
 {% endblock content %}

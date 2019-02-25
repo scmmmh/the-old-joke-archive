@@ -4,7 +4,7 @@
 {% block title %}The Old Joke Archive - Set your Password{% endblock title %}
 {% block content %}
   {% if user is defined %}
-  <form action="{{ request.route_url('users.confirm', email=user.email, token=user.attributes['validation_token']) }}" method="post" novalidate>
+  <form action="{{ 'users.confirm'|route_url(email=user.email, token=user.attributes['validation_token']) }}" method="post" novalidate>
     <h1>Set your Password</h1>
     <div>{{ form.field('password', 'password', 'Password', attributes={'required': 'required'}) }}</div>
     <div>{{ form.field('confirm_password', 'password', 'Confirm your Password', attributes={'required': 'required'}) }}</div>

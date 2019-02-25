@@ -3,10 +3,10 @@
 
 {% block title %}The Old Joke Archive - Logout{% endblock title %}
 {% block content %}
-  <form action="{{ request.route_url('users.logout') }}" method="post" novalidate>
+  <form action="{{ 'users.logout'|route_url() }}" method="post" novalidate>
     <h1>Logout</h1>
     <div class="text-right">
-      {{ form.buttons('Logout', "Don't Logout", request.route_url('root')) }}
+      {{ form.buttons('Logout', "Don't Logout", 'root'|route_url()) }}
     </div>
   </form>
 {% endblock content %}
