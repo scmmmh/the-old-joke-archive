@@ -26,4 +26,4 @@ Index('transcriptions_owner_id_ix', Transcription.owner_id)
 transcription_links = Table('transcription_links', Base.metadata,
     Column('source_id', Integer, ForeignKey('transcriptions.id'), primary_key=True),
     Column('target_id', Integer, ForeignKey('transcriptions.id'), primary_key=True),
-    Column('relationship', Unicode(255), primary_key=True))
+    Column('relationship', Unicode(191), primary_key=True))
