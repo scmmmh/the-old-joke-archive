@@ -3,7 +3,10 @@ from email_validator import validate_email, EmailNotValidError
 from hashlib import sha512
 from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
-from secrets import token_hex
+try:
+    from secrets import token_hex
+except:
+    from .p35_secrets import token_hex
 from sqlalchemy import and_
 
 from ..models import User
