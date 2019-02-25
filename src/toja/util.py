@@ -90,18 +90,18 @@ def send_email(request, recipient, sender, subject, text):  # pragma: no cover
     :param text: The e-mail's text body content
     :type text: `unicode`
     """
-    if get_config_setting(request, 'email.smtp_host'):
+    if get_config_setting(request, 'app.email.smtp_host'):
         email = MIMEText(text)
         email['Subject'] = subject
         email['From'] = sender
         email['To'] = recipient
         email['Date'] = formatdate()
         try:
-            smtp = smtplib.SMTP(get_config_setting(request, 'email.smtp_host'))
-            if get_config_setting(request, 'email.ssl', target_type='bool', default=False):
+            smtp = smtplib.SMTP(get_config_setting(request, 'app.email.smtp_host'))
+            if get_config_setting(request, 'app.email.ssl', target_type='bool', default=False):
                 smtp.starttls()
-            username = get_config_setting(request, 'email.username')
-            password = get_config_setting(request, 'email.password')
+            username = get_config_setting(request, 'app.email.username')
+            password = get_config_setting(request, 'app.email.password')
             if username and password:
                 smtp.login(username, password)
             smtp.sendmail(sender, recipient, email.as_string())
@@ -110,7 +110,7 @@ def send_email(request, recipient, sender, subject, text):  # pragma: no cover
             logging.getLogger("toja").error(str(e))
             print(text)  # TODO: Remove
     else:
-        logging.getLogger("toja").error('Could not send e-mail as "email.smtp_host" setting not specified')
+        logging.getLogger("toja").error('Could not send e-mail as "app.email.smtp_host" setting not specified')
         print(text)  # TODO: Remove
 
 
