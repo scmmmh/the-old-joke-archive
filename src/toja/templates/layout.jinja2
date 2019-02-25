@@ -16,6 +16,11 @@
   {% endif %}
   {% if request|logged_in() %}
     <div><a href="{{ 'users.logout'|route_url() }}" data-post-link="">Logout</a></div>
+    <div>
+      {% if request|permitted('sources.upload') %}
+        <a href="{{ 'root'|route_url() }}">Upload Sources</a>
+      {% endif %}
+    </div>
   {% else %}
     <div><a href="{{ 'users.login'|route_url() }}">Login</a></div>
   {% endif %}
