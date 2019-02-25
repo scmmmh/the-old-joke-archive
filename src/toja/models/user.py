@@ -10,7 +10,7 @@ class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
-    email = Column(Unicode(255))
+    email = Column(Unicode(191))
     salt = Column(Unicode(255))
     password = Column(Unicode(255))
     name = Column(Unicode(255))
@@ -22,4 +22,4 @@ class User(Base):
     created = Column(DateTime, default=datetime.now)
 
 
-Index('users_email_ix', User.email, unique=True, mysql_length=255)
+Index('users_email_ix', User.email, unique=True, mysql_length=191)
