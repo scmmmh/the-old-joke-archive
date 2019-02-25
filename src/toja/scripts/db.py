@@ -1,5 +1,4 @@
 import click
-#import transaction
 
 from pyramid.paster import (get_appsettings,setup_logging)
 
@@ -20,11 +19,3 @@ def init_db(ctx, drop_existing):
     if drop_existing:
         Base.metadata.drop_all(engine)
     Base.metadata.create_all(engine)
-
-    #session_factory = get_session_factory(engine)
-
-    #with transaction.manager:
-    #    dbsession = get_tm_session(session_factory, transaction.manager)
-
-    #    model = MyModel(name='one', value=1)
-    #    dbsession.add(model)
