@@ -25,6 +25,9 @@ function inlineEditor() {
 };
 inlineEditor();
 
+/**
+ * JavaScript that posts the URL of a link, instead of the default GET action.
+ */
 function postLink() {
     function init(anchor) {
         anchor.addEventListener('click', function(ev) {
