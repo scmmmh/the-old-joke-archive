@@ -13,7 +13,6 @@ class User(Base):
     email = Column(Unicode(191))
     salt = Column(Unicode(255))
     password = Column(Unicode(255))
-    name = Column(Unicode(255))
     trust = Column(Unicode(255))
     status = Column(Unicode(255))
     groups = Column(NestedMutableJson)

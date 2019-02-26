@@ -25,7 +25,7 @@
       <tbody>
         {% for user in users %}
           <tr>
-            <td>{{ user.name }}</td>
+            <td>{{ user.attributes['name'] }}</td>
             <td>{{ user.email }}</td>
             <td>{{ form.inline_select('status', [('new', 'New'), ('confirmed', 'Confirmed'), ('blocked', 'Blocked')], user.status, user.status|title(), 'users.edit.status'|route_url(uid=user.id)) }}</td>
             <td>{{ form.inline_select('trust', [('low', 'Low'), ('medium', 'Medium'), ('full', 'Full')], user.trust, user.trust|title(), 'users.edit.trust'|route_url(uid=user.id)) }}</td>

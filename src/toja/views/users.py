@@ -47,14 +47,14 @@ def register(request):
         validator = Validator(schema)
         if validator.validate(request.params):
             user = User(email=request.params['email'],
-                        name=request.params['name'],
                         salt=None,
                         password=None,
                         status='new',
                         trust='low',
                         groups=[],
                         permissions=[],
-                        attributes={'validation_token': token_hex(32)})
+                        attributes={'validation_token': token_hex(32),
+                                    'name': request.params['name']})
             if request.dbsession.query(User).count() == 0:
                 user.groups.append('admin')
                 user.trust = 'full'
@@ -70,9 +70,9 @@ Please click on the following link or copy it into your browser:
 
 Thank you,
 The Old Joke Archive
-''' % {'name': user.name, 'url': request.route_url('users.confirm',
-                                                   email=user.email,
-                                                   token=user.attributes['validation_token'])})
+''' % {'name': user.attributes['name'], 'url': request.route_url('users.confirm',
+                                                                 email=user.email,
+                                                                 token=user.attributes['validation_token'])})
             return HTTPFound(location=request.route_url('root'))
         else:
             return {'errors': validator.errors,
