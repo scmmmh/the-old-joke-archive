@@ -15,16 +15,17 @@
     {% endfor %}
   {% endif %}
   {% if request|logged_in() %}
-    <div><a href="{{ 'users.logout'|route_url() }}" data-post-link="">Logout</a></div>
+    <div><a href="{{ 'users.logout'|route_url() }}" data-action="post-link">Logout</a></div>
     <div>
-      {% if request|permitted('sources.upload') %}
-        <a href="{{ 'root'|route_url() }}">Upload Sources</a>
+      {% if request|permitted('users.list') %}
+        <a href="{{ 'users.list'|route_url() }}">List Users</a>
       {% endif %}
     </div>
   {% else %}
     <div><a href="{{ 'users.login'|route_url() }}">Login</a></div>
   {% endif %}
   {% block body %}{% endblock body %}
+  <script src="{{ 'toja:static/frontend.js'|static_url() }}"></script>
   {% block body_scripts %}{% endblock body_scripts %}
 </body>
 </html>

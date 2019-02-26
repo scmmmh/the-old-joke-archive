@@ -11,3 +11,36 @@
 @include foundation-float-classes;
 
 @include foundation-forms;*/
+
+.hidden {
+    display: none;
+}
+
+svg {
+    width: rem-calc(24);
+    height: rem-calc(24);
+}
+
+button {
+    cursor: pointer;
+}
+
+*[data-action="inline-edit"] {
+    select {
+        margin-bottom: 0;
+    }
+}
+
+.hover-parent {
+    .hover-only, .hover-only-inline {
+        display: none;
+    }
+    &:hover {
+        .hover-only {
+            display: block;
+        }
+        .hover-only-inline {
+            display: inline;
+        }
+    }
+}

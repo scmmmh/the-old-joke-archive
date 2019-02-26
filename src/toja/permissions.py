@@ -1,5 +1,11 @@
-PERMISSIONS = ['sources.upload']
-GROUPS = {'admin': ['sources.upload']}
+from decorator import decorator
+from pyramid.httpexceptions import HTTPForbidden
+
+PERMISSIONS = ['users.list',
+               'users.edit',
+               'users.delete',
+               'sources.upload']
+GROUPS = {'admin': ['users.list', 'users.edit', 'users.delete', 'sources.upload']}
 PERMISSIONS_GROUPS = dict([permission, group] for group, permissions in GROUPS.items() for permission in permissions)
 
 
@@ -18,6 +24,16 @@ def has_permission(user, permission):
 def permitted(request, permission):
     """Jinja2 filter that checks if the current user has a specific permission."""
     return has_permission(request.current_user, permission)
+
+
+def require_permission(permissions):
+    """Pyramid decorator to check permissions for a request."""
+    def handler(f, *args, **kwargs):
+        if has_permission(args[0].current_user, permissions):
+            return f(*args, **kwargs)
+        else:
+            raise HTTPForbidden()
+    return decorator(handler)
 
 
 def logged_in(request):

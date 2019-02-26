@@ -1,11 +1,39 @@
+{% import "../macros/icons.jinja2" as icons %}
+
+{% macro input(name, type, attributes={}) %}
+<input type="{{ type }}" name="{{ name }}" {% for key, value in attributes.items() %}{{ key }}="{{ value }}"{% endfor %} {% if errors is defined and name in errors %} class="is-invalid-label"{% endif %} {% if values is defined and name in values %}value="{{ values[name] }}"{% endif %}/>
+{% endmacro %}
+
 {% macro field(name, type, label, attributes={}) %}
-  <label{% if errors is defined and name in errors %} class="is-invalid-label"{% endif %}>{{ label }}
-    <input type="{{ type }}" name="{{ name }}" {% for key, value in attributes.items() %}{{ key }}="{{ value }}"{% endfor %} {% if errors is defined and name in errors %} class="is-invalid-label"{% endif %} {% if values is defined and name in values %}value="{{ values[name] }}"{% endif %}/>
-    {% if errors is defined and name in errors %}<span class="form-error is-visible">{{ errors[name]|join(' ') }}</span>{% endif %}
-  </label>
+<label{% if errors is defined and name in errors %} class="is-invalid-label"{% endif %}>{% if type not in ['checkbox', 'radio'] %}{{ label }}{% endif %}
+  {{ input(name, type, attributes) }}
+  {% if type in ['checkbox', 'radio'] %}{{ label }}{% endif %}
+  {% if errors is defined and name in errors %}<span class="form-error is-visible">{{ errors[name]|join(' ') }}</span>{% endif %}
+</label>
+{% endmacro %}
+
+{% macro select(name, values, selected, attributes={}) %}
+<select name="{{ name }}" {% for key, value in attributes.items() %}{{ key }}="{{ value }}"{% endfor %}>
+  {% for value in values %}
+    <option value="{{ value[0] }}"{% if value[0] == selected %} selected="selected"{% endif %}>{{ value[1] }}</option>
+  {% endfor %}
+</select>
+{% endmacro %}
+
+{% macro inline_select(name, values, selected, display, action) %}
+<div data-action="inline-edit" class="hover-parent">
+  <div class="grid-x"><div class="cell auto">{{ display }}</div><div class="cell shrink"><a data-action="edit" class="hover-only-inline">{{ icons.icon('pencil') }}</a></div></div>
+  <form action="{{ action }}" method="post" class="grid-x">
+    {{ select(name, values, selected, {'class': 'cell auto'}) }}
+    <div class="cell shrink">
+      <a data-action="cancel">{{ icons.icon('close') }}</a>
+      <button data-action="submit">{{ icons.icon('check') }}</button>
+    </div>
+  </form>
+</div>
 {% endmacro %}
 
 {% macro buttons(ok_label, cancel_label, cancel_url) %}
-  <a href="{{ cancel_url }}" class="button secondary">{{ cancel_label }}</a>
-  <button class="button">{{ ok_label }}</button>
+<a href="{{ cancel_url }}" class="button secondary">{{ cancel_label }}</a>
+<button class="button">{{ ok_label }}</button>
 {% endmacro %}

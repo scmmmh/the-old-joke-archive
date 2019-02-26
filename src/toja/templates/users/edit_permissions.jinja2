@@ -1,0 +1,32 @@
+{% extends "../centred_layout.jinja2" %}
+{% import "../macros/form.jinja2" as form with context %}
+
+{% block title %}{{ user.name }} ({{ user.email }}) - Edit Permissions{% endblock title %}
+{% block content %}
+  <form action="{{ 'users.edit.permissions'|route_url(uid=user.id) }}" method="post" novalidate>
+    <h1>Edit Permissions for {{ user.name }} ({{ user.email }})</h1>
+    <label>Permission Groups</label>
+    <ul class="no-bullet">
+      {% for group in groups %}
+        {% if group in user.groups %}
+          <li>{{ form.field('group', 'checkbox', group|title(), {'value': group, 'checked': 'checked'}) }}</li>
+        {% else %}
+          <li>{{ form.field('group', 'checkbox', group|title(), {'value': group}) }}</li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+    <label>Individual Permissions</label>
+    <ul class="no-bullet">
+      {% for permission in permissions %}
+        {% if permission in user.permissions %}
+          <li>{{ form.field('permission', 'checkbox', permission|title(), {'value': permission, 'checked': 'checked'}) }}</li>
+        {% else %}
+          <li>{{ form.field('permission', 'checkbox', permission|title(), {'value': permission}) }}</li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+    <div class="text-right">
+      {{ form.buttons('Set Permissions', "Don't Set Permissions", 'users.list'|route_url()) }}
+    </div>
+  </form>
+{% endblock content %}

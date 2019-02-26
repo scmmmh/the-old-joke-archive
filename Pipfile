@@ -19,6 +19,7 @@ sqlalchemy-json = "*"
 cerberus = "*"
 email-validator = "*"
 pyramid-nacl-session = "*"
+decorator = "*"
 
 [requires]
 python_version = "3.6"

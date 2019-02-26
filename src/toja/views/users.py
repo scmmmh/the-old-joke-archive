@@ -1,12 +1,13 @@
 from copy import deepcopy
 from email_validator import validate_email, EmailNotValidError
 from hashlib import sha512
-from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound, HTTPMethodNotAllowed
 from pyramid.view import view_config
 from secrets import token_hex
 from sqlalchemy import and_
 
 from ..models import User
+from ..permissions import require_permission, PERMISSIONS, GROUPS
 from ..util import get_config_setting, send_email, Validator
 
 
@@ -50,7 +51,7 @@ def register(request):
                         salt=None,
                         password=None,
                         status='new',
-                        trust='',
+                        trust='low',
                         groups=[],
                         permissions=[],
                         attributes={'validation_token': token_hex(32)})
@@ -147,3 +148,89 @@ def logout(request):
         request.session.clear()
         return HTTPFound(location=request.route_url('root'))
     return {}
+
+
+@view_config(route_name='users.list', renderer='toja:templates/users/list.jinja2')
+@require_permission('users.list')
+def index(request):
+    """Handle displaying the list of users."""
+    users = request.dbsession.query(User)
+    return {'users': users}
+
+
+edit_permissions_schema = {'group': {'type': 'string', 'allowed': list(GROUPS.keys())},
+                           'permission': {'type': 'string', 'allowed': PERMISSIONS}}
+
+
+@view_config(route_name='users.edit.permissions', renderer='toja:templates/users/edit_permissions.jinja2')
+@require_permission('users.edit')
+def edit_permissions(request):
+    """Handle updating a users permissions."""
+    user = request.dbsession.query(User).filter(User.id == request.matchdict['uid']).first()
+    if user:
+        if request.method == 'POST':
+            validator = Validator(edit_permissions_schema)
+            if validator.validate(request.params):
+                user.groups = request.params.getall('group')
+                user.permissions = request.params.getall('permission')
+                return HTTPFound(location=request.route_url('users.list'))
+            else:
+                return {'user': user,
+                        'permissions': PERMISSIONS,
+                        'groups': GROUPS.keys(),
+                        'errors': validator.errors,
+                        'values': request.params}
+        return {'user': user,
+                'permissions': PERMISSIONS,
+                'groups': GROUPS.keys()}
+    else:
+        raise HTTPNotFound()
+
+
+edit_status_schema = {'status': {'type': 'string', 'empty': False, 'allowed': ['new', 'confirmed', 'blocked']}}
+
+
+@view_config(route_name='users.edit.status')
+@require_permission('users.edit')
+def edit_status(request):
+    """Handle updating the user's status."""
+    user = request.dbsession.query(User).filter(User.id == request.matchdict['uid']).first()
+    if user:
+        validator = Validator(edit_status_schema)
+        if validator.validate(request.params):
+            user.status = request.params['status']
+        return HTTPFound(location=request.route_url('users.list'))
+    else:
+        raise HTTPNotFound()
+
+
+edit_trust_schema = {'trust': {'type': 'string', 'empty': False, 'allowed': ['low', 'medium', 'full']}}
+
+
+@view_config(route_name='users.edit.trust')
+@require_permission('users.edit')
+def edit_status(request):
+    """Handle updating the user's trust level."""
+    user = request.dbsession.query(User).filter(User.id == request.matchdict['uid']).first()
+    if user:
+        validator = Validator(edit_trust_schema)
+        if validator.validate(request.params):
+            user.trust = request.params['trust']
+        return HTTPFound(location=request.route_url('users.list'))
+    else:
+        raise HTTPNotFound()
+
+
+@view_config(route_name='users.delete')
+@require_permission('users.delete')
+def delete(request):
+    """Handle deleting a user."""
+    user = request.dbsession.query(User).filter(User.id == request.matchdict['uid']).first()
+    if user:
+        if request.method == 'POST':
+            request.dbsession.delete(user)
+            return HTTPFound(location=request.route_url('users.list'))
+        else:
+            raise HTTPMethodNotAllowed()
+    else:
+        raise HTTPNotFound()

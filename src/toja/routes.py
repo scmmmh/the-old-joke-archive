@@ -6,10 +6,15 @@ def includeme(config):
 
     config.add_route('root', '/')
 
+    config.add_route('users.list', '/users')
     config.add_route('users.register', '/users/register')
     config.add_route('users.confirm', '/users/confirm/:email/:token')
     config.add_route('users.login', '/users/login')
     config.add_route('users.logout', '/users/logout')
+    config.add_route('users.edit.permissions', '/users/:uid/edit/permissions')
+    config.add_route('users.edit.status', '/users/:uid/edit/status')
+    config.add_route('users.edit.trust', '/users/:uid/edit/trust')
+    config.add_route('users.delete', '/users/:uid/delete')
 
     config.get_jinja2_environment().filters['static_url'] = static_url_filter
     config.get_jinja2_environment().filters['route_url'] = route_url_filter
