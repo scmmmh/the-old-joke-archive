@@ -61,7 +61,7 @@ def register(request):
             request.dbsession.add(user)
             request.session.flash('You have registered. You should shortly receive a confirmation e-mail.', 'info')
             send_email(request, user.email, get_config_setting(request, 'app.email.sender', default='toja@example.com'),
-                'Confirm your registration with The Old Joke Archive', '''Dear %(name)s,
+                       'Confirm your registration with The Old Joke Archive', '''Dear %(name)s,
 
 Welcome to The Old Joke Archive. We just need to confirm your e-mail address.
 Please click on the following link or copy it into your browser:
@@ -71,8 +71,8 @@ Please click on the following link or copy it into your browser:
 Thank you,
 The Old Joke Archive
 ''' % {'name': user.name, 'url': request.route_url('users.confirm',
-                                               email=user.email,
-                                               token=user.attributes['validation_token'])})
+                                                   email=user.email,
+                                                   token=user.attributes['validation_token'])})
             return HTTPFound(location=request.route_url('root'))
         else:
             return {'errors': validator.errors,
@@ -133,8 +133,10 @@ def login(request):
                 if user.password == hash.hexdigest():
                     request.session['user-id'] = user.id
                     return HTTPFound(location=request.route_url('root'))
-            return {'errors': {'email': ['Either there is no user with this e-mail address or the password is incorrect.'],
-                               'password': ['Either there is no user with this e-mail address or the password is incorrect.']},
+            return {'errors': {'email': ['Either there is no user with this e-mail address ' +
+                                         'or the password is incorrect.'],
+                               'password': ['Either there is no user with this e-mail address ' +
+                                            'or the password is incorrect.']},
                     'values': request.params}
         else:
             return {'errors': validator.errors, 'values': request.params}
@@ -209,7 +211,7 @@ edit_trust_schema = {'trust': {'type': 'string', 'empty': False, 'allowed': ['lo
 
 @view_config(route_name='users.edit.trust')
 @require_permission('users.edit')
-def edit_status(request):
+def edit_trust(request):
     """Handle updating the user's trust level."""
     user = request.dbsession.query(User).filter(User.id == request.matchdict['uid']).first()
     if user:

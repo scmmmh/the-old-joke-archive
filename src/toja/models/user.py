@@ -1,6 +1,6 @@
 from datetime import datetime
 from sqlalchemy import (Column, Index, Integer, Unicode, DateTime)
-from sqlalchemy_json import MutableJson, NestedMutableJson
+from sqlalchemy_json import NestedMutableJson
 
 from .meta import Base
 

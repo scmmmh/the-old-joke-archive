@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 pyramid-debugtoolbar = "*"
+flake8 = "*"
 
 [packages]
 pyramid = "*"

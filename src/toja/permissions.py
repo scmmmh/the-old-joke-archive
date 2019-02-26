@@ -18,7 +18,8 @@ def has_permission(user, permission):
     :type permission: ``str``
     """
     return permission in PERMISSIONS and user is not None and (permission in user.permissions or
-        (permission in PERMISSIONS_GROUPS and PERMISSIONS_GROUPS[permission] in user.groups))
+                                                               (permission in PERMISSIONS_GROUPS and
+                                                                PERMISSIONS_GROUPS[permission] in user.groups))
 
 
 def permitted(request, permission):

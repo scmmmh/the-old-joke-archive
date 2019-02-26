@@ -1,9 +1,9 @@
 import click
 
-from pyramid.paster import (get_appsettings,setup_logging)
+from pyramid.paster import get_appsettings, setup_logging
 
 from ..models.meta import Base
-from ..models import (get_engine, get_session_factory, get_tm_session)
+from ..models import get_engine
 
 
 @click.command()

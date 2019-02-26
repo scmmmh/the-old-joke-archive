@@ -15,8 +15,8 @@ class Transcription(Base):
     text = Column(NestedMutableJson)
     attributes = Column(NestedMutableJson)
     status = Column(Unicode(255))
-    created = Column(DateTime)
-    updated = Column(DateTime)
+    created = Column(DateTime, default=datetime.now)
+    updated = Column(DateTime, default=None, onupdate=datetime.now)
 
 
 Index('transcriptions_source_id_ix', Transcription.source_id)
@@ -24,6 +24,6 @@ Index('transcriptions_owner_id_ix', Transcription.owner_id)
 
 
 transcription_links = Table('transcription_links', Base.metadata,
-    Column('source_id', Integer, ForeignKey('transcriptions.id'), primary_key=True),
-    Column('target_id', Integer, ForeignKey('transcriptions.id'), primary_key=True),
-    Column('relationship', Unicode(191), primary_key=True))
+                            Column('source_id', Integer, ForeignKey('transcriptions.id'), primary_key=True),
+                            Column('target_id', Integer, ForeignKey('transcriptions.id'), primary_key=True),
+                            Column('relationship', Unicode(191), primary_key=True))

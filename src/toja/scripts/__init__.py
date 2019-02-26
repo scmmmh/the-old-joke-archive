@@ -9,5 +9,6 @@ from .db import init_db
 def main(config):
     """Administration Utility for TOJA"""
 
+
 main.add_command(create_config)
 main.add_command(init_db)
