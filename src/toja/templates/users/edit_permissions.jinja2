@@ -1,5 +1,5 @@
-{% extends "../centred_layout.jinja2" %}
-{% import "../macros/form.jinja2" as form with context %}
+{% extends "toja:templates/layouts/centred.jinja2" %}
+{% import "toja:templates/macros/form.jinja2" as form with context %}
 
 {% block title %}{{ user.name }} ({{ user.email }}) - Edit Permissions{% endblock title %}
 {% block content %}
