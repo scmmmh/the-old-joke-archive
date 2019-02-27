@@ -22,5 +22,7 @@ def includeme(config):
     config.add_route('sources.edit.attribute', '/sources/:sid/edit/:attribute')
     config.add_route('sources.delete', '/sources/:sid/delete')
 
+    config.add_route('crowdsourcing', '/contribute')
+
     config.get_jinja2_environment().filters['static_url'] = static_url_filter
     config.get_jinja2_environment().filters['route_url'] = route_url_filter
