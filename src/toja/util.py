@@ -2,6 +2,7 @@ import cerberus
 import logging
 import smtplib
 
+from cgi import FieldStorage
 from email.mime.text import MIMEText
 from email.utils import formatdate
 
@@ -114,11 +115,22 @@ def send_email(request, recipient, sender, subject, text):  # pragma: no cover
         print(text)  # TODO: Remove
 
 
+fieldstorage_type = cerberus.TypeDefinition('fieldstorage', (FieldStorage,), ())
+
+
 class Validator(cerberus.Validator):
     """Extended Validator that can check whether two fields match."""
+
+    types_mapping = cerberus.Validator.types_mapping.copy()
+    types_mapping['fieldstorage'] = fieldstorage_type
 
     def _validate_matches(self, other, field, value):
         if other not in self.document:
             self._error(field, 'You must provide a value.')
         if self.document[other] != value:
             self._error(field, 'The value does not match.')
+
+
+def includeme(config):
+    config.get_jinja2_environment().filters['config'] = get_config_setting
+    config.get_jinja2_environment().filters['zip'] = zip

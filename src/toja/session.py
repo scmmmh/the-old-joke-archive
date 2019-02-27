@@ -1,5 +1,6 @@
 from binascii import unhexlify
 from pyramid_nacl_session import EncryptedCookieSessionFactory
+from sqlalchemy import and_
 
 from .models import User
 
@@ -11,7 +12,8 @@ def get_current_user(request):
     :type request: :class:`~pyramid.request.Request`
     """
     if 'user-id' in request.session and hasattr(request, 'dbsession'):
-        return request.dbsession.query(User).filter(User.id == request.session['user-id']).first()
+        return request.dbsession.query(User).filter(and_(User.id == request.session['user-id'],
+                                                         User.status == 'confirmed')).first()
     return None
 
 

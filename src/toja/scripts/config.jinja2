@@ -9,6 +9,21 @@ sqlalchemy.url = sqlite:///%(here)s/toja.sqlite
 # Secure session secret
 app.session_secret = {{ session_secret }}
 
+# Email configuration
+app.email.smtp_host =
+app.email.ssl =
+app.email.username =
+app.email.password =
+app.email.sender =
+
+# Metadata settings
+app.sources.metadata.fields =
+app.sources.metadata.types =
+app.sources.metadata.labels =
+
+# Image storage settings
+app.images.storage.path =
+
 # Pyramid internal configuration
 pyramid.reload_templates = {% if debug %}true{% else %}false{% endif %}
 pyramid.debug_authorization = false

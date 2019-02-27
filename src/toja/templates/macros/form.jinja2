@@ -20,11 +20,24 @@
 </select>
 {% endmacro %}
 
+{% macro inline_input(name, type, value, display, action) %}
+<div data-action="inline-edit" class="hover-parent">
+  <div class="grid-x"><div class="cell auto">{{ display }}</div><div class="cell shrink"><a data-action="edit" class="hover-only-inline">{{ icons.icon('pencil') }}</a></div></div>
+  <form action="{{ action }}" method="post" class="grid-x">
+    <div class="cell auto">{{ input(name, type, {'value': value}) }}</div>
+    <div class="cell shrink">
+      <a data-action="cancel">{{ icons.icon('close') }}</a>
+      <button data-action="submit">{{ icons.icon('check') }}</button>
+    </div>
+  </form>
+</div>
+{% endmacro %}
+
 {% macro inline_select(name, values, selected, display, action) %}
 <div data-action="inline-edit" class="hover-parent">
   <div class="grid-x"><div class="cell auto">{{ display }}</div><div class="cell shrink"><a data-action="edit" class="hover-only-inline">{{ icons.icon('pencil') }}</a></div></div>
   <form action="{{ action }}" method="post" class="grid-x">
-    {{ select(name, values, selected, {'class': 'cell auto'}) }}
+    <div class="cell auto">{{ select(name, values, selected) }}</div>
     <div class="cell shrink">
       <a data-action="cancel">{{ icons.icon('close') }}</a>
       <button data-action="submit">{{ icons.icon('check') }}</button>

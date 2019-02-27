@@ -4,8 +4,12 @@ from pyramid.httpexceptions import HTTPForbidden
 PERMISSIONS = ['users.list',
                'users.edit',
                'users.delete',
-               'sources.upload']
-GROUPS = {'admin': ['users.list', 'users.edit', 'users.delete', 'sources.upload']}
+               'sources.list',
+               'sources.upload',
+               'sources.edit',
+               'sources.delete']
+GROUPS = {'admin': ['users.list', 'users.edit', 'users.delete', 'sources.list', 'sources.upload', 'sources.edit',
+                    'sources.delete']}
 PERMISSIONS_GROUPS = dict([permission, group] for group, permissions in GROUPS.items() for permission in permissions)
 
 

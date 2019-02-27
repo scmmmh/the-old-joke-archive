@@ -5344,3 +5344,7 @@ button {
 
 .hover-parent:hover .hover-only-inline {
   display: inline; }
+
+img.thumbnail {
+  max-width: 4rem;
+  max-height: 4rem; }

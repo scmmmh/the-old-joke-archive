@@ -20,8 +20,12 @@
       {% if request|permitted('users.list') %}
         <a href="{{ 'users.list'|route_url() }}">List Users</a>
       {% endif %}
+      {% if request|permitted('sources.list') %}
+        <a href="{{ 'sources.list'|route_url() }}">List Sources</a>
+      {% endif %}
     </div>
   {% else %}
+    <div><a href="{{ 'users.register'|route_url() }}">Register</a></div>
     <div><a href="{{ 'users.login'|route_url() }}">Login</a></div>
   {% endif %}
   {% block body %}{% endblock body %}

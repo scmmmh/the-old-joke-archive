@@ -44,3 +44,8 @@ button {
         }
     }
 }
+
+img.thumbnail {
+    max-width: rem-calc(64);
+    max-height: rem-calc(64);
+}

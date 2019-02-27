@@ -3,3 +3,4 @@ production.ini
 development.ini
 *.sqlite
 *.egg-info
+tmp

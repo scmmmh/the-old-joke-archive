@@ -1,5 +1,6 @@
 from datetime import datetime
 from sqlalchemy import (Column, Index, Integer, Unicode, ForeignKey, DateTime)
+from sqlalchemy.orm import relationship
 from sqlalchemy_json import NestedMutableJson
 
 from .meta import Base
@@ -14,8 +15,11 @@ class Image(Base):
     owner_id = Column(Integer, ForeignKey('users.id'))
     attributes = Column(NestedMutableJson)
     type = Column(Unicode(255))
+    status = Column(Unicode(255))
     created = Column(DateTime, default=datetime.now)
     updated = Column(DateTime, default=None, onupdate=datetime.now)
+
+    owner = relationship('User')
 
 
 Index('images_parent_ix', Image.parent_id)
