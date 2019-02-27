@@ -17,7 +17,13 @@
     <p>Our sources provide us with scans of newspapers, books, and manuscripts. In these we need to identify individual
       jokes. To do this, we provide you with a graphical tool in which you simply draw boxes around the jokes that you
       can find.</p>
-    <p>Currently there are {{ counts['sources'] }} tasks available.</p>
+    <p>
+      {% trans count=counts['sources'] %}
+        Currently there is {{ count }} task available.
+      {% pluralize %}
+        Currently there are {{ count }} tasks available.
+      {% endtrans %}
+    </p>
     {% if request|logged_in() %}
       <p class="text-right"><a href="">Have a go &rarr;</a></p>
     {% endif %}
