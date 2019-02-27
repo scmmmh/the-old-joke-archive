@@ -29,7 +29,7 @@ def upload(request):
         if validator.validate(request.params) and storage_path:
             image = Image(owner=request.current_user,
                           type='source',
-                          status='new',
+                          status='processing',
                           attributes={'mimetype': guess_type(request.params['source'].filename)})
             for field, _ in metadata:
                 image.attributes[field] = request.params[field]
@@ -72,6 +72,27 @@ def image(request):
         return FileResponse(path, request=request, content_type=image.attributes['mimetype'][0])
     else:
         raise HTTPNotFound()
+
+
+edit_status_schema = {'status': {'type': 'string', 'empty': False, 'allowed': ['processing', 'complete']}}
+
+
+@view_config(route_name='sources.edit.status')
+@require_permission('sources.edit')
+def edit_status(request):
+    """Handle updating the source's status."""
+    if request.method == 'POST':
+        image = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['sid'],
+                                                           Image.type == 'source')).first()
+        if image:
+            validator = Validator(edit_status_schema)
+            if validator.validate(request.params):
+                image.status = request.params['status']
+            return HTTPFound(location=request.route_url('sources.list'))
+        else:
+            raise HTTPNotFound()
+    else:
+        raise HTTPMethodNotAllowed()
 
 
 @view_config(route_name='sources.edit.attribute')

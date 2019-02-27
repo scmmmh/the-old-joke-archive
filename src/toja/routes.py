@@ -19,6 +19,7 @@ def includeme(config):
     config.add_route('sources.list', '/sources')
     config.add_route('sources.upload', '/sources/upload')
     config.add_route('sources.view.image', '/sources/:sid/image')
+    config.add_route('sources.edit.status', '/sources/:sid/edit/status')
     config.add_route('sources.edit.attribute', '/sources/:sid/edit/:attribute')
     config.add_route('sources.delete', '/sources/:sid/delete')
 

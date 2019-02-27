@@ -28,6 +28,7 @@
           {% for _, _, label in metadata %}
             <th>{{ label }}</th>
           {% endfor %}
+          <th>Status</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -45,6 +46,7 @@
                 {% endif %}
               </td>
             {% endfor %}
+            <td>{{ form.inline_select('status', [('processing', 'Processing'), ('complete', 'Complete')], image.status, image.status|title(), 'sources.edit.status'|route_url(sid=image.id)) }}</td>
             <td>{% if request|permitted('sources.delete') %}<a href="{{ 'sources.delete'|route_url(sid=image.id) }}" data-action="post-link">{{ icons.icon('delete') }}</a>{% endif %}</td>
           </tr>
         {% endfor %}
