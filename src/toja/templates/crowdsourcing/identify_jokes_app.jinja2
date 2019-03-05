@@ -33,6 +33,19 @@
     <div class="grid-y cell-block-y">
       <div class="cell shrink">
         <p>Use the controls on the left to navigate the image and then select the area that contains a single joke.</p>
+        <p>To navigate the image, select the navigation mode {{ icons.icon('cursor-move') }}. Then you can scroll up and
+          down the image by clicking and dragging on the image or zoom in {{ icons.icon('magnify-plus-outline') }} or
+          zoom out {{ icons.icon('magnify-minus-outline') }}.</p>
+        <p>To create a new joke, select the add mode {{ icons.icon('plus') }}. Then click on the location in the image
+          where you want to select the joke. A red box will appear. Use the black handles in the corners to resize the
+          box to cover the joke you wish to extract. Then click on the save icon {{ icons.icon('check') }} to actually
+          extract the image, which will appear on the right hand side.</p>
+          <p>To edit the extracted jokes, select the edit mode {{ icons.icon('edit') }}. Then click on the joke you want
+          to edit. Use the black handles in the corners to resize the box to cover the joke you wish to extract. Then
+          click on the save icon {{ icons.icon('check') }} to update the extracted joke.</p>
+        <p>To delete an extracted joke, switch to edit mode {{ icons.icon('edit') }}, select the joke you wish to delete
+          and then click on the remove icon {{ icons.icon('minus') }}.</p>
+        <p>When you are editing a joke, you can cancel any changes by clicking on the cancel icon {{ icons.icon('close') }}.</p>
       </div>
       <div class="cell auto overflow-auto">
         <ul id="extract-list" class="no-bullet">
