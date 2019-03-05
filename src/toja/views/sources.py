@@ -9,6 +9,7 @@ from sqlalchemy import and_
 
 from ..models import Image
 from ..permissions import require_permission
+from ..session import require_logged_in
 from ..util import get_config_setting, Validator
 
 
@@ -60,6 +61,7 @@ def index(request):
 
 
 @view_config(route_name='sources.view.image')
+@require_logged_in()
 def image(request):
     """Send the image data for a single source image."""
     image = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['sid'],

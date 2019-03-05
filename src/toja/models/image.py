@@ -20,6 +20,13 @@ class Image(Base):
     updated = Column(DateTime, default=None, onupdate=datetime.now)
 
     owner = relationship('User')
+    parent = relationship('Image', remote_side=[id])
+    children = relationship('Image', remote_side=[parent_id])
+
+    def padded_id(self):
+        """Returns the id padded with zeroes as a triple."""
+        padded_id = '%09i' % self.id
+        return (padded_id[0:3], padded_id[3:6], padded_id[6:9])
 
 
 Index('images_parent_ix', Image.parent_id)

@@ -21,6 +21,7 @@ cerberus = "*"
 email-validator = "*"
 pyramid-nacl-session = "*"
 decorator = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.6"

@@ -24,6 +24,13 @@ def includeme(config):
     config.add_route('sources.delete', '/sources/:sid/delete')
 
     config.add_route('crowdsourcing', '/contribute')
+    config.add_route('crowdsourcing.identify', '/contribute/identify-jokes')
+    config.add_route('crowdsourcing.identify.app', '/contribute/identify-jokes/:sid')
+    config.add_route('crowdsourcing.identify.new', '/contribute/identify-jokes/:sid/create', request_method='POST')
+    config.add_route('crowdsourcing.identify.update', '/contribute/identify-jokes/:sid/:jid/update',
+                     request_method='PATCH')
+
+    config.add_route('jokes.view.image', '/jokes/image/:jid')
 
     config.get_jinja2_environment().filters['static_url'] = static_url_filter
     config.get_jinja2_environment().filters['route_url'] = route_url_filter

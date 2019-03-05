@@ -1,4 +1,6 @@
 from binascii import unhexlify
+from decorator import decorator
+from pyramid.httpexceptions import HTTPForbidden
 from pyramid_nacl_session import EncryptedCookieSessionFactory
 from sqlalchemy import and_
 
@@ -15,6 +17,16 @@ def get_current_user(request):
         return request.dbsession.query(User).filter(and_(User.id == request.session['user-id'],
                                                          User.status == 'confirmed')).first()
     return None
+
+
+def require_logged_in():
+    """Pyramid decorator to check the request is logged in."""
+    def handler(f, *args, **kwargs):
+        if args[0].current_user is not None:
+            return f(*args, **kwargs)
+        else:
+            raise HTTPForbidden()
+    return decorator(handler)
 
 
 def includeme(config):

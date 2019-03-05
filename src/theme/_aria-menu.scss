@@ -1,0 +1,94 @@
+/*
+ * ARIA Compliant Menu
+ */
+*[role="menu"] {
+    @include menu-base;
+
+    &[aria-orientation="vertical"] {
+        @include menu-direction('vertical');
+
+        li.separator {
+            padding-right: 0;
+            padding-bottom: $global-padding;
+        }
+    }
+
+    li {
+        position: relative;
+
+        &.menu-text {
+            @include menu-text;
+        }
+
+        &.separator {
+            padding-right: $global-padding;
+        }
+
+        *[role="menuitem"] {
+            &:link, &:visited {
+                color: $black;
+            }
+
+            &:hover {
+                &:link, &:visited {
+                    color: $primary-color;
+                }
+                svg path {
+                    fill: $primary-color;
+                }
+            }
+
+            &[aria-current="true"] {
+                background: $primary-color;
+                color: $white;
+
+                &:link, &:visited, &:hover {
+                    background: $primary-color;
+                    color: $white;
+                }
+                svg path {
+                    fill: $white;
+                }
+            }
+
+            &[aria-disabled="true"] {
+                cursor: default;
+
+                &link, &:visited {
+                    color: $light-gray;
+                }
+                svg path {
+                    fill: $light-gray;
+                }
+            }
+
+            &.ancestor {
+                color: $dark-gray;
+            }
+
+            &.narrow {
+                padding-top: $global-padding / 4;
+                padding-bottom: $global-padding / 4;
+            }
+        }
+
+        & > *[role="menu"] {
+            display: none;
+            position: absolute;
+            z-index: 1;
+            box-shadow: 0 10px 10px $light-gray;
+
+            *[role="menu"] {
+                position: absolute;
+                top: 0;
+                left: 100%;
+            }
+        }
+
+        &:hover {
+            & > *[role="menu"] {
+                display: block;
+            }
+        }
+    }
+}

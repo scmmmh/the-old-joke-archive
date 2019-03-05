@@ -11,7 +11,11 @@
 @include foundation-float-classes;
 
 @include foundation-forms;*/
+@import 'aria-menu';
 
+.overflow-auto {
+    overflow: auto;
+}
 .hidden {
     display: none;
 }
@@ -48,4 +52,25 @@ button {
 img.thumbnail {
     max-width: rem-calc(64);
     max-height: rem-calc(64);
+
+    &.large {
+        max-width: rem-calc(128);
+        max-height: rem-calc(128);
+    }
+}
+
+
+#identify-jokes-app {
+    height: 80vh;
+
+    #viewer {
+        border: 1px solid $light-gray;
+    }
+
+    #extract-list {
+        li {
+            margin-bottom: $global-margin;
+            border: 1px solid;
+        }
+    }
 }

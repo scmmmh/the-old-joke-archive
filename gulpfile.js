@@ -21,7 +21,10 @@ gulp.task('theme', function(cb) {
 
 gulp.task('frontend', function(cb) {
     pump([
-        gulp.src('src/frontend/*.js'),
+        gulp.src([
+            'node_modules/fabricjs/index.js',
+            'src/frontend/*.js'
+        ]),
         concat('frontend.js'),
         gulp.dest('src/toja/static/')
     ], cb);

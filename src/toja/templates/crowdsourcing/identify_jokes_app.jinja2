@@ -1,0 +1,70 @@
+{% extends "toja:templates/layouts/full_width.jinja2" %}
+{% import "toja:templates/macros/icons.jinja2" as icons %}
+
+{% block title %}Identify Jokes{% endblock title %}
+{% block content %}
+<h1>Identify Jokes</h1>
+<div id="identify-jokes-app" class="grid-x grid-padding-x">
+  <div class="cell small-12 medium-8">
+    <div class="grid-y cell-block-y">
+      <div class="cell shrink">
+        <nav>
+          <ul role="menu" aria-orientation="horizontal">
+            <li><a id="mode-move" role="menuitem" aria-current="true">{{ icons.icon('cursor-move') }}</a></li>
+            <li><a id="mode-add" role="menuitem">{{ icons.icon('plus') }}</a></li>
+            <li><a id="mode-edit" role="menuitem">{{ icons.icon('pencil') }}</a></li>
+            <li class="separator"></li>
+            <li class="hidden"><a id="zoom-initial" role="menuitem">{{ icons.icon('home') }}</a></li>
+            <li class="hidden"><a id="zoom-in" role="menuitem">{{ icons.icon('magnify-plus-outline') }}</a></li>
+            <li class="hidden"><a id="zoom-out" role="menuitem">{{ icons.icon('magnify-minus-outline') }}</a></li>
+            <li class="hidden"><a id="edit-remove" role="menuitem" aria-disabled="true">{{ icons.icon('minus') }}</a></li>
+            <li class="hidden"><a id="edit-cancel" role="menuitem" aria-disabled="true">{{ icons.icon('close') }}</a></li>
+            <li class="hidden"><a id="edit-save" role="menuitem" aria-disabled="true">{{ icons.icon('check') }}</a></li>
+            <li id="busy-spinner" class="menu-text hidden">{{ icons.spinner() }}</li>
+          </ul>
+        </nav>
+      </div>
+      <div id="viewer" class="cell auto">
+        <canvas style="width:100%;height:100%;"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="cell small-12 medium-4">
+    <div class="grid-y cell-block-y">
+      <div class="cell shrink">
+        <p>Use the controls on the left to navigate the image and then select the area that contains a single joke.</p>
+      </div>
+      <div class="cell auto overflow-auto">
+        <ul id="extract-list" class="no-bullet">
+          {% for joke in source.children %}
+            <li id="joke-{{ joke.id }}"><img src="{{ 'jokes.view.image'|route_url(jid=joke.id) }}"/></li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+{% block body_scripts %}
+<script>
+    var extractor = new toja.JokeExtractor(document.querySelector('#identify-jokes-app'), {
+        urls: {
+            create: '{{ 'crowdsourcing.identify.new'|route_url(sid=source.id) }}',
+            update: '{{ 'crowdsourcing.identify.update'|route_url(sid=source.id, jid='$jid')}}',
+            image: '{{ 'jokes.view.image'|route_url(jid='$jid') }}'
+        },
+        jokes: [
+            {% for joke in source.children %}
+            {
+                id: {{ joke.id }},
+                attributes: {
+                    bbox: {{ joke.attributes['bbox']|tojson() }},
+                    editable: {{ (joke.owner == request.current_user)|tojson() }}
+                }
+            }{% if not loop.last %},{% endif %}
+            {% endfor %}
+        ]
+    });
+    extractor.load('{{ 'sources.view.image'|route_url(sid=source.id) }}');
+</script>
+{% endblock body_scripts %}
