@@ -147,7 +147,7 @@
             this._attachmentPoint.querySelector('#edit-save').setAttribute('aria-disabled', 'false');
             for(var idx = 0; idx < this._jokes.length; idx++) {
                 if(this._jokes[idx] !== this._canvas.getActiveObject()) {
-                    if(this._jokes[idx].sourceData.attributes.editable) {
+                    if(this._jokes[idx].sourceData === undefined || this._jokes[idx].sourceData.attributes.editable) {
                         this._jokes[idx].set({stroke: '#00aa00'});
                     } else {
                         this._jokes[idx].set({stroke: '#0000aa'});
@@ -162,7 +162,7 @@
             this._attachmentPoint.querySelector('#edit-cancel').setAttribute('aria-disabled', 'true');
             this._attachmentPoint.querySelector('#edit-save').setAttribute('aria-disabled', 'true');
             for(var idx = 0; idx < this._jokes.length; idx++) {
-                if(this._jokes[idx].sourceData.attributes.editable) {
+                if(this._jokes[idx].sourceData === undefined || this._jokes[idx].sourceData.attributes.editable) {
                     this._jokes[idx].set({stroke: '#00aa00'});
                 } else {
                     this._jokes[idx].set({stroke: '#0000aa'});
@@ -220,7 +220,24 @@
             this._canvas.remove(this._canvas.getActiveObject());
         },
         cancelEdit: function() {
-
+            if(this._canvas.getActiveObject().sourceData !== undefined) {
+                var bbox = this._canvas.getActiveObject().sourceData.attributes.bbox;
+                this._canvas.getActiveObject().set({
+                    left: bbox.left,
+                    top: bbox.top,
+                    width: bbox.width,
+                    height: bbox.height,
+                });
+                this._canvas.deactivateAllWithDispatch().renderAll();
+            } else {
+                for(var idx = 0; idx < this._jokes.length; idx++) {
+                    if(this._jokes[idx] === this._canvas.getActiveObject()) {
+                        this._jokes.splice(idx, 1);
+                        break;
+                    }
+                }
+                this._canvas.remove(this._canvas.getActiveObject());
+            }
         },
         saveEdit: function() {
             var self = this;
