@@ -5408,6 +5408,56 @@ html.is-reveal-open {
     *[role="menu"] li:hover > *[role="menu"] {
       display: block; }
 
+*[role="tablist"] {
+  margin: 0;
+  border: 1px solid #e6e6e6;
+  background: #fefefe;
+  list-style-type: none; }
+  *[role="tablist"]::before, *[role="tablist"]::after {
+    display: table;
+    content: ' ';
+    -ms-flex-preferred-size: 0;
+    flex-basis: 0;
+    -webkit-box-ordinal-group: 2;
+    -ms-flex-order: 1;
+    order: 1; }
+  *[role="tablist"]::after {
+    clear: both; }
+  *[role="tablist"] li {
+    float: left; }
+    *[role="tablist"] li > a {
+      display: block;
+      padding: 1.25rem 1.5rem;
+      font-size: 0.75rem;
+      line-height: 1;
+      color: #1779ba; }
+      [data-whatinput='mouse'] *[role="tablist"] li > a {
+        outline: 0; }
+      *[role="tablist"] li > a:hover {
+        background: #fefefe;
+        color: #1468a0; }
+      *[role="tablist"] li > a:focus, *[role="tablist"] li > a[aria-selected='true'] {
+        background: #e6e6e6;
+        color: #1779ba; }
+
+.tab-panel-wrapper {
+  border: 1px solid #e6e6e6;
+  border-top: 0;
+  background: #fefefe;
+  color: #0a0a0a;
+  -webkit-transition: all 0.5s ease;
+  transition: all 0.5s ease; }
+
+*[role="tabpanel"] {
+  display: none;
+  padding: 1rem;
+  display: block;
+  max-height: 100%; }
+  *[role="tabpanel"].is-active {
+    display: block; }
+  *[role="tabpanel"][aria-hidden="true"] {
+    display: none; }
+
 .overflow-auto {
   overflow: auto; }
 

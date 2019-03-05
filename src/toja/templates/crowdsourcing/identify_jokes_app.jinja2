@@ -32,28 +32,40 @@
   <div class="cell small-12 medium-4">
     <div class="grid-y cell-block-y">
       <div class="cell shrink">
-        <p>Use the controls on the left to navigate the image and then select the area that contains a single joke.</p>
-        <p>To navigate the image, select the navigation mode {{ icons.icon('cursor-move') }}. Then you can scroll up and
-          down the image by clicking and dragging on the image or zoom in {{ icons.icon('magnify-plus-outline') }} or
-          zoom out {{ icons.icon('magnify-minus-outline') }}.</p>
-        <p>To create a new joke, select the add mode {{ icons.icon('plus') }}. Then click on the location in the image
-          where you want to select the joke. A red box will appear. Use the black handles in the corners to resize the
-          box to cover the joke you wish to extract. Then click on the save icon {{ icons.icon('check') }} to actually
-          extract the image, which will appear on the right hand side.</p>
-          <p>To edit the extracted jokes, select the edit mode {{ icons.icon('edit') }}. Then click on the joke you want
-          to edit. Use the black handles in the corners to resize the box to cover the joke you wish to extract. Then
-          click on the save icon {{ icons.icon('check') }} to update the extracted joke.</p>
-        <p>To delete an extracted joke, switch to edit mode {{ icons.icon('edit') }}, select the joke you wish to delete
-          and then click on the remove icon {{ icons.icon('minus') }}.</p>
-        <p>When you are editing a joke, you can cancel any changes by clicking on the cancel icon {{ icons.icon('close') }}.</p>
-      </div>
-      <div class="cell auto overflow-auto">
-        <ul id="extract-list" class="no-bullet">
-          {% for joke in source.children %}
-            <li id="joke-{{ joke.id }}"><img src="{{ 'jokes.view.image'|route_url(jid=joke.id) }}"/></li>
-          {% endfor %}
+        <ul role="tablist">
+          <li role="presentation"><a id="help-tab" role="tab" aria-selected="true" aria-controls="help-panel">Help</a></li>
+          <li role="presentation"><a id="jokes-list-tab" role="tab" aria-controls="jokes-list-panel">Extracted Jokes</a></li>
         </ul>
       </div>
+      <div class="cell auto tab-panel-wrapper">
+        <div id="help-panel" role="tabpanel" arialabelledby="help-tab" class="overflow-auto">
+          <p>Use the controls on the left to navigate the image and then select the area that contains a single joke.</p>
+          <p>To navigate the image, select the navigation mode {{ icons.icon('cursor-move') }}. Then you can scroll up and
+            down the image by clicking and dragging on the image or zoom in {{ icons.icon('magnify-plus-outline') }} or
+            zoom out {{ icons.icon('magnify-minus-outline') }}.</p>
+          <p>To create a new joke, select the add mode {{ icons.icon('plus') }}. Then click on the location in the image
+            where you want to select the joke. A red box will appear. Use the black handles in the corners to resize the
+            box to cover the joke you wish to extract. Then click on the save icon {{ icons.icon('check') }} to actually
+            extract the image, which will appear on the right hand side.</p>
+            <p>To edit the extracted jokes, select the edit mode {{ icons.icon('edit') }}. Then click on the joke you want
+            to edit. Use the black handles in the corners to resize the box to cover the joke you wish to extract. Then
+            click on the save icon {{ icons.icon('check') }} to update the extracted joke.</p>
+          <p>To delete an extracted joke, switch to edit mode {{ icons.icon('edit') }}, select the joke you wish to delete
+            and then click on the remove icon {{ icons.icon('minus') }}.</p>
+          <p>When you are editing a joke, you can cancel any changes by clicking on the cancel icon {{ icons.icon('close') }}.</p>
+        </div>
+        <div id="jokes-list-panel" role="tabpanel" arialabelledby="help-tab" aria-hidden="true" class="overflow-auto">
+          <ul id="extract-list" class="no-bullet">
+            {% for joke in source.children %}
+              <li id="joke-{{ joke.id }}"><img src="{{ 'jokes.view.image'|route_url(jid=joke.id) }}"/></li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+      <!--<div class="cell shrink">
+      </div>
+      <div class="cell auto overflow-auto">
+      </div>-->
     </div>
   </div>
 </div>
