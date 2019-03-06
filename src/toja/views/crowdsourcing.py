@@ -2,7 +2,7 @@ import json
 import os
 
 from PIL import Image as PILImage
-from pyramid.httpexceptions import HTTPNotFound
+from pyramid.httpexceptions import HTTPNotFound, HTTPOk
 from pyramid.view import view_config
 from random import sample
 from sqlalchemy import and_
@@ -105,5 +105,27 @@ def update_joke(request):
         return {'data': {'types': 'images',
                          'id': joke_img.id,
                          'attributes': joke_img.attributes}}
+    else:
+        raise HTTPNotFound()
+
+
+@view_config(route_name='crowdsourcing.identify.delete', renderer='json')
+@require_logged_in()
+def delete_joke(request):
+    """Update an extracted joke."""
+    source = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['sid'],
+                                                        Image.type == 'source')).first()
+    joke_img = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['jid'],
+                                                          Image.type == 'joke',
+                                                          Image.parent_id == source.id,
+                                                          Image.owner_id == request.current_user.id)).first()
+    storage_path = get_config_setting(request, 'app.images.storage.path')
+    if source and joke_img and storage_path:
+        try:
+            os.remove(os.path.join(storage_path, *joke_img.padded_id()))
+            request.dbsession.delete(joke_img)
+        except Exception:
+            pass
+        return HTTPOk()
     else:
         raise HTTPNotFound()

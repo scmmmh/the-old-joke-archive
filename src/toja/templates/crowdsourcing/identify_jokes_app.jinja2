@@ -76,6 +76,7 @@
         urls: {
             create: '{{ 'crowdsourcing.identify.new'|route_url(sid=source.id) }}',
             update: '{{ 'crowdsourcing.identify.update'|route_url(sid=source.id, jid='$jid')}}',
+            delete: '{{ 'crowdsourcing.identify.delete'|route_url(sid=source.id, jid='$jid')}}',
             image: '{{ 'jokes.view.image'|route_url(jid='$jid') }}'
         },
         jokes: [

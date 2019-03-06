@@ -29,6 +29,8 @@ def includeme(config):
     config.add_route('crowdsourcing.identify.new', '/contribute/identify-jokes/:sid/create', request_method='POST')
     config.add_route('crowdsourcing.identify.update', '/contribute/identify-jokes/:sid/:jid/update',
                      request_method='PATCH')
+    config.add_route('crowdsourcing.identify.delete', '/contribute/identify-jokes/:sid/:jid/delete',
+                     request_method='DELETE')
 
     config.add_route('jokes.view.image', '/jokes/image/:jid')
 

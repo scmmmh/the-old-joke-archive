@@ -217,7 +217,43 @@
             }
         },
         removeSelected: function() {
-            this._canvas.remove(this._canvas.getActiveObject());
+            var activeObject = this._canvas.getActiveObject();
+            if(activeObject.sourceData) {
+                var self = this;
+                this._attachmentPoint.querySelector('#edit-remove').setAttribute('aria-disabled', 'true');
+                this._attachmentPoint.querySelector('#edit-cancel').setAttribute('aria-disabled', 'true');
+                this._attachmentPoint.querySelector('#edit-save').setAttribute('aria-disabled', 'true');
+                this._attachmentPoint.querySelector('#busy-spinner').classList.remove('hidden');
+                fetch(this._options.urls.delete.replace('$jid', activeObject.sourceData.id), {
+                    method: 'DELETE'
+                }).then(function() {
+                    for(var idx = 0; idx < self._jokes.length; idx++) {
+                        if(self._jokes[idx] === activeObject) {
+                            self._jokes.splice(idx, 1);
+                            break;
+                        }
+                    }
+                    self._canvas.remove(activeObject);
+                    self._attachmentPoint.querySelector('#joke-' + activeObject.sourceData.id).remove();
+                    self._attachmentPoint.querySelector('#edit-cancel').setAttribute('aria-disabled', 'false');
+                    self._attachmentPoint.querySelector('#edit-remove').setAttribute('aria-disabled', 'false');
+                    self._attachmentPoint.querySelector('#edit-save').setAttribute('aria-disabled', 'false');
+                    self._attachmentPoint.querySelector('#busy-spinner').classList.add('hidden');
+                }).catch(function() {
+                    self._attachmentPoint.querySelector('#edit-cancel').setAttribute('aria-disabled', 'false');
+                    self._attachmentPoint.querySelector('#edit-remove').setAttribute('aria-disabled', 'false');
+                    self._attachmentPoint.querySelector('#edit-save').setAttribute('aria-disabled', 'false');
+                    self._attachmentPoint.querySelector('#busy-spinner').classList.add('hidden');
+                });
+            } else {
+                for(var idx = 0; idx < this._jokes.length; idx++) {
+                    if(this._jokes[idx] === activeObject) {
+                        this._jokes.splice(idx, 1);
+                        break;
+                    }
+                }
+                this._canvas.remove(activeObject);
+            }
         },
         cancelEdit: function() {
             if(this._canvas.getActiveObject().sourceData !== undefined) {
