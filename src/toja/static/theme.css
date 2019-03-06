@@ -5467,6 +5467,16 @@ html.is-reveal-open {
 svg {
   width: 1.5rem;
   height: 1.5rem; }
+  svg.primary path {
+    fill: #1779ba; }
+  svg.secondary path {
+    fill: #767676; }
+  svg.success path {
+    fill: #3adb76; }
+  svg.alert path {
+    fill: #cc4b37; }
+  svg.warning path {
+    fill: #ffae00; }
 
 button {
   cursor: pointer; }

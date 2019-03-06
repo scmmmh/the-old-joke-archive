@@ -24,6 +24,32 @@
 svg {
     width: rem-calc(24);
     height: rem-calc(24);
+
+    &.primary {
+        path {
+            fill: $primary-color;
+        }
+    }
+    &.secondary {
+        path {
+            fill: $secondary-color;
+        }
+    }
+    &.success {
+        path {
+            fill: $success-color;
+        }
+    }
+    &.alert {
+        path {
+            fill: $alert-color;
+        }
+    }
+    &.warning {
+        path {
+            fill: $warning-color;
+        }
+    }
 }
 
 button {

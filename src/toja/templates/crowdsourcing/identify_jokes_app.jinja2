@@ -17,9 +17,9 @@
             <li class="hidden"><a id="zoom-initial" role="menuitem">{{ icons.icon('home') }}</a></li>
             <li class="hidden"><a id="zoom-in" role="menuitem">{{ icons.icon('magnify-plus-outline') }}</a></li>
             <li class="hidden"><a id="zoom-out" role="menuitem">{{ icons.icon('magnify-minus-outline') }}</a></li>
-            <li class="hidden"><a id="edit-remove" role="menuitem" aria-disabled="true">{{ icons.icon('minus') }}</a></li>
-            <li class="hidden"><a id="edit-cancel" role="menuitem" aria-disabled="true">{{ icons.icon('close') }}</a></li>
-            <li class="hidden"><a id="edit-save" role="menuitem" aria-disabled="true">{{ icons.icon('check') }}</a></li>
+            <li class="hidden"><a id="edit-remove" role="menuitem" aria-disabled="true">{{ icons.icon('minus', {"class": "alert"}) }}</a></li>
+            <li class="hidden"><a id="edit-cancel" role="menuitem" aria-disabled="true">{{ icons.icon('close', {"class": "secondary"}) }}</a></li>
+            <li class="hidden"><a id="edit-save" role="menuitem" aria-disabled="true">{{ icons.icon('check', {"class": "success"}) }}</a></li>
             <li id="busy-spinner" class="menu-text hidden">{{ icons.spinner() }}</li>
           </ul>
         </nav>
