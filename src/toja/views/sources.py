@@ -101,6 +101,7 @@ def edit_status(request):
 @require_permission('sources.edit')
 def edit_attribute(request):
     """Update a single attribute on a source image."""
+    # Todo: Need to check that the image can be updated and has not been processed further.
     if request.method == 'POST':
         image = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['sid'],
                                                            Image.type == 'source')).first()
@@ -121,6 +122,7 @@ def edit_attribute(request):
 @require_permission('sources.delete')
 def delete(request):
     """Delete a single source image."""
+    # Todo: Need to check that the image can be deleted and has not been processed further.
     image = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['sid'],
                                                        Image.type == 'source')).first()
     storage_path = get_config_setting(request, 'app.images.storage.path')
