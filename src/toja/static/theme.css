@@ -3550,7 +3550,7 @@ table.hover:not(.unstriped) tr:nth-of-type(even):hover {
 
 .tabs {
   margin: 0;
-  border: 1px solid #e6e6e6;
+  border: 1px solid transparent;
   background: #fefefe;
   list-style-type: none; }
   .tabs::before, .tabs::after {
@@ -3588,18 +3588,18 @@ table.hover:not(.unstriped) tr:nth-of-type(even):hover {
     padding: 1.25rem 1.5rem;
     font-size: 0.75rem;
     line-height: 1;
-    color: #1779ba; }
+    color: #0a0a0a; }
     [data-whatinput='mouse'] .tabs-title > a {
       outline: 0; }
     .tabs-title > a:hover {
       background: #fefefe;
-      color: #1468a0; }
+      color: #090909; }
     .tabs-title > a:focus, .tabs-title > a[aria-selected='true'] {
-      background: #e6e6e6;
-      color: #1779ba; }
+      background: #1779ba;
+      color: #fefefe; }
 
 .tabs-content {
-  border: 1px solid #e6e6e6;
+  border: 1px solid transparent;
   border-top: 0;
   background: #fefefe;
   color: #0a0a0a;
@@ -3607,7 +3607,7 @@ table.hover:not(.unstriped) tr:nth-of-type(even):hover {
   transition: all 0.5s ease; }
 
 .tabs-content.vertical {
-  border: 1px solid #e6e6e6;
+  border: 1px solid transparent;
   border-left: 0; }
 
 .tabs-panel {
@@ -5410,7 +5410,7 @@ html.is-reveal-open {
 
 *[role="tablist"] {
   margin: 0;
-  border: 1px solid #e6e6e6;
+  border: 1px solid transparent;
   background: #fefefe;
   list-style-type: none; }
   *[role="tablist"]::before, *[role="tablist"]::after {
@@ -5430,18 +5430,18 @@ html.is-reveal-open {
       padding: 1.25rem 1.5rem;
       font-size: 0.75rem;
       line-height: 1;
-      color: #1779ba; }
+      color: #0a0a0a; }
       [data-whatinput='mouse'] *[role="tablist"] li > a {
         outline: 0; }
       *[role="tablist"] li > a:hover {
         background: #fefefe;
-        color: #1468a0; }
+        color: #090909; }
       *[role="tablist"] li > a:focus, *[role="tablist"] li > a[aria-selected='true'] {
-        background: #e6e6e6;
-        color: #1779ba; }
+        background: #1779ba;
+        color: #fefefe; }
 
 .tab-panel-wrapper {
-  border: 1px solid #e6e6e6;
+  border: 1px solid transparent;
   border-top: 0;
   background: #fefefe;
   color: #0a0a0a;
@@ -5480,6 +5480,13 @@ svg {
 
 button {
   cursor: pointer; }
+
+*[role="tablist"] {
+  border-bottom: 1px solid #8a8a8a; }
+  *[role="tablist"] *[role="tab"]:hover {
+    background: #e6e6e6; }
+  *[role="tablist"] *[role="tab"][aria-selected="true"]:hover {
+    background: #1779ba; }
 
 *[data-action="inline-edit"] select {
   margin-bottom: 0; }

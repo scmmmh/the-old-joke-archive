@@ -55,6 +55,18 @@ svg {
 button {
     cursor: pointer;
 }
+*[role="tablist"] {
+    border-bottom: 1px solid $dark-gray;
+
+    *[role="tab"] {
+        &:hover {
+            background: $light-gray;
+        }
+        &[aria-selected="true"]:hover {
+            background: $primary-color;
+        }
+    }
+}
 
 *[data-action="inline-edit"] {
     select {
