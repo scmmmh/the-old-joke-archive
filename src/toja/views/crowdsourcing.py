@@ -82,6 +82,7 @@ def create_new_joke(request):
 @require_logged_in()
 def update_joke(request):
     """Update an extracted joke."""
+    # TODO: Need to check that the image has not been processed furhter before allowing edit/delete
     source = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['sid'],
                                                         Image.type == 'source')).first()
     joke_img = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['jid'],
@@ -113,6 +114,7 @@ def update_joke(request):
 @require_logged_in()
 def delete_joke(request):
     """Update an extracted joke."""
+    # TODO: Need to check that the image has not been processed furhter before allowing edit/delete
     source = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['sid'],
                                                         Image.type == 'source')).first()
     joke_img = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['jid'],
