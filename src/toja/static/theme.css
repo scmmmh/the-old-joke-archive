@@ -5386,7 +5386,7 @@ html.is-reveal-open {
         fill: #fefefe; }
     *[role="menu"] li *[role="menuitem"][aria-disabled="true"] {
       cursor: default; }
-      *[role="menu"] li *[role="menuitem"][aria-disabled="true"]link, *[role="menu"] li *[role="menuitem"][aria-disabled="true"]:visited {
+      *[role="menu"] li *[role="menuitem"][aria-disabled="true"]:link, *[role="menu"] li *[role="menuitem"][aria-disabled="true"]:visited {
         color: #e6e6e6; }
       *[role="menu"] li *[role="menuitem"][aria-disabled="true"] svg path {
         fill: #e6e6e6; }

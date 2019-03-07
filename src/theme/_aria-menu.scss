@@ -54,7 +54,7 @@
             &[aria-disabled="true"] {
                 cursor: default;
 
-                &link, &:visited {
+                &:link, &:visited {
                     color: $light-gray;
                 }
                 svg path {
