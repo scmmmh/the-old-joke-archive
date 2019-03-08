@@ -5,6 +5,8 @@
 {% block content %}
   <form action="{{ 'users.register'|route_url() }}" method="post" novalidate>
     <h1>Register</h1>
+    <p class="warning">The Old Joke Archive is in an early prototype stage. That means that your account may be
+      deleted without warning, if the development requires this. We try to avoid this, but sometimes it is necessary.</p>
     <div>{{ form.field('email', 'email', 'E-Mail Address', attributes={'required': 'required'}) }}</div>
     <div>{{ form.field('name', 'text', 'Name', attributes={'required': 'required'}) }}</div>
     <div class="text-right">
