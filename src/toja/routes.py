@@ -32,7 +32,7 @@ def includeme(config):
     config.add_route('crowdsourcing.identify.delete', '/contribute/identify-jokes/:sid/:jid/delete',
                      request_method='DELETE')
 
-    config.add_route('jokes.view.image', '/jokes/image/:jid')
+    config.add_route('jokes.view.image', '/jokes/:jid/image')
 
     config.get_jinja2_environment().filters['static_url'] = static_url_filter
     config.get_jinja2_environment().filters['route_url'] = route_url_filter
