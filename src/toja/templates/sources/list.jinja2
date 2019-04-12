@@ -14,7 +14,7 @@
     <nav>
       <ul role="menu">
         {% if request|permitted('sources.upload') %}
-          <li><a href="{{ 'sources.upload'|route_url() }}" role="menuitem">Upload Source</a></li>
+          <li><a href="{{ 'admin.sources.upload'|route_url() }}" role="menuitem">Upload Source</a></li>
         {% endif %}
       </ul>
     </nav>
@@ -35,19 +35,19 @@
       <tbody>
         {% for image in images %}
           <tr>
-            <td><a href="{{ 'sources.view.image'|route_url(sid=image.id )}}"><img src="{{ 'sources.view.image'|route_url(sid=image.id) }}" class="thumbnail"/></a></td>
+            <td><a href="{{ 'admin.sources.view.image'|route_url(sid=image.id )}}"><img src="{{ 'admin.sources.view.image'|route_url(sid=image.id) }}" class="thumbnail"/></a></td>
             <td>{{ image.owner.email }}</td>
             {% for field, datatype, _ in metadata %}
               <td>
                 {% if request|permitted('sources.edit') %}
-                  {{ form.inline_input(field, datatype, image.attributes[field], image.attributes[field], 'sources.edit.attribute'|route_url(sid=image.id, attribute=field)) }}
+                  {{ form.inline_input(field, datatype, image.attributes[field], image.attributes[field], 'admin.sources.edit.attribute'|route_url(sid=image.id, attribute=field)) }}
                 {% else %}
                   {{ image.attributes[field] }}
                 {% endif %}
               </td>
             {% endfor %}
-            <td>{{ form.inline_select('status', [('processing', 'Processing'), ('complete', 'Complete')], image.status, image.status|title(), 'sources.edit.status'|route_url(sid=image.id)) }}</td>
-            <td>{% if request|permitted('sources.delete') %}<a href="{{ 'sources.delete'|route_url(sid=image.id) }}" data-action="post-link">{{ icons.icon('delete') }}</a>{% endif %}</td>
+            <td>{{ form.inline_select('status', [('processing', 'Processing'), ('complete', 'Complete')], image.status, image.status|title(), 'admin.sources.edit.status'|route_url(sid=image.id)) }}</td>
+            <td>{% if request|permitted('sources.delete') %}<a href="{{ 'admin.sources.delete'|route_url(sid=image.id) }}" data-action="post-link">{{ icons.icon('delete') }}</a>{% endif %}</td>
           </tr>
         {% endfor %}
       </tbody>

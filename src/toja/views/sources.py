@@ -13,7 +13,7 @@ from ..session import require_logged_in
 from ..util import get_config_setting, Validator
 
 
-@view_config(route_name='sources.upload', renderer='toja:templates/sources/upload.jinja2')
+@view_config(route_name='admin.sources.upload', renderer='toja:templates/sources/upload.jinja2')
 @require_permission('sources.upload')
 def upload(request):
     """Handles the uploading of new sources."""
@@ -48,7 +48,7 @@ def upload(request):
     return {}
 
 
-@view_config(route_name='sources.list', renderer='toja:templates/sources/list.jinja2')
+@view_config(route_name='admin.sources.list', renderer='toja:templates/sources/list.jinja2')
 @require_permission('sources.list')
 def index(request):
     """Handles the display of all sources."""
@@ -60,7 +60,7 @@ def index(request):
             'metadata': metadata}
 
 
-@view_config(route_name='sources.view.image')
+@view_config(route_name='admin.sources.view.image')
 @require_logged_in()
 def image(request):
     """Send the image data for a single source image."""
@@ -79,7 +79,7 @@ def image(request):
 edit_status_schema = {'status': {'type': 'string', 'empty': False, 'allowed': ['processing', 'complete']}}
 
 
-@view_config(route_name='sources.edit.status')
+@view_config(route_name='admin.sources.edit.status')
 @require_permission('sources.edit')
 def edit_status(request):
     """Handle updating the source's status."""
@@ -97,7 +97,7 @@ def edit_status(request):
         raise HTTPMethodNotAllowed()
 
 
-@view_config(route_name='sources.edit.attribute')
+@view_config(route_name='admin.sources.edit.attribute')
 @require_permission('sources.edit')
 def edit_attribute(request):
     """Update a single attribute on a source image."""
@@ -118,7 +118,7 @@ def edit_attribute(request):
         raise HTTPMethodNotAllowed()
 
 
-@view_config(route_name='sources.delete')
+@view_config(route_name='admin.sources.delete')
 @require_permission('sources.delete')
 def delete(request):
     """Delete a single source image."""

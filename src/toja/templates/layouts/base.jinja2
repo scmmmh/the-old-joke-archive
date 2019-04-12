@@ -24,7 +24,7 @@
         <a href="{{ 'users.list'|route_url() }}">List Users</a>
       {% endif %}
       {% if request|permitted('sources.list') %}
-        <a href="{{ 'sources.list'|route_url() }}">List Sources</a>
+        <a href="{{ 'admin.sources.list'|route_url() }}">List Sources</a>
       {% endif %}
     </div>
   {% else %}

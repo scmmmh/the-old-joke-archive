@@ -16,12 +16,12 @@ def includeme(config):
     config.add_route('users.edit.trust', '/users/:uid/edit/trust')
     config.add_route('users.delete', '/users/:uid/delete')
 
-    config.add_route('sources.list', '/sources')
-    config.add_route('sources.upload', '/sources/upload')
-    config.add_route('sources.view.image', '/sources/:sid/image')
-    config.add_route('sources.edit.status', '/sources/:sid/edit/status')
-    config.add_route('sources.edit.attribute', '/sources/:sid/edit/:attribute')
-    config.add_route('sources.delete', '/sources/:sid/delete')
+    config.add_route('admin.sources.list', '/admin/sources')
+    config.add_route('admin.sources.upload', '/admin/sources/upload')
+    config.add_route('admin.sources.view.image', '/admin/sources/:sid/image')
+    config.add_route('admin.sources.edit.status', '/admin/sources/:sid/edit/status')
+    config.add_route('admin.sources.edit.attribute', '/admin/sources/:sid/edit/:attribute')
+    config.add_route('admin.sources.delete', '/admin/sources/:sid/delete')
 
     config.add_route('crowdsourcing', '/contribute')
     config.add_route('crowdsourcing.identify', '/contribute/identify-jokes')
