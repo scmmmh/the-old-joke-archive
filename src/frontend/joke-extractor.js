@@ -24,8 +24,8 @@
         this._canvas.on('mouse:move', function(opt) { self.mouseMove(opt.e); });
         this._canvas.on('mouse:up', function(opt) { self.mouseUp(opt.e); });
         this._canvas.on('mouse:dblclick', function(opt) { self.zoomIn(); });
-        this._canvas.on('object:selected', function(opt) { self.select(); })
-        this._canvas.on('selection:cleared', function(opt) { self.deSelect(); })
+        this._canvas.on('object:selected', function(opt) { self.select(); });
+        this._canvas.on('selection:cleared', function(opt) { self.deSelect(); });
 
         // Attach menu events
         this._attachmentPoint.querySelector('#zoom-initial').addEventListener('click', function() { self.zoomInitial(); });
