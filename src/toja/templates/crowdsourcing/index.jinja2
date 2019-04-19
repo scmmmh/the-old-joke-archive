@@ -19,9 +19,9 @@
       can find.</p>
     <p>
       {% trans count=counts['sources'] %}
-        Currently there is {{ count }} task available.
+        Currently there is {{ count }} task available in this area.
       {% pluralize %}
-        Currently there are {{ count }} tasks available.
+        Currently there are {{ count }} tasks available in this area.
       {% endtrans %}
     </p>
     {% if request|logged_in() %}
