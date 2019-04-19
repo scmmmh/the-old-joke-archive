@@ -15,7 +15,8 @@ from ..session import require_logged_in
 @view_config(route_name='crowdsourcing', renderer='toja:templates/crowdsourcing/index.jinja2')
 def crowdsourcing(request):
     """Handles the crowdsourcing overview."""
-    sources_count = request.dbsession.query(Image).filter(Image.type == 'source').count()
+    sources_count = request.dbsession.query(Image).filter(and_(Image.type == 'source',
+                                                               Image.status == 'processing')).count()
     return {'counts': {'sources': sources_count}}
 
 
