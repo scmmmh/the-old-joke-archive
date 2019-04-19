@@ -3,13 +3,11 @@ import shutil
 
 from mimetypes import guess_type
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound, HTTPMethodNotAllowed
-from pyramid.response import FileResponse
 from pyramid.view import view_config
 from sqlalchemy import and_
 
 from ..models import Image
 from ..permissions import require_permission
-from ..session import require_logged_in
 from ..util import get_config_setting, Validator
 
 
@@ -58,22 +56,6 @@ def index(request):
                         get_config_setting(request, 'app.sources.metadata.labels', target_type='list', default=[])))
     return {'images': images,
             'metadata': metadata}
-
-
-@view_config(route_name='admin.sources.view.image')
-@require_logged_in()
-def image(request):
-    """Send the image data for a single source image."""
-    image = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['sid'],
-                                                       Image.type == 'source')).first()
-    storage_path = get_config_setting(request, 'app.images.storage.path')
-    if image and storage_path:
-        padded_id = '%09i' % image.id
-        padded_id = (padded_id[0:3], padded_id[3:6], padded_id[6:9])
-        path = os.path.join(storage_path, *padded_id)
-        return FileResponse(path, request=request, content_type=image.attributes['mimetype'][0])
-    else:
-        raise HTTPNotFound()
 
 
 edit_status_schema = {'status': {'type': 'string', 'empty': False, 'allowed': ['processing', 'complete']}}
