@@ -225,11 +225,21 @@ inlineEditor();
                 if(this._jokes[idx] !== this._canvas.getActiveObject()) {
                     if(this._jokes[idx].sourceData === undefined || this._jokes[idx].sourceData.attributes.editable) {
                         this._jokes[idx].set({stroke: '#00aa00'});
+                        // TODO: Factor this out into an event that can then be handled in the main JS
+                        var joke = document.querySelector('#joke-' + this._jokes[idx].sourceData.id);
+                        if (joke) {
+                            joke.setAttribute('aria-current', 'false');
+                        }
                     } else {
                         this._jokes[idx].set({stroke: '#0000aa'});
                     }
                 } else {
                     this._jokes[idx].set({stroke: '#ff0000'});
+                    var joke = document.querySelector('#joke-' + this._jokes[idx].sourceData.id);
+                    if (joke) {
+                        joke.setAttribute('aria-current', 'true');
+                        joke.scrollIntoView();
+                    }
                 }
             }
         },
@@ -240,6 +250,10 @@ inlineEditor();
             for(var idx = 0; idx < this._jokes.length; idx++) {
                 if(this._jokes[idx].sourceData === undefined || this._jokes[idx].sourceData.attributes.editable) {
                     this._jokes[idx].set({stroke: '#00aa00'});
+                    var joke = document.querySelector('#joke-' + this._jokes[idx].sourceData.id);
+                    if (joke) {
+                        joke.setAttribute('aria-current', 'false');
+                    }
                 } else {
                     this._jokes[idx].set({stroke: '#0000aa'});
                 }

@@ -5514,3 +5514,5 @@ img.thumbnail {
   #identify-jokes-app #extract-list li {
     margin-bottom: 1rem;
     border: 1px solid; }
+    #identify-jokes-app #extract-list li[aria-current="true"] {
+      border: 1px solid #ff0000; }

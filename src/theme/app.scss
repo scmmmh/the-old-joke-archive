@@ -110,6 +110,10 @@ img.thumbnail {
         li {
             margin-bottom: $global-margin;
             border: 1px solid;
+
+            &[aria-current="true"] {
+                border: 1px solid #ff0000;
+            }
         }
     }
 }
