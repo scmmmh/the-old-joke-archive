@@ -57,7 +57,7 @@
         <div id="jokes-list-panel" role="tabpanel" arialabelledby="help-tab" aria-hidden="true" class="overflow-auto">
           <ul id="extract-list" class="no-bullet">
             {% for joke in source.children %}
-              <li id="joke-{{ joke.id }}"><img src="{{ 'jokes.view.image'|route_url(jid=joke.id) }}"/></li>
+              <li id="joke-{{ joke.id }}"><img src="{{ 'images.view'|route_url(iid=joke.id) }}"/></li>
             {% endfor %}
           </ul>
         </div>
@@ -77,7 +77,7 @@
             create: '{{ 'crowdsourcing.identify.new'|route_url(sid=source.id) }}',
             update: '{{ 'crowdsourcing.identify.update'|route_url(sid=source.id, jid='$jid')}}',
             delete: '{{ 'crowdsourcing.identify.delete'|route_url(sid=source.id, jid='$jid')}}',
-            image: '{{ 'jokes.view.image'|route_url(jid='$jid') }}'
+            image: '{{ 'images.view'|route_url(iid='$jid') }}'
         },
         jokes: [
             {% for joke in source.children %}
@@ -91,6 +91,6 @@
             {% endfor %}
         ]
     });
-    extractor.load('{{ 'admin.sources.view.image'|route_url(sid=source.id) }}');
+    extractor.load('{{ 'images.view'|route_url(iid=source.id) }}');
 </script>
 {% endblock body_scripts %}

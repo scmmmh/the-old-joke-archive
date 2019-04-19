@@ -18,7 +18,6 @@ def includeme(config):
 
     config.add_route('admin.sources.list', '/admin/sources')
     config.add_route('admin.sources.upload', '/admin/sources/upload')
-    config.add_route('admin.sources.view.image', '/admin/sources/:sid/image')
     config.add_route('admin.sources.edit.status', '/admin/sources/:sid/edit/status')
     config.add_route('admin.sources.edit.attribute', '/admin/sources/:sid/edit/:attribute')
     config.add_route('admin.sources.delete', '/admin/sources/:sid/delete')
@@ -32,7 +31,7 @@ def includeme(config):
     config.add_route('crowdsourcing.identify.delete', '/contribute/identify-jokes/:sid/:jid/delete',
                      request_method='DELETE')
 
-    config.add_route('jokes.view.image', '/jokes/:jid/image')
+    config.add_route('images.view', '/images/:iid')
 
     config.get_jinja2_environment().filters['static_url'] = static_url_filter
     config.get_jinja2_environment().filters['route_url'] = route_url_filter

@@ -35,7 +35,7 @@
       <tbody>
         {% for image in images %}
           <tr>
-            <td><a href="{{ 'admin.sources.view.image'|route_url(sid=image.id )}}"><img src="{{ 'admin.sources.view.image'|route_url(sid=image.id) }}" class="thumbnail"/></a></td>
+            <td><a href="{{ 'images.view'|route_url(iid=image.id )}}"><img src="{{ 'images.view'|route_url(iid=image.id) }}" class="thumbnail"/></a></td>
             <td>{{ image.owner.email }}</td>
             {% for field, datatype, _ in metadata %}
               <td>
