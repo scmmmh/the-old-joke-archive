@@ -1,0 +1,20 @@
+{% extends "toja:templates/layouts/centred.jinja2" %}
+
+{% block title %}Verify a Joke{% endblock title %}
+{% block content %}
+<h1>Verify a Joke</h1>
+<div class="grid-x grid-padding-x">
+  <div class="cell small-12">
+    <p>For the joke below, please check that it has been extracted cleanly, that none of the joke's text is cut off
+      at the borders, and that there is no excessive amount of other text visible.</p>
+    <p>If you are unsure, then simply reload the page to see a different joke.</p>
+    <p class="text-center"><img src="{{ 'images.view'|route_url(iid=joke.id) }}"/></p>
+  </div>
+  <div class="cell small-12 medium-6 medium-offset-3">
+    <div class="grid-x">
+      <div class="cell auto text-center"><a href="{{ 'crowdsourcing.verify_joke'|route_url(jid=joke.id, _query={'status': 'clean'}) }}" class="button success" data-action="post-link">Cleanly extracted</a></div>
+      <div class="cell auto text-center"><a href="{{ 'crowdsourcing.verify_joke'|route_url(jid=joke.id, _query={'status': 'not-clean'}) }}" class="button alert" data-action="post-link">Not cleanly extracted</a></div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

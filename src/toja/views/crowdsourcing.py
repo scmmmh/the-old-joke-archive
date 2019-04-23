@@ -2,12 +2,12 @@ import json
 import os
 
 from PIL import Image as PILImage
-from pyramid.httpexceptions import HTTPNotFound, HTTPOk
+from pyramid.httpexceptions import HTTPNotFound, HTTPFound, HTTPOk
 from pyramid.view import view_config
-from random import sample
-from sqlalchemy import and_
+from random import sample, choice
+from sqlalchemy import and_, or_, func
 
-from ..models import Image
+from ..models import Image, Review
 from ..util import get_config_setting
 from ..session import require_logged_in
 
@@ -15,9 +15,22 @@ from ..session import require_logged_in
 @view_config(route_name='crowdsourcing', renderer='toja:templates/crowdsourcing/index.jinja2')
 def crowdsourcing(request):
     """Handles the crowdsourcing overview."""
+    # Sources to extract from are those with the status processing.
     sources_count = request.dbsession.query(Image).filter(and_(Image.type == 'source',
                                                                Image.status == 'processing')).count()
-    return {'counts': {'sources': sources_count}}
+    # Verifiable jokes are those that are new and are neither uploaded or reviewed by the same user.
+    verify_jokes_count = request.dbsession.query(func.count(Image.id)).outerjoin(Image.reviews).\
+        filter(and_(Image.type == 'joke',
+                    Image.status == 'new',
+                    Image.owner_id != (request.current_user.id if
+                                       request.current_user else
+                                       -1),
+                    or_(Review.owner_id == None,
+                        Review.owner_id != (request.current_user.id if
+                                            request.current_user else
+                                            -1)))).first()[0]  # noqa: E711
+    return {'counts': {'sources': sources_count,
+                       'verify_jokes': verify_jokes_count}}
 
 
 @view_config(route_name='crowdsourcing.identify', renderer='toja:templates/crowdsourcing/identify_jokes_tasks.jinja2')
@@ -132,3 +145,41 @@ def delete_joke(request):
         return HTTPOk()
     else:
         raise HTTPNotFound()
+
+
+@view_config(route_name='crowdsourcing.verify_jokes', renderer='toja:templates/crowdsourcing/verify_jokes.jinja2')
+@require_logged_in()
+def verify_jokes(request):
+    """Display an extracted joke for verification."""
+    joke_ids = [i.id for i in request.dbsession.query(Image.id).outerjoin(Image.reviews).
+                filter(and_(Image.type == 'joke',
+                            Image.status == 'new',
+                            Image.owner_id != request.current_user.id,
+                            or_(Review.owner_id == None,
+                                Review.owner_id != request.current_user.id)))]  # noqa: E711
+    if joke_ids:
+        joke = request.dbsession.query(Image).filter(Image.id == choice(joke_ids)).first()
+        return {'joke': joke}
+    else:
+        request.session.flash('Thank you for your help. There are currently no outstanding jokes for you to check.',
+                              'info')
+        raise HTTPFound(request.route_url('crowdsourcing'))
+
+
+@view_config(route_name='crowdsourcing.verify_joke')
+@require_logged_in()
+def verify_joke(request):
+    """Handle the verification of a single extracted joke."""
+    joke = request.dbsession.query(Image).outerjoin(Image.reviews).\
+        filter(and_(Image.id == request.matchdict['jid'],
+                    Image.type == 'joke',
+                    Image.status == 'new',
+                    Image.owner_id != request.current_user.id,
+                    or_(Review.owner_id == None,
+                        Review.owner_id != request.current_user.id))).first()  # noqa: E711
+    if joke and 'status' in request.params and request.params['status'] in ['clean', 'not-clean']:
+        review = Review(owner=request.current_user,
+                        attributes={'review': request.params['status']})
+        joke.reviews.append(review)
+    request.session.flash('Thank you for your help.', 'info')
+    return HTTPFound(request.route_url('crowdsourcing.verify_jokes'))

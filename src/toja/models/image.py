@@ -22,6 +22,7 @@ class Image(Base):
     owner = relationship('User')
     parent = relationship('Image', remote_side=[id])
     children = relationship('Image', remote_side=[parent_id])
+    reviews = relationship('Review', secondary='images_reviews')
 
     def padded_id(self):
         """Returns the id padded with zeroes as a triple."""
