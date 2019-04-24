@@ -38,6 +38,8 @@ def includeme(config):
     # Crowdsourcing joke verification routes
     config.add_route('crowdsourcing.verify_jokes', '/contribute/verify-jokes')
     config.add_route('crowdsourcing.verify_joke', '/contribute/verify-jokes/:jid', request_method='POST')
+    # Crowdsourcing joke transcription routes
+    config.add_route('crowdsourcing.transcribe_joke', '/contribute/transcribe-joke/:jid')
 
     # Image display routes
     config.add_route('images.view', '/images/:iid')

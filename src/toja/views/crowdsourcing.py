@@ -10,6 +10,7 @@ from sqlalchemy import and_, or_, func
 from ..models import Image, Review
 from ..util import get_config_setting
 from ..session import require_logged_in
+from ..tasks import ocr_single_image
 
 
 @view_config(route_name='crowdsourcing', renderer='toja:templates/crowdsourcing/index.jinja2')
@@ -75,7 +76,7 @@ def create_new_joke(request):
                          attributes={'mimetype': 'image/jpeg',
                                      'bbox': body['data']['attributes']['bbox']},
                          type='joke',
-                         status='new')
+                         status='confirmed' if request.current_user.trust == 'full' else 'new')
         request.dbsession.add(joke_img)
         request.dbsession.flush()
         part_img = source_img.crop((int(body['data']['attributes']['bbox']['left']),
@@ -85,6 +86,7 @@ def create_new_joke(request):
                                     int(body['data']['attributes']['bbox']['top']) +
                                     int(body['data']['attributes']['bbox']['height'])))
         part_img.save(os.path.join(storage_path, *joke_img.padded_id()), format='jpeg')
+        ocr_single_image.apply_async(args=(joke_img.id,), countdown=30)
         return {'data': {'types': 'images',
                          'id': joke_img.id,
                          'attributes': joke_img.attributes}}
@@ -108,6 +110,7 @@ def update_joke(request):
         body = json.loads(request.body)
         source_img = PILImage.open(os.path.join(storage_path, *source.padded_id()))
         joke_img.attributes['bbox'] = body['data']['attributes']['bbox']
+        joke_img.status = 'confirmed' if request.current_user.trust == 'full' else 'new'
         request.dbsession.add(joke_img)
         request.dbsession.flush()
         part_img = source_img.crop((int(body['data']['attributes']['bbox']['left']),
@@ -117,6 +120,7 @@ def update_joke(request):
                                     int(body['data']['attributes']['bbox']['top']) +
                                     int(body['data']['attributes']['bbox']['height'])))
         part_img.save(os.path.join(storage_path, *joke_img.padded_id()), format='jpeg')
+        ocr_single_image.apply_async(args=(joke_img.id,), countdown=30)
         return {'data': {'types': 'images',
                          'id': joke_img.id,
                          'attributes': joke_img.attributes}}
