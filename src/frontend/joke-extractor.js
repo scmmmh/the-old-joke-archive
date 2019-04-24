@@ -24,6 +24,7 @@
         this._canvas.on('mouse:move', function(opt) { self.mouseMove(opt.e); });
         this._canvas.on('mouse:up', function(opt) { self.mouseUp(opt.e); });
         this._canvas.on('mouse:dblclick', function(opt) { self.zoomIn(); });
+        this._canvas.on('mouse:wheel', function(opt) { self.mouseScroll(opt.e); });
         this._canvas.on('object:selected', function(opt) { self.select(); });
         this._canvas.on('selection:cleared', function(opt) { self.deSelect(); });
 
@@ -140,6 +141,11 @@
                 this.setMode('edit');
                 this._canvas.setActiveObject(rect);
             }
+        },
+        mouseScroll: function(ev) {
+            var transform = this._canvas.viewportTransform;
+            transform[5] = transform[5] + ev.deltaY * 10;
+            this._canvas.setViewportTransform(transform);
         },
         select: function() {
             this._attachmentPoint.querySelector('#edit-remove').setAttribute('aria-disabled', 'false');
