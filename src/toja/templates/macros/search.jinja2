@@ -1,5 +1,5 @@
 {% macro search_form() %}
-<form class="search">
+<form class="search" action="{{ 'search'|route_url() }}">
   <input type="search" title="Search" aria-label="Search for jokes by keyword">
   <button><img src="{{ 'toja:static/img/icon-search.svg'|static_url() }}" alt="Search"/></button>
 </form>

@@ -34,7 +34,7 @@
 <section class="joke-summary">
   {{ joke_ratings({'laugh': 10201, 'boo': 328, 'groan': 243}) }}
   <div class="source-image">
-    <img src="/static/img/tmp-original.png" alt="">
+    <img src="{{ 'toja:static/img/tmp-original.png'|static_url() }}" alt="">
   </div>
   <div class="metadata">
     <div>

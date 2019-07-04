@@ -1,0 +1,23 @@
+ul.filter-list {
+    li {
+        &:before {
+            content: "";
+        }
+
+        a {
+            display: flex;
+
+            > span {
+                flex: 1 1;
+            }
+
+            > img {
+            }
+        }
+    }
+
+    &.expanded {
+        border-bottom: var(--border-width-thin) solid var(--color-border);
+        padding-bottom: var(--spacing);
+    }
+}

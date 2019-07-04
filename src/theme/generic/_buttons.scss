@@ -34,22 +34,22 @@ button, .btn {
         text-decoration: none;
     }
 
-    &[class*="alt-large"] {
+    &.alt-large {
         padding: var(--spacing-medium) var(--spacing-x-large);
     }
 
-    &[class*="alt-small"] {
+    &.alt-small {
         padding: var(--spacing-small) var(--spacing-medium);
         font-size: var(--font-size-x-small);
     }
 
-    &[class*="alt-block"] {
+    &.alt-block {
         display: block;
         width: 100%;
         text-align: center;
     }
 
-    &[class*="alt-secondary"]{
+    &.alt-secondary {
         background-color: var(--color-base);
         color: var(--color-text-default);
     }
