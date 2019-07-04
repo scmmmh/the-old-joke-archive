@@ -1,0 +1,25 @@
+{% macro search_form() %}
+<form class="search">
+  <input type="search" title="Search" aria-label="Search for jokes by keyword">
+  <button><img src="{{ 'toja:static/img/icon-search.svg'|static_url() }}" alt="Search"/></button>
+</form>
+{% endmacro %}
+
+{% macro categories_block() %}
+<ul class="categories-block">
+  <li><a href="#">Alternative</a></li>
+  <li><a href="#">Anecdotal </a></li>
+  <li><a href="#">Blue</a></li>
+  <li><a href="#">Black </a></li>
+  <li><a href="#">Character</a></li>
+  <li><a href="#">Cringe</a></li>
+  <li><a href="#">Deadpan</a></li>
+  <li><a href="#">Improvisational </a></li>
+  <li><a href="#">Insult</a></li>
+  <li><a href="#">Observational</a></li>
+  <li><a href="#">One-line jokes</a></li>
+  <li><a href="#">Surreal</a></li>
+  <li><a href="#">Word play</a></li>
+  <li><a href="#">Topical</a></li>
+</ul>
+{% endmacro %}

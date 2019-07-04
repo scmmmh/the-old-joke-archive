@@ -4,10 +4,12 @@
 
 {% block main %}
 {% from 'toja:templates/macros/jokes.jinja2' import joke_summary %}
+{% from 'toja:templates/macros/ui.jinja2' import visual_separator %}
+{% from 'toja:templates/macros/search.jinja2' import search_form, categories_block %}
 <section class="grid">
   <div class="cell-1-4">
     <figure>
-      <img src="/static/img/img-4.png" alt="404 not found">
+      <img src="{{ 'toja:static/img/img-4.png'|static_url() }}" alt="404 not found">
     </figure>
     <h1 class="alt-font">Nothing funny to see here</h1>
     <p>Don't laugh. There isn't anything here.</p>
@@ -17,29 +19,11 @@
   </div>
   <div class="cell-6-7">
     <h2 class="alt-font">Find something funny</h2>
-    <form class="search margin-bottom">
-      <input type="search" title="Search" aria-label="Search for jokes by keyword">
-      <button><img src="/static/img/icon-search.svg" alt="Search"/></button>
-    </form>
-    <ul class="categories-block">
-      <li><a href="#">Alternative</a></li>
-      <li><a href="#">Anecdotal </a></li>
-      <li><a href="#">Blue</a></li>
-      <li><a href="#">Black </a></li>
-      <li><a href="#">Character</a></li>
-      <li><a href="#">Cringe</a></li>
-      <li><a href="#">Deadpan</a></li>
-      <li><a href="#">Improvisational </a></li>
-      <li><a href="#">Insult</a></li>
-      <li><a href="#">Observational</a></li>
-      <li><a href="#">One-line jokes</a></li>
-      <li><a href="#">Surreal</a></li>
-      <li><a href="#">Word play</a></li>
-      <li><a href="#">Topical</a></li>
-    </ul>
+    {{ search_form() }}
+    {{ categories_block() }}
   </div>
   <div class="cell-1-7">
-    <img src="/static/img/element-hr.svg" alt="" class="separator" aria-hidden="true" />
+    {{ visual_separator() }}
   </div>
 </section>
 <section class="grid">

@@ -1,3 +1,4 @@
+{% from 'toja:templates/macros/ui.jinja2' import visual_separator -%}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +7,7 @@
   <title>{% block title %}Are we amused? | The Old Joke Archive{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://fonts.googleapis.com/css?family=Merriweather:400,700,700i,900,900i&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/theme.css" media="screen">
+  <link rel="stylesheet" href="{{ 'toja:static/theme.css'|static_url() }}" media="screen">
 
   <!-- META ICONS / COLOUR
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
@@ -23,7 +24,7 @@
 <body>
   <div class="page">
     <header class="grid">
-      <div><a href="#"><img src="/static/img/tmp-logo.svg" alt="Are we amused? | The Old Joke Archive"></a></div>
+      <div><a href="{{ 'root'|route_url() }}"><img src="{{ 'toja:static/img/tmp-logo.svg'|static_url() }}" alt="Are we amused? | The Old Joke Archive"></a></div>
       <nav>
         <ul>
           <li><a href="#">Search</a></li>
@@ -33,13 +34,13 @@
           <li><a href="#">Sign up</a></li>
           <li><a href="#">Log in</a></li>
         </ul>
-        <img src="/static/img/element-hr.svg" alt="" class="separator" aria-hidden="true" />
+        {{ visual_separator() }}
       </nav>
     </header>
     <main>{% block main %}{% endblock main %}</main>
     <footer class="grid margin-top margin-bottom-negative">
       <nav>
-        <img src="/static/img/element-hr.svg" alt="" class="separator" aria-hidden="true" />
+      {{ visual_separator() }}
         <ul>
           <li><a href="#">Copyright questions</a></li>
           <li><a href="#">Press &#38; media</a></li>

@@ -2,12 +2,14 @@
 
 {% block main %}
 {% from 'toja:templates/macros/jokes.jinja2' import joke_ratings %}
+{% from 'toja:templates/macros/ui.jinja2' import visual_separator %}
+{% from 'toja:templates/macros/search.jinja2' import search_form, categories_block %}
 <section class="joke-banner padding-top padding-bottom">
   <div>
-    <img src="/static/img/img-1.png" alt="Person telling a joke"/>
+    <img src="{{ 'toja:static/img/img-1.png'|static_url() }}" alt="Person telling a joke"/>
   </div>
   <div>
-    <img src="/static/img/img-2.png" alt="Person telling a joke"/>
+    <img src="{{ 'toja:static/img/img-2.png'|static_url() }}" alt="Person telling a joke"/>
   </div>
   <div>
     <blockquote>
@@ -19,33 +21,13 @@
 </section>
 <section class="grid">
   <h1 class="cell-2-6 alt-font align-center">Find Something Funny</h1>
-  <form class="cell-2-6 search">
-    <input type="search" title="Search" aria-label="Search for jokes by keyword">
-    <button><img src="/static/img/icon-search.svg" alt="Search"/></button>
-  </form>
-  <ul class="cell-2-6 categories-block">
-    <li><a href="#">Alternative</a></li>
-    <li><a href="#">Anecdotal </a></li>
-    <li><a href="#">Blue</a></li>
-    <li><a href="#">Black </a></li>
-    <li><a href="#">Character</a></li>
-    <li><a href="#">Cringe</a></li>
-    <li><a href="#">Deadpan</a></li>
-    <li><a href="#">Improvisational </a></li>
-    <li><a href="#">Insult</a></li>
-    <li><a href="#">Observational</a></li>
-    <li><a href="#">One-line jokes</a></li>
-    <li><a href="#">Surreal</a></li>
-    <li><a href="#">Word play</a></li>
-    <li><a href="#">Topical</a></li>
-  </ul>
-  <div class="cell-1-7">
-    <img src="/static/img/element-hr.svg" alt="" class="separator" aria-hidden="true" />
-  </div>
+  <div class="cell-2-6">{{ search_form() }}</div>
+  <div class="cell-2-6">{{ categories_block() }}</div>
+  <div class="cell-1-7">{{ visual_separator() }}</div>
 </section>
 <section class="grid">
   <section class="cell-1-3">
-    <h2>Most Boo'd</h2>
+    <h2 class="alt-font">Most Boo'd</h2>
     <blockquote>
       <p>What&#8217;s the difference between a tube and a foolish Dutchman?</p>
       <p>One is a hollow cylinder and the other a silly Hollander.</p>
@@ -53,10 +35,10 @@
     {{ joke_ratings({'laugh': 323, 'boo': 1839, 'groan': 932}) }}
   </section>
   <div class="cell-3-5">
-    <img src="/static/img/img-3.png" alt="" aria-hidden="true">
+    <img src="{{ 'toja:static/img/img-3.png'|static_url() }}" alt="" aria-hidden="true">
   </div>
   <section class="cell-5-7">
-    <h2>Most LOL'd</h2>
+    <h2 class="alt-font">Most LOL'd</h2>
     <blockquote>
       <p>What&#8217;s the difference between a tube and a foolish Dutchman?</p>
       <p>One is a hollow cylinder and the other a silly Hollander.</p>
@@ -64,7 +46,7 @@
     {{ joke_ratings({'laugh': 2832693, 'boo': 8372, 'groan': 1038282}) }}
   </section>
   <div class="cell-1-7">
-    <img src="/static/img/element-hr.svg" alt="" class="separator" aria-hidden="true" />
+  {{ visual_separator() }}
   </div>
 </section>
 <section class="timeline">
