@@ -8,8 +8,24 @@ with open(os.path.join(here, 'README.md')) as f:
 with open(os.path.join(here, 'CHANGES.md')) as f:
     CHANGES = f.read()
 
+requires = [
+    'pyramid',
+    'pyramid_jinja2',
+    'pyramid_tm',
+    'SQLAlchemy',
+    'transaction',
+    'zope.sqlalchemy',
+    'waitress',
+    ]
+
+tests_require = [
+    'WebTest >= 1.3.1',  # py3 compat
+    'pytest',  # includes virtualenv
+    'pytest-cov',
+    ]
+
 setup(name='toja',
-      version='0.1.0',
+      version='0.0',
       description='toja',
       long_description=README + '\n\n' + CHANGES,
       classifiers=[
@@ -26,7 +42,10 @@ setup(name='toja',
       package_dir={'': 'src'},
       include_package_data=True,
       zip_safe=False,
-      install_requires=[],
+      extras_require={
+          'testing': tests_require,
+      },
+      install_requires=requires,
       entry_points="""\
       [paste.app_factory]
       main = toja:main

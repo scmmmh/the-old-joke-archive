@@ -1,119 +1,35 @@
-/* Load Foundation */
-@import 'foundation';
+/* Basic Utilities */
 @import 'settings';
 
-@include foundation-everything;
-/* Include Foundation Components */
-/*@include foundation-global-styles;
-@include foundation-xy-grid-classes;
-@include foundation-typography;
-@include foundation-visibility-classes;
-@include foundation-float-classes;
+/* Layout */
+@import 'layout/flex';
+@import 'layout/grid';
+@import 'layout/general';
+@import 'layout/body';
 
-@include foundation-forms;*/
-@import 'aria-menu';
-@import 'aria-tabs';
+/* Generic Elements */
+@import 'generic/alignments';
+@import 'generic/anchors';
+@import 'generic/assorted';
+@import 'generic/blockquotes';
+@import 'generic/buttons';
+@import 'generic/chrome';
+@import 'generic/font-sizes';
+@import 'generic/forms';
+@import 'generic/headings';
+@import 'generic/icons';
+@import 'generic/lists';
+@import 'generic/margins';
+@import 'generic/numbers.scss';
+@import 'generic/paragraphs';
+@import 'generic/separators';
+@import 'generic/tables';
 
-.overflow-auto {
-    overflow: auto;
-}
-.hidden {
-    display: none;
-}
+/* Specific Components */
 
-svg {
-    width: rem-calc(24);
-    height: rem-calc(24);
-
-    &.primary {
-        path {
-            fill: $primary-color;
-        }
-    }
-    &.secondary {
-        path {
-            fill: $secondary-color;
-        }
-    }
-    &.success {
-        path {
-            fill: $success-color;
-        }
-    }
-    &.alert {
-        path {
-            fill: $alert-color;
-        }
-    }
-    &.warning {
-        path {
-            fill: $warning-color;
-        }
-    }
-}
-
-button {
-    cursor: pointer;
-}
-*[role="tablist"] {
-    border-bottom: 1px solid $dark-gray;
-
-    *[role="tab"] {
-        &:hover {
-            background: $light-gray;
-        }
-        &[aria-selected="true"]:hover {
-            background: $primary-color;
-        }
-    }
-}
-
-*[data-action="inline-edit"] {
-    select {
-        margin-bottom: 0;
-    }
-}
-
-.hover-parent {
-    .hover-only, .hover-only-inline {
-        display: none;
-    }
-    &:hover {
-        .hover-only {
-            display: block;
-        }
-        .hover-only-inline {
-            display: inline;
-        }
-    }
-}
-
-img.thumbnail {
-    max-width: rem-calc(64);
-    max-height: rem-calc(64);
-
-    &.large {
-        max-width: rem-calc(128);
-        max-height: rem-calc(128);
-    }
-}
-
-
-#identify-jokes-app {
-    height: 80vh;
-
-    #viewer {
-        border: 1px solid $light-gray;
-    }
-
-    #extract-list {
-        li {
-            margin-bottom: $global-margin;
-            border: 1px solid;
-
-            &[aria-current="true"] {
-                border: 1px solid #ff0000;
-            }
-        }
-    }
-}
+@import 'components/categories';
+@import 'components/footer';
+@import 'components/header';
+@import 'components/joke-banner';
+@import 'components/joke-rating';
+@import 'components/timeline';

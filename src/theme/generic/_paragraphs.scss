@@ -1,0 +1,39 @@
+/*
+ * Paragraph styling
+ */
+
+p {
+    margin: 0 0 var(--spacing);
+    font-size: var(--font-size-default);
+
+    &.alt-font {
+        font-family: var(--font-family-alt);
+    }
+
+    &:last-child:only-child {
+        margin-bottom: 0;
+    }
+
+    &.secondary {
+        font-size: var(--font-size-small);
+    }
+
+    &.tertiary {
+        font-size: var(--font-size-x-small);
+    }
+
+    &.milli {
+        font-size: var(--font-size-xx-small);
+        line-height: calc(var(--lineheight-text) / 1.05);
+    }
+}
+
+@media screen and (min-width:64em) {
+    .standfirst {
+        font-size: var(--font-size-x-large);
+    }
+
+    .lede {
+        font-size: var(--font-size-medium);
+    }
+}

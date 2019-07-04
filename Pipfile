@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 pyramid-debugtoolbar = "*"
+toja = {editable = true,path = "."}
 flake8 = "*"
 
 [packages]
@@ -15,15 +16,6 @@ sqlalchemy = "*"
 transaction = "*"
 zope-sqlalchemy = "*"
 waitress = "*"
-click = "*"
-sqlalchemy-json = "*"
-cerberus = "*"
-email-validator = "*"
-pyramid-nacl-session = "*"
-decorator = "*"
-pillow = "*"
-pytesseract = "*"
-celery = "*"
 
 [requires]
 python_version = "3.7"

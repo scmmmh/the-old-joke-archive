@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>{% block title %}Are we amused? | The Old Joke Archive{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css?family=Merriweather:400,700,700i,900,900i&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/theme.css" media="screen">
+
+  <!-- META ICONS / COLOUR
+  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="mask-icon" href="safari-pinned-tab.svg" color="#000000">
+  <meta name="msapplication-TileColor" content="#000000">
+  <meta name="theme-color" content="#ffffff">
+  -->
+
+</head>
+
+<body>
+  <div class="page">
+    <header class="grid">
+      <div><a href="#"><img src="/static/img/tmp-logo.svg" alt="Are we amused? | The Old Joke Archive"></a></div>
+      <nav>
+        <ul>
+          <li><a href="#">Search</a></li>
+          <li><a href="#">About</a></li>
+          <li><a href="#">Contribute</a></li>
+          <li><a href="#">History</a></li>
+          <li><a href="#">Sign up</a></li>
+          <li><a href="#">Log in</a></li>
+        </ul>
+        <img src="/static/img/element-hr.svg" alt="" class="separator" aria-hidden="true" />
+      </nav>
+    </header>
+    <main>{% block main %}{% endblock main %}</main>
+    <footer class="grid margin-top margin-bottom-negative">
+      <nav>
+        <img src="/static/img/element-hr.svg" alt="" class="separator" aria-hidden="true" />
+        <ul>
+          <li><a href="#">Copyright questions</a></li>
+          <li><a href="#">Press &#38; media</a></li>
+          <li><a href="#">Privacy policy</a></li>
+          <li><a href="#">Terms &#38; conditions</a></li>
+        </ul>
+      </nav>
+      <nav>
+        <ul>
+          <li>
+            <a href="https://www.facebook.com/VictorianHumour" target="_blank" rel="noopener" aria-label="Join us on Facebook">
+              <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 51 51" width="50">
+                <path fill-rule="evenodd" d="M32.4895833,23.9583333 L28.125,23.9583333 L28.125,38.5416667 L21.875,38.5416667 L21.875,23.9583333 L17.7083333,23.9583333 L17.7083333,19.7916667 L21.875,19.7916667 L21.875,17.3666667 C21.875,15.0770833 22.6083333,11.4958333 27.3958333,11.4958333 L32.2916667,11.5083333 L32.2916667,16.3125 L29.3583333,16.3125 C28.85,16.3125 28.125,16.5708333 28.125,17.6604167 L28.125,19.7916667 L32.9979167,19.7916667 L32.4895833,23.9583333 Z M25,0 C11.2145833,0 0,11.2145833 0,25 C0,38.7854167 11.2145833,50 25,50 C38.7854167,50 50,38.7854167 50,25 C50,11.2145833 38.7854167,0 25,0 L25,0 Z" transform="translate(.533 .642)" />
+              </svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/VictorianHumour" target="_blank" rel="noopener" aria-label="Join us on Twitter">
+              <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 49 49" width="50">
+                <path fill-rule="evenodd" d="M34.524,18.77 C34.536,18.996 34.54,19.222 34.54,19.45 C34.54,26.406 29.244,34.43 19.562,34.43 C16.59,34.43 13.822,33.556 11.492,32.062 C14.24,32.384 17.036,31.648 19.286,29.884 C16.982,29.84 15.04,28.318 14.37,26.226 C15.162,26.376 15.976,26.348 16.746,26.136 C14.338,25.654 12.524,23.526 12.524,20.978 L12.524,20.908 C13.234,21.302 14.048,21.538 14.908,21.566 C13.496,20.622 12.566,19.012 12.566,17.186 C12.566,16.222 12.826,15.318 13.28,14.538 C15.876,17.724 19.754,19.822 24.13,20.038 C24.04,19.654 23.992,19.25 23.992,18.84 C23.992,15.932 26.35,13.574 29.258,13.574 C30.772,13.574 32.14,14.214 33.1,15.238 C34.3,15 37,14.708 37,14.708 C36.296,15.764 35.554,18.026 34.524,18.77 M24,0 C10.766,0 0,10.766 0,24 C0,37.234 10.766,48 24,48 C37.234,48 48,37.234 48,24 C48,10.766 37.234,0 24,0" transform="translate(.5 .642)" />
+              </svg>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </footer>
+  </div>
+  <section class="grid">
+    <div class="cell-1-4">
+    </div>
+    <div class="cell-4-7 align-right">
+      <ul class="font-size-x-small no-bullet">
+        <li>Design: <a href="https://stuffandnonsense.co.uk" target="_blank" rel="noopener">Stuff &amp; Nonsense</a></li>
+        <li>Illustrations: <a href="http://www.vicbell.co.uk" target="_blank" rel="noopener">Vic Bell</a></li>
+      </ul>
+    </div>
+  </section>
+<!--
+<div class="nebuchadnezzar">
+
+<div>
+
+<!-- footer - ->
+
+<footer role="contentinfo">
+
+<div>
+
+<small>&#169; 2019. All Rights Reserved. <br><a href="https://www.edgehill.ac.uk">Edge Hill University</a>. Department of English, History, and Creative Writing.</small>
+
+<ul class="alt-inline">
+<li><a href="https://www.bl.uk"><img src="/img/logo-british-library.svg" alt="British Library"></a></li>
+<li><a href="javascript:void(0)"><img src="/img/tmp-icon.png" alt=""></a></li>
+<li><a href="javascript:void(0)"><img src="/img/tmp-icon.png" alt=""></a></li>
+</ul>
+
+<ul class="alt-inline tertiary">
+<li><b>Templates (Remove)</b></li>
+<li><a href="index.html">Home</a></li>
+<li><a href="article.html">Article</a></li>
+<li><a href="detail.html">Detail</a></li>
+<li><a href="elements.html">Elements</a></li>
+<li><a href="grids.html">Grids</a></li>
+<li><a href="listing.html">Listing</a></li>
+<li><a href="404.html">404</a></li>
+</ul>
+
+</div><!-- first - ->
+
+<div class="align--right">
+
+<ul class="alt--unstyled tertiary">
+<li>Design: <a href="https://stuffandnonsense.co.uk">Stuff &amp; Nonsense</a></li>
+<li>Icons: <a href="https://hicksdesign.co.uk">Jon Hicks</a></li>
+<li>Illustration: <a href="http://www.vicbell.co.uk">Vic Bell</a></li>
+</ul>
+
+</div><!-- second - ->
+
+</footer>
+<script src='js/lib/jquery-3.3.1.min.js'></script>
+<script src='js/src/functions.js'></script>
+-->
+</body>
+
+</html>

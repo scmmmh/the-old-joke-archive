@@ -1,0 +1,13 @@
+/*
+ * Icon styling
+ */
+.icon, .icon {
+    path, g {
+        fill: var(--color-accent);
+    }
+}
+a:hover {
+    path, g {
+        fill: var(--color-brand);
+    }
+}

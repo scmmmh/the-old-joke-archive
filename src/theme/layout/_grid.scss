@@ -1,0 +1,42 @@
+.grid {
+    padding: var(--spacing-small) 0;
+
+    [class*="cell-"] {
+        padding: var(--spacing) 0;
+
+        img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    }
+}
+
+@media (min-width: 48rem) {
+    .grid {
+        padding-left: var(--spacing);
+        padding-right: var(--spacing);
+    }
+}
+
+@media (min-width: 64rem) {
+    .grid {
+        display: grid;
+        grid-template-columns: var(--grid-3-4);
+        grid-column-gap: var(--grid-column-gap);
+        grid-row-gap: var(--grid-row-gap);
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 0;
+        padding-right: 0;
+        max-width: var(--max-width);
+
+        @for $start from 1 through 7 {
+            @for $end from $start through 7 {
+                .cell-#{$start}-#{$end} {
+                    grid-column-start: $start;
+                    grid-column-end: $end;
+                }
+            }
+        }
+    }
+}

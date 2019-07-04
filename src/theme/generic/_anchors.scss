@@ -1,0 +1,25 @@
+/*
+ * Link styling
+ */
+a {
+    color: var(--color-text-link);
+    text-decoration: none;
+
+    &:hover {
+        text-decoration: underline;
+        color: var(--color-text-link-hover);
+    }
+
+    &:focus {
+        outline: thin dotted;
+        color: var(--color-text-link-active);
+    }
+
+    &:hover, &:active {
+        outline: 0;
+    }
+
+    &:link {
+        transition: color var(--duration-quickly) ease;
+    }
+}

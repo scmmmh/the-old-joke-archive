@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="9px" viewBox="0 0 16 9" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 55 (78076) - https://sketchapp.com -->
+    <title>icon-timeline-small</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Desktop-HD" transform="translate(-411.000000, -255.000000)" fill="#A1ABAD">
+            <path d="M419.055172,251.641906 C416.872414,251.641906 415.102759,253.407423 415.102759,255.59363 C415.102759,257.772941 419.055172,266.63501 419.055172,266.63501 C419.055172,266.63501 423,257.772941 423,255.59363 C423,253.407423 421.238621,251.641906 419.055172,251.641906" id="icon-timeline-small" transform="translate(419.051379, 259.138458) rotate(90.000000) translate(-419.051379, -259.138458) "></path>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,53 @@
+/*
+ * Headings
+ */
+h1, h2, h3, h4, h5, h6 {
+    margin: 0 0 var(--spacing);
+    font-family: var(--font-family);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--lineheight-heading);
+    color: var(--color-text-headline);
+
+    strong {
+        color: var(--color-brand-light);
+    }
+
+    &.alt-font {
+        font-family: var(--font-family-alt);
+        font-style: normal;
+        font-weight: normal;
+        text-shadow: 2px 2px 0 var(--color-background), 4px 4px 0 var(--color-border);
+
+        a {
+            color: var(--color-text-default);
+
+            &:hover {
+                text-decoration: none;
+            }
+        }
+    }
+}
+
+h2, h3, h4, h5, h6 {
+    font-style: italic;
+}
+
+h1 {
+    font-size: var(--font-size-xx-large);
+}
+
+h2 {
+    font-size: var(--font-size-x-large);
+}
+
+h3 {
+    font-size: var(--font-size-large);
+}
+
+h4 {
+    font-size: var(--font-size-medium);
+}
+
+h5, h6 {
+    font-size: var(--font-size-default);
+}

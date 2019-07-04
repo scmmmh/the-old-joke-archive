@@ -1,0 +1,40 @@
+/*
+ * Blockquotes
+ */
+blockquote {
+    box-sizing: border-box;
+    margin: 0 0 var(--spacing-x-large);
+    padding: 0;
+    background-color: transparent;
+
+    &:first-child {
+        margin-top: 0;
+    }
+
+    p {
+        font-size: var(--font-size-medium);
+
+        &:last-of-type, &:only-of-type {
+            margin-bottom: var(--spacing);
+        }
+    }
+
+    cite {
+        display: block;
+        font-size: var(--font-size-small);
+        font-style: normal;
+    }
+
+    &.alt-vertical--reverse {
+        display: flex;
+        flex-direction: column-reverse;
+
+        p:last-of-type, p:only-of-type {
+            margin-bottom: 0;
+        }
+
+        cite {
+            margin-bottom: var(--spacing);
+        }
+    }
+}

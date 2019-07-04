@@ -1,2 +1,2 @@
 include *.txt *.ini *.cfg *.rst
-recursive-include src/toja *.ico *.png *.css *.gif *.jpg *.jinja2 *.txt *.js *.html *.xml
+recursive-include toja *.ico *.png *.css *.gif *.jpg *.jinja2 *.pt *.txt *.mak *.mako *.js *.html *.xml

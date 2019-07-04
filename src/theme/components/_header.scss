@@ -1,0 +1,58 @@
+/*
+ * Header styling
+ */
+header {
+    nav {
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            column-count: 2;
+
+            li {
+                text-align: center;
+
+                &:before {
+                    content: "";
+                }
+
+                a {
+                    font-family: var(--font-family-alt);
+
+                    &:hover {
+                        text-decoration: none;
+                    }
+                }
+            }
+        }
+    }
+}
+
+@media (min-width:48em) {
+    header {
+        div {
+            grid-column: 1 / 3;
+        }
+        nav {
+            grid-column: 4 / 7;
+
+            ul {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                column-count: 1;
+
+                li {
+                    margin: 0;
+                    text-align: left;
+
+                    + li {
+                        margin: 0 0 0 var(--spacing);
+                        padding: 0 0 0 var(--spacing);
+                        border-left: 1px solid var(--color-border);
+                    }
+                }
+            }
+        }
+    }
+}

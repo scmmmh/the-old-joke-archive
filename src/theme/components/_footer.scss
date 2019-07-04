@@ -1,0 +1,54 @@
+/*
+ * Footer styling
+ */
+footer {
+    nav {
+        ul {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            font-size: var(--font-size-x-small);
+
+            li {
+                margin-bottom: var(--spacing);
+
+                &:before {
+                    content: "";
+                }
+            }
+        }
+
+        &:first-child {
+            ul {
+                margin-top: var(--spacing);
+                margin-bottom: var(--spacing-large);
+            }
+        }
+
+        &:last-child {
+            ul {
+                display: flex;
+                flex-direction: row;
+
+                li {
+                    margin-right: var(--spacing-small);
+                }
+            }
+        }
+    }
+}
+
+@media (min-width:48em) {
+    footer {
+        nav:first-child {
+            grid-column: 2 / 6;
+
+            ul {
+                column-count: 3;
+            }
+        }
+        nav:last-child {
+            grid-column: 6 / 7;
+        }
+    }
+}

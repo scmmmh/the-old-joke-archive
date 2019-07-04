@@ -1,0 +1,34 @@
+/*
+ * Assorted small elements
+ */
+small {
+    font-size: var(--font-size-x-small);
+}
+
+strong {
+    font-weight: var(--font-weight-semibold);
+}
+
+em {
+    font-style: italic;
+}
+
+sup {
+    font-weight: var(--font-weight-default);
+}
+
+abbr[title] {
+    border-bottom : var(--border-width-thin) dotted var(--color-border);
+    cursor : help;
+}
+
+dfn {
+    font-style : italic;
+}
+
+pre {
+    white-space : pre;
+    white-space : pre-wrap;
+    word-wrap : break-word;
+    font-family: inherit;
+}

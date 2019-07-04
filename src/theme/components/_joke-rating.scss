@@ -1,0 +1,33 @@
+nav.joke-rating {
+    ul {
+        list-style-type: none;
+        display: flex;
+        justify-content: flex-end;
+        margin: 0;
+        padding: 0;
+
+        li {
+            margin-right: var(--spacing-large);
+
+            &:before {
+                content: "";
+            }
+
+            a {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                color: var(--color-mid);
+                text-decoration: none;
+
+                &:hover {
+                    color: var(--color-brand);
+                }
+
+                span {
+                    margin-left: var(--spacing-small);
+                }
+            }
+        }
+    }
+}
