@@ -999,6 +999,8 @@ nav.joke-rating ul {
     margin-right: var(--spacing-large); }
     nav.joke-rating ul li:before {
       content: ""; }
+    nav.joke-rating ul li:last-of-type {
+      margin-right: 0; }
     nav.joke-rating ul li a {
       display: -webkit-box;
       display: flex;
@@ -1013,6 +1015,37 @@ nav.joke-rating ul {
         color: var(--color-brand); }
       nav.joke-rating ul li a span {
         margin-left: var(--spacing-small); }
+
+.joke-summary {
+  margin-bottom: var(--spacing-x-large); }
+  .joke-summary .source-image {
+    margin: var(--spacing) 0;
+    padding: var(--spacing);
+    height: 100px;
+    border: var(--border-width-thin) solid var(--color-border);
+    text-align: center;
+    overflow-y: scroll; }
+    .joke-summary .source-image img {
+      max-height: none; }
+  .joke-summary .metadata {
+    display: -webkit-box;
+    display: flex; }
+    .joke-summary .metadata > div {
+      -webkit-box-flex: 1;
+      flex: 1 1; }
+    .joke-summary .metadata > time {
+      display: block;
+      width: 6em; }
+      .joke-summary .metadata > time a {
+        display: block;
+        text-align: center; }
+        .joke-summary .metadata > time a:first-of-type {
+          font-family: var(--font-family-alt);
+          font-size: var(--font-size-x-large); }
+    .joke-summary .metadata h3 a, .joke-summary .metadata time a {
+      color: var(--color-text-default); }
+      .joke-summary .metadata h3 a:hover, .joke-summary .metadata time a:hover {
+        text-decoration: underline; }
 
 /*
  * Timeline styling

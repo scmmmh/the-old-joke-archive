@@ -1,8 +1,9 @@
-{% extends '../layout/base.jinja2' %}
+{% extends 'toja:templates/layout/base.jinja2' %}
 
 {% block title %}Nothing funny to see here{% endblock title %}
 
 {% block main %}
+{% from 'toja:templates/macros/jokes.jinja2' import joke_summary %}
 <section class="grid">
   <div class="cell-1-4">
     <figure>
@@ -41,6 +42,13 @@
     <img src="/static/img/element-hr.svg" alt="" class="separator" aria-hidden="true" />
   </div>
 </section>
-<section>
+<section class="grid">
+  <h2 class="cell-1-7 align-center alt-font">Laugh at this!</h2>
+  <div class="cell-1-4">
+    {{ joke_summary() }}
+  </div>
+  <div class="cell-4-7">
+    {{ joke_summary() }}
+  </div>
 </section>
 {% endblock %}
