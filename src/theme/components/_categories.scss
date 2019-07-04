@@ -9,6 +9,10 @@
         text-align: center;
         transition: transform var(--duration-quickly) ease;
 
+        &:before {
+            content: "";
+        }
+
         &:nth-child(odd) {
             transform: rotate(-5deg);
         }

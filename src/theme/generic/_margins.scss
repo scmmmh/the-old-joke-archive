@@ -7,11 +7,11 @@
 }
 
 .margin-top {
-    margin-top: var(-spacing-large);
+    margin-top: var(--spacing-large);
 }
 
 .margin-bottom {
-    margin-bottom: var(-spacing-x-large);
+    margin-bottom: var(--spacing-x-large);
 }
 
 .margin-bottom-zero {
@@ -19,11 +19,11 @@
 }
 
 .margin-right {
-    margin-right: var(-grid-column-gap);
+    margin-right: var(--grid-column-gap);
 }
 
 .margin-left {
-    margin-left: var(-grid-column-gap);
+    margin-left: var(--grid-column-gap);
 }
 
 @media screen and (min-width:48em) {

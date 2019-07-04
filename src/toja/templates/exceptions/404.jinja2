@@ -1,0 +1,46 @@
+{% extends '../layout/base.jinja2' %}
+
+{% block title %}Nothing funny to see here{% endblock title %}
+
+{% block main %}
+<section class="grid">
+  <div class="cell-1-4">
+    <figure>
+      <img src="/static/img/img-4.png" alt="404 not found">
+    </figure>
+    <h1 class="alt-font">Nothing funny to see here</h1>
+    <p>Don't laugh. There isn't anything here.</p>
+    <p>If you have come from an external site, please ask them to update their links.</p>
+    <p>If you have landed here from one of our own pages, not to worry. Somebody important has been notified about this.
+      They might even do something about it. Who knows. In the meantime, why don't you have a laugh.</p>
+  </div>
+  <div class="cell-6-7">
+    <h2 class="alt-font">Find something funny</h2>
+    <form class="search margin-bottom">
+      <input type="search" title="Search" aria-label="Search for jokes by keyword">
+      <button><img src="/static/img/icon-search.svg" alt="Search"/></button>
+    </form>
+    <ul class="categories-block">
+      <li><a href="#">Alternative</a></li>
+      <li><a href="#">Anecdotal </a></li>
+      <li><a href="#">Blue</a></li>
+      <li><a href="#">Black </a></li>
+      <li><a href="#">Character</a></li>
+      <li><a href="#">Cringe</a></li>
+      <li><a href="#">Deadpan</a></li>
+      <li><a href="#">Improvisational </a></li>
+      <li><a href="#">Insult</a></li>
+      <li><a href="#">Observational</a></li>
+      <li><a href="#">One-line jokes</a></li>
+      <li><a href="#">Surreal</a></li>
+      <li><a href="#">Word play</a></li>
+      <li><a href="#">Topical</a></li>
+    </ul>
+  </div>
+  <div class="cell-1-7">
+    <img src="/static/img/element-hr.svg" alt="" class="separator" aria-hidden="true" />
+  </div>
+</section>
+<section>
+</section>
+{% endblock %}
