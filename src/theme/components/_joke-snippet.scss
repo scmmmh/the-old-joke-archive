@@ -1,7 +1,7 @@
 .joke-snippet {
     margin-bottom: var(--spacing-large);
     display: flex;
-    flex-direction: column;
+    flex-direction: column-reverse;
 
     > div {
         &:first-child {
@@ -9,10 +9,6 @@
             flex-direction: column;;
 
             div {
-                order: 2;
-            }
-            nav {
-                order: 1;
                 margin-bottom: var(--spacing-small);
             }
         }
@@ -103,18 +99,6 @@
 
         > div {
             width: 50%;
-
-            &:first-child {
-                padding-right: var(--spacing);
-
-                div {
-                    order: 1;
-                }
-                nav {
-                    order: 2;
-                    margin-bottom: 0;
-                }
-            }
 
             &:last-child {
                 padding-left: var(--spacing);

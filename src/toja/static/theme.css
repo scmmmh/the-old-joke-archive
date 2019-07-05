@@ -1058,8 +1058,8 @@ nav.joke-rating ul {
   display: -webkit-box;
   display: flex;
   -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  flex-direction: column; }
+  -webkit-box-direction: reverse;
+  flex-direction: column-reverse; }
   .joke-snippet > div:first-child {
     display: -webkit-box;
     display: flex;
@@ -1067,11 +1067,6 @@ nav.joke-rating ul {
     -webkit-box-direction: normal;
     flex-direction: column; }
     .joke-snippet > div:first-child div {
-      -webkit-box-ordinal-group: 3;
-      order: 2; }
-    .joke-snippet > div:first-child nav {
-      -webkit-box-ordinal-group: 2;
-      order: 1;
       margin-bottom: var(--spacing-small); }
   .joke-snippet > div .metadata {
     display: -webkit-box;
@@ -1133,15 +1128,6 @@ nav.joke-rating ul {
       flex-direction: row; }
       .joke-snippet > div {
         width: 50%; }
-        .joke-snippet > div:first-child {
-          padding-right: var(--spacing); }
-          .joke-snippet > div:first-child div {
-            -webkit-box-ordinal-group: 2;
-            order: 1; }
-          .joke-snippet > div:first-child nav {
-            -webkit-box-ordinal-group: 3;
-            order: 2;
-            margin-bottom: 0; }
         .joke-snippet > div:last-child {
           padding-left: var(--spacing); } }
 
