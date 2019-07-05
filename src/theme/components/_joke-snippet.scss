@@ -42,8 +42,9 @@
             padding: var(--spacing);
             height: 100px;
             border: var(--border-width-thin) solid var(--color-border);
+            border-radius: var(--border-radius-medium);
             text-align: center;
-            overflow: auto;
+            overflow: hidden;
 
             img {
                 max-width: none;
@@ -98,57 +99,17 @@
         flex-direction: row;
 
         > div {
-            width: 50%;
+            &:first-child {
+                width: 33.333333%;
+
+                .source-image {
+                    height: 120px;
+                }
+            }
 
             &:last-child {
-                padding-left: var(--spacing);
-            }
-        }
-    }
-}
-
-.joke-old {
-
-
-
-
-    margin-bottom: var(--spacing-x-large);
-    display: flex;
-
-    > div {
-        flex: 1 1 auto;
-
-    }
-
-    .metadata {
-        display: flex;
-
-        > div {
-            flex: 1 1;
-        }
-
-        > time {
-            display: block;
-            width: 6em;
-
-            a {
-                display: block;
-                text-align: center;
-
-                &:first-of-type {
-                    font-family: var(--font-family-alt);
-                    font-size: var(--font-size-x-large);
-                }
-            }
-        }
-
-        h3, time {
-            a {
-                color: var(--color-text-default);
-
-                &:hover {
-                    text-decoration: underline;
-                }
+                width: 66.666666%;
+                padding-left: var(--spacing-large);
             }
         }
     }
