@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "45bb667eb1cf9c21d2dcb99f076f69cac6e0d81eb532be1103b91114f1b80f96"
+            "sha256": "4bdd79cde5960110d623a1dd0b86320519a579f3668636e8e6ac74a39dc8cedc"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,6 +16,13 @@
         ]
     },
     "default": {
+        "cerberus": {
+            "hashes": [
+                "sha256:0be48fc0dc84f83202a5309c0aa17cd5393e70731a1698a50d118b762fbe6875"
+            ],
+            "index": "pypi",
+            "version": "==1.3.1"
+        },
         "cffi": {
             "hashes": [
                 "sha256:041c81822e9f84b1d9c401182e174996f0bae9991f33725d059b771744290774",
@@ -208,6 +215,19 @@
             ],
             "index": "pypi",
             "version": "==1.3.5"
+        },
+        "sqlalchemy-json": {
+            "hashes": [
+                "sha256:d17952e771eecd9023c0f683d2a6aaa27ce1a6dbf57b0fe2bf4d5aef4c5dad1c"
+            ],
+            "index": "pypi",
+            "version": "==0.2.3"
+        },
+        "sqlalchemy-utils": {
+            "hashes": [
+                "sha256:0ebd4d176a5786233db9f2e92040476fcff8b1b426fdbbb7ee4f478280ee9166"
+            ],
+            "version": "==0.34.0"
         },
         "transaction": {
             "hashes": [

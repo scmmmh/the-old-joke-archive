@@ -18,7 +18,8 @@ requires = [
     'waitress',
     'click',
     'pyramid_nacl_session',
-    'decorator'
+    'decorator',
+    'cerberus'
     ]
 
 tests_require = [

@@ -19,6 +19,8 @@ waitress = "*"
 click = "*"
 pyramid-nacl-session = "*"
 decorator = "*"
+cerberus = "*"
+sqlalchemy-json = "*"
 
 [requires]
 python_version = "3.7"
