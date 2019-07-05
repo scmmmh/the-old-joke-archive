@@ -1,6 +1,11 @@
+.venv
 node_modules
 production.ini
 development.ini
 *.sqlite
 *.egg-info
 tmp
+*.log
+pre-build.sh
+post-build.sh
+__pycache__
