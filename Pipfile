@@ -16,6 +16,9 @@ sqlalchemy = "*"
 transaction = "*"
 zope-sqlalchemy = "*"
 waitress = "*"
+click = "*"
+pyramid-nacl-session = "*"
+decorator = "*"
 
 [requires]
 python_version = "3.7"
