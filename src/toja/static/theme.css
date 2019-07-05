@@ -395,7 +395,7 @@ blockquote {
 /*
  * Buttons
  */
-button, .btn {
+button, a.btn, .btn {
   -webkit-appearance: none;
   display: -webkit-inline-box;
   display: inline-flex;
@@ -419,26 +419,29 @@ button, .btn {
   transition: var(--duration-promptly) all ease;
   text-decoration: none;
   line-height: 1; }
-  button:hover, .btn:hover {
+  button:hover, a.btn:hover, .btn:hover {
     background-color: var(--color-button-hover);
     color: var(--color-text-alt);
     text-decoration: none; }
-  button:active, .btn:active {
+  button:active, a.btn:active, .btn:active {
     background-color: var(--color-button-active);
     color: var(--color-text-alt);
     text-decoration: none; }
-  button.alt-large, .btn.alt-large {
+  button.alt-large, a.btn.alt-large, .btn.alt-large {
     padding: var(--spacing-medium) var(--spacing-x-large); }
-  button.alt-small, .btn.alt-small {
+  button.alt-small, a.btn.alt-small, .btn.alt-small {
     padding: var(--spacing-small) var(--spacing-medium);
     font-size: var(--font-size-x-small); }
-  button.alt-block, .btn.alt-block {
+  button.alt-block, a.btn.alt-block, .btn.alt-block {
     display: block;
     width: 100%;
     text-align: center; }
-  button.alt-secondary, .btn.alt-secondary {
+  button.alt-secondary, a.btn.alt-secondary, .btn.alt-secondary {
     background-color: var(--color-base);
     color: var(--color-text-default); }
+    button.alt-secondary:hover, a.btn.alt-secondary:hover, .btn.alt-secondary:hover {
+      background-color: var(--color-button-hover);
+      color: var(--color-text-alt); }
 
 /*
  * Button Groups
