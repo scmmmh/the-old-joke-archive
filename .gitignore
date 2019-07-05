@@ -6,6 +6,6 @@ development.ini
 *.egg-info
 tmp
 *.log
-pre-build.sh
-post-build.sh
+pre-build
+post-build
 __pycache__
