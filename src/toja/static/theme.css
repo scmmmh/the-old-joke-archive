@@ -765,7 +765,8 @@ p {
  * Visual separators
  */
 img.separator {
-  width: 100%; }
+  width: 100%;
+  height: 20px; }
 
 /*
  * Basic table styling
