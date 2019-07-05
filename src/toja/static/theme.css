@@ -56,6 +56,7 @@
   --color-button-hover-alt: var(--color-mid);
   --color-button-active-alt: var(--color-base);
   --color-button-border-alt: var(--color-border);
+  --color-background-selection: var(--color-accent);
   /* Borders */
   --border-radius-x-small: .15rem;
   --border-radius-small: .25rem;
@@ -506,11 +507,13 @@ button, .btn {
 @viewport {
   width: device-width; }
 
-::-moz-selection {
+::-moz-selection, ::-moz-selection {
+  color: var(--color-light);
   background-color: var(--color-background-selection);
   text-shadow: none; }
 
-::selection {
+::-moz-selection, ::selection {
+  color: var(--color-light);
   background-color: var(--color-background-selection);
   text-shadow: none; }
 

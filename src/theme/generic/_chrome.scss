@@ -10,12 +10,8 @@
     width: device-width;
 }
 
-::-moz-selection {
-    background-color: var(--color-background-selection);
-    text-shadow: none;
-}
-
-::selection {
+::-moz-selection, ::selection {
+    color: var(--color-light);
     background-color: var(--color-background-selection);
     text-shadow: none;
 }
