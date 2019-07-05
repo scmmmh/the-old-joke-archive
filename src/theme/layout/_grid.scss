@@ -3,6 +3,7 @@
 
     [class*="cell-"] {
         padding: var(--spacing) 0;
+        min-width: 0;
 
         img {
             max-width: 100%;

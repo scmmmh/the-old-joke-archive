@@ -30,21 +30,37 @@
 </nav>
 {% endmacro %}
 
-{% macro joke_summary() %}
-<section class="joke-summary">
-  {{ joke_ratings({'laugh': 10201, 'boo': 328, 'groan': 243}) }}
-  <div class="source-image">
-    <img src="{{ 'toja:static/img/tmp-original.png'|static_url() }}" alt="">
-  </div>
-  <div class="metadata">
-    <div>
-      <h3><a href="#">Lloyd’s Weekly Newspaper</a></h3>
-      <p><a href="#">Jokes of the day</a></p>
+{% macro joke_snippet() %}
+<section class="joke-snippet">
+  <div>
+    <div class="source-image">
+      <img src="{{ 'toja:static/img/tmp-original.png'|static_url() }}" alt="">
     </div>
-    <time>
-      <a href="#">1891</a>
-      <a href="#">12 April</a>
-    </time>
+    {{ joke_ratings({'laugh': 10201, 'boo': 328, 'groan': 243}) }}
+  </div>
+  <div>
+    <div class="metadata">
+      <div>
+        <h2><a href="#">Lloyd’s Weekly Newspaper</a></h2>
+        <p>Jokes of the day</p>
+      </div>
+      <time>
+        <span>1891</span>
+        <span>12 April</span>
+      </time>
+    </div>
+    <div class="snippet" style="width:100%;">
+      <p>Another Lapsus.&mdash;Lovely <strong>Woman</strong>: Just look at this? It's the best photo I've ever had
+        taken. All the crudities absolutely toned down.	&hellip;
+    </div>
+    <div class="classification">
+      <ul class="inline">
+        <li><a href="#">Dialog</a></li>
+      </ul>
+      <ul class="inline">
+        <li><a href="#">beauty</a></li>
+        <li><a href="#">photograph</a></li>
+    </div>
   </div>
 </section>
 {% endmacro %}

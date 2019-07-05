@@ -1,11 +1,11 @@
 {% extends 'toja:templates/layout/base.jinja2' %}
 
-{% block title %}Jokes with woman{% endblock title %}
+{% block title %}Dialog jokes containing woman in Lloyd's Weekly Newspaper{% endblock title %}
 
 {% block main %}
-{% from 'toja:templates/macros/jokes.jinja2' import joke_summary %}
+{% from 'toja:templates/macros/jokes.jinja2' import joke_snippet %}
 <section class="grid">
-  <section class="cell-1-4">
+  <section class="cell-1-5">
     <h1 class="alt-font"><span class="color-brand">Dialog</span> jokes containing <span class="color-brand">woman</span> in <span class="color-brand">Lloyd's Weekly Newspaper</span></h1>
     <div class="search-result-status margin-top">
       <div class="font-size-small align-bottom">1 - 10 of 480 jokes</div>
@@ -23,7 +23,7 @@
     </div>
     <ol class="search-results">
       {% for _ in range(0, 10) %}
-        <li>{{ joke_summary() }}</li>
+        <li>{{ joke_snippet() }}</li>
       {% endfor %}
     </ol>
     <div class="search-result-status margin-top">
@@ -41,7 +41,7 @@
       </ul>
     </div>
   </section>
-  <form class="cell-5-7" action="{{ 'search'|route_url() }}">
+  <form class="cell-6-7" action="{{ 'search'|route_url() }}">
     <h2 class="alt-font">Find something funny</h2>
     <div class="margin-bottom">
       <input type="search" title="Search" aria-label="Search for jokes by keyword" value="woman">
