@@ -7,6 +7,8 @@ def includeme(config):
 
     config.add_route('search', '/search')
 
+    config.add_route('joke.view', '/jokes/:jid')
+
     # Jinja2 configuration
     config.get_jinja2_environment().filters['static_url'] = static_url_filter
     config.get_jinja2_environment().filters['route_url'] = route_url_filter

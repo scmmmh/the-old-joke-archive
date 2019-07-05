@@ -7,6 +7,16 @@ table {
     background-color: transparent;
     border-collapse: collapse;
     font-family: var(--font-family);
+
+    ul {
+        margin: 0;
+    }
+
+    &.layout-1-2 {
+        th {
+            width: 33.33333%;
+        }
+    }
 }
 
 th, td {

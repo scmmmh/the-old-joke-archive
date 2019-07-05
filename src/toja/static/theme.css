@@ -284,6 +284,15 @@
 .block {
   display: block; }
 
+.hide-small {
+  display: none; }
+
+@media (min-width: 48rem) {
+  .hide-small {
+    display: block; }
+  .show-small {
+    display: none; } }
+
 /*
  * Body styling
  */
@@ -391,16 +400,19 @@ blockquote {
     display: block;
     font-size: var(--font-size-small);
     font-style: normal; }
-  blockquote.alt-vertical--reverse {
-    display: -webkit-box;
-    display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: reverse;
-    flex-direction: column-reverse; }
-    blockquote.alt-vertical--reverse p:last-of-type, blockquote.alt-vertical--reverse p:only-of-type {
-      margin-bottom: 0; }
-    blockquote.alt-vertical--reverse cite {
-      margin-bottom: var(--spacing); }
+    blockquote cite.with-badge {
+      display: -webkit-box;
+      display: flex;
+      -webkit-box-align: center;
+      align-items: center;
+      margin-bottom: var(--spacing-small); }
+      blockquote cite.with-badge > :first-child {
+        -webkit-box-flex: 0;
+        flex: 0 0 auto; }
+      blockquote cite.with-badge > :last-child {
+        -webkit-box-flex: 1;
+        flex: 1 1 auto;
+        margin-left: var(--spacing); }
 
 /*
  * Buttons
@@ -662,8 +674,7 @@ ol {
 ul {
   list-style-type: none;
   margin-left: 0;
-  padding-left: 0;
-  font-size: var(--font-size-default); }
+  padding-left: 0; }
   ul li:before {
     content: "• ";
     color: var(--color-brand); }
@@ -699,6 +710,12 @@ dd {
     padding-right: var(--spacing-small);
     margin-right: var(--spacing-small);
     border-right: var(--border-width-thin) solid var(--color-border); }
+  .inline.comma li:not(:last-child) {
+    padding-right: 0;
+    margin-right: var(--spacing-x-small);
+    border-right: 0; }
+    .inline.comma li:not(:last-child):after {
+      content: ", "; }
 
 /*
  * Margin helpers
@@ -771,6 +788,10 @@ table {
   background-color: transparent;
   border-collapse: collapse;
   font-family: var(--font-family); }
+  table ul {
+    margin: 0; }
+  table.layout-1-2 th {
+    width: 33.33333%; }
 
 th, td {
   padding: var(--spacing) var(--spacing-medium) var(--spacing) 0;

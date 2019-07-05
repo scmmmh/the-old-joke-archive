@@ -1,0 +1,161 @@
+{% extends 'toja:templates/layout/base.jinja2' %}
+
+{% block title %}Another Lapsus{% endblock title %}
+{% block main %}
+{% from 'toja:templates/macros/jokes.jinja2' import joke_ratings, joke_snippet %}
+{% from 'toja:templates/macros/ui.jinja2' import visual_separator %}
+<section class="grid">
+  <div class="cell-1-4">
+    <div class="flex">
+      <h1>Another Lapsus</h1>
+      <div class="shrink hide-small">
+        {{ joke_ratings({'laugh': 10201, 'boo': 328, 'groan': 243}) }}
+      </div>
+    </div>
+    <blockquote>
+      <p>Lovely Woman: Just look at this? It's the best photo I've ever had taken. All the crudities of features
+        absolutely toned down.</p>
+      <p>Plain Man: Yes, by jove! He's a deuced good photographer.</p>
+      <p>Lovely Woman (bitten): He is. If I were you, when you have your photo taken I'd go to the same man.</p>
+      <cite>Judy.</cite>
+    </blockquote>
+    <div class="show-small">
+      {{ joke_ratings({'laugh': 10201, 'boo': 328, 'groan': 243}) }}
+    </div>
+    <div class="align-center margin-bottom">
+      <img src="{{ 'toja:static/img/tmp-original.png'|static_url() }}"/>
+    </div>
+    <h2>Transcriptions</h2>
+    <blockquote>
+      <cite class="with-badge">
+        <img src="{{ 'toja:static/img/icon-verified-on.svg'|static_url() }}" alt="Transcription accepted"/>
+        <span>Transcribed by <a href="#">Mark Hall</a> on March 14th in the year 2019</span>
+      </cite>
+      <p>Another Lapsus.&mdash;Lovely Woman: Just look at this? It's the best photo I've ever had taken. All the
+        crudities of features absolutely toned down.&mdash;Plain Man: Yes, by jove! He's a deuced good
+        photographer.&mdash;Lovely Woman (bitten): He is. If I were you, when you have your photo taken I'd go to the
+        same man.&mdash;Judy.</p>
+    </blockquote>
+    <blockquote>
+      <cite class="with-badge">
+        <img src="{{ 'toja:static/img/icon-verified-on.svg'|static_url() }}" alt="Transcription accepted"/>
+        <span>Transcribed by <a href="#">Andy Clarke</a> on May 25th in the year 2019</span>
+      </cite>
+      <p>Another Lapsus.&mdash;Lovely Woman: Just look at this? It's the best photo I've ever had taken. All the
+        crudities of features absolutely toned down.&mdash;Plain Man: Yes, by jove! He's a deuced good
+        photographer.&mdash;Lovely Woman (bitten): He is. If I were you, when you have your photo taken I'd go to the
+        same man.&mdash;Judy.</p>
+    </blockquote>
+    <blockquote>
+      <cite class="with-badge">
+        <img src="{{ 'toja:static/img/icon-verified-off.svg'|static_url() }}" alt="Transcription accepted"/>
+        <span>Transcribed by <a href="#">David Walsh</a> on April 1st in the year 2019</span>
+      </cite>
+      <p>VERY, VERY AMBIGUOUS.&mdash;His Wife’s Mother: Only think! This is the last night we shall all be together.
+        Tomorrow I shall be far from here. Sixty miles away, isn’t it, Jane ?&mdash;Adolphus (interrupting) : Oh, sixty
+        miles is quite near enough.&mdash;Ariel.</p>
+    </blockquote>
+  </div>
+  <div class="cell-5-7">
+    <h2>Metadata</h2>
+    <table class="layout-1-2">
+      <tbody>
+        <tr>
+          <th scope="row">Source</th>
+          <td><a href="#">Lloyd's Weekly Newspaper</a></td>
+        </tr>
+        <tr>
+          <th scope="row">Section</th>
+          <td><a href="#">Jokes of the day</a></td>
+        </tr>
+        <tr>
+          <th scope="row">Source type</th>
+          <td><a href="#">Newspaper</a></td>
+        </tr>
+        <tr>
+          <th scope="row">Joke type</th>
+          <td><a href="#">Dialog</a></td>
+        </tr>
+        <tr>
+          <th scope="row">Keywords</th>
+          <td>
+            <ul class="inline comma">
+              <li><a href="#">beauty</a></li>
+              <li><a href="#">photograph</a></li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <th scope="row">Publication Date</th>
+          <td><a href="#">12/04/1891</a></td>
+        </tr>
+      </tbody>
+    </table>
+    <h2>Characters</h2>
+    <table class="layout-1-2">
+      <tbody>
+        <tr>
+          <th scope="row">Character 1</th>
+          <td>Lovely Woman</td>
+        </tr>
+        <tr>
+          <th scope="row">Gender</th>
+          <td>Female</td>
+        </tr>
+        <tr>
+          <th>Class</th>
+          <td>&#8212;</td>
+        </tr>
+        <tr>
+          <th>Race</th>
+          <td>&#8212;</td>
+        </tr>
+        <tr>
+          <th>Age</th>
+          <td>&#8212;</td>
+        </tr>
+        <tr>
+          <th>Profession</th>
+          <td>&#8212;</td>
+        </tr>
+      </tbody>
+    </table>
+    <table class="layout-1-2">
+      <tbody>
+        <tr>
+          <th scope="row">Character 2</th>
+          <td>Plain Man</td>
+        </tr>
+        <tr>
+          <th scope="row">Gender</th>
+          <td>Male</td>
+        </tr>
+        <tr>
+          <th>Class</th>
+          <td>&#8212;</td>
+        </tr>
+        <tr>
+          <th>Race</th>
+          <td>&#8212;</td>
+        </tr>
+        <tr>
+          <th>Age</th>
+          <td>&#8212;</td>
+        </tr>
+        <tr>
+          <th>Profession</th>
+          <td>&#8212;</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="cell-1-7">{{ visual_separator() }}</div>
+  <h2 class="cell-1-7 align-center alt-font">Laugh at this!</h2>
+  <div class="cell-1-4">
+    {{ joke_snippet() }}
+  </div>
+  <div class="cell-4-7">
+    {{ joke_snippet() }}
+  </div>
+</section>
+{% endblock main %}

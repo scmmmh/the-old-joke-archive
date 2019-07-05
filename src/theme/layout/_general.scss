@@ -1,3 +1,17 @@
 .block {
     display: block;
 }
+
+.hide-small {
+    display: none;
+}
+
+@media (min-width: 48rem) {
+    .hide-small {
+        display: block;
+    }
+    
+    .show-small {
+        display: none;
+    }
+}

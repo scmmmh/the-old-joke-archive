@@ -26,7 +26,6 @@ ul {
     list-style-type: none;
     margin-left: 0;
     padding-left: 0;
-    font-size: var(--font-size-default);
 
     li {
         &:before {
@@ -77,5 +76,17 @@ dd {
         padding-right: var(--spacing-small);
         margin-right: var(--spacing-small);
         border-right: var(--border-width-thin) solid var(--color-border);
+    }
+
+    &.comma {
+        li:not(:last-child) {
+            padding-right: 0;
+            margin-right: var(--spacing-x-small);
+            border-right: 0;
+
+            &:after {
+                content: ", "
+            }
+        }
     }
 }
