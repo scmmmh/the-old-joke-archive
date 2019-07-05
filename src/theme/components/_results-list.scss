@@ -1,7 +1,8 @@
 .search-results {
-    li {
+    > li {
         margin-left: 0;
-        
+        margin-bottom: var(--spacing-xx-large);
+
         &:before {
             content: "";
         }

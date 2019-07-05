@@ -47,7 +47,7 @@
             height: 100px;
             border: var(--border-width-thin) solid var(--color-border);
             text-align: center;
-            overflow: scroll;
+            overflow: auto;
 
             img {
                 max-width: none;

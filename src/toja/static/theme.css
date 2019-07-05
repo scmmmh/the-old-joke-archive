@@ -704,8 +704,7 @@ dd {
   -webkit-box-align: center;
   align-items: center; }
   .inline li:before {
-    content: "";
-    margin: 0; }
+    content: ""; }
   .inline li:not(:last-child) {
     padding-right: var(--spacing-small);
     margin-right: var(--spacing-small);
@@ -1108,7 +1107,7 @@ nav.joke-rating ul {
     height: 100px;
     border: var(--border-width-thin) solid var(--color-border);
     text-align: center;
-    overflow: scroll; }
+    overflow: auto; }
     .joke-snippet > div .source-image img {
       max-width: none;
       max-height: none; }
@@ -1184,9 +1183,10 @@ nav.joke-rating ul {
       .joke-old .metadata h3 a:hover, .joke-old .metadata time a:hover {
         text-decoration: underline; }
 
-.search-results li {
-  margin-left: 0; }
-  .search-results li:before {
+.search-results > li {
+  margin-left: 0;
+  margin-bottom: var(--spacing-xx-large); }
+  .search-results > li:before {
     content: ""; }
 
 .search-result-status {
