@@ -2,6 +2,12 @@
     margin-bottom: var(--spacing-large);
     display: flex;
     flex-direction: column-reverse;
+    position: relative;
+
+    a {
+        position: relative;
+        z-index: 1;
+    }
 
     > div {
         &:first-child {
@@ -88,9 +94,20 @@
 
         a {
             color: var(--color-text-default);
+            position: static;
 
             &:hover {
                 text-decoration: underline;
+            }
+
+            &:before {
+                content: "";
+                position: absolute;
+                z-index: 0;
+                top: 0;
+                left: 0;
+                height: 100%;
+                width: 100%;
             }
         }
     }

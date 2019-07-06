@@ -1062,7 +1062,11 @@ nav.joke-rating ul {
   display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: reverse;
-  flex-direction: column-reverse; }
+  flex-direction: column-reverse;
+  position: relative; }
+  .joke-snippet a {
+    position: relative;
+    z-index: 1; }
   .joke-snippet > div:first-child {
     display: -webkit-box;
     display: flex;
@@ -1122,9 +1126,18 @@ nav.joke-rating ul {
     font-size: var(--font-size-x-large);
     margin-bottom: var(--spacing-small); }
     .joke-snippet h2 a {
-      color: var(--color-text-default); }
+      color: var(--color-text-default);
+      position: static; }
       .joke-snippet h2 a:hover {
         text-decoration: underline; }
+      .joke-snippet h2 a:before {
+        content: "";
+        position: absolute;
+        z-index: 0;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%; }
   @media (min-width: 64rem) {
     .joke-snippet {
       -webkit-box-orient: horizontal;
