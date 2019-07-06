@@ -1,6 +1,6 @@
 {% macro joke_ratings(ratings) %}
 {% from 'numbers.jinja2' import human_number %}
-<nav class="joke-rating">
+<div class="joke-rating">
   <ul>
     <li>
       <a href="#" title="LOL">
@@ -27,7 +27,7 @@
       </a>
     </li>
   </ul>
-</nav>
+</div>
 {% endmacro %}
 
 {% macro joke_snippet() %}

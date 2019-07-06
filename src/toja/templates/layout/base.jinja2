@@ -50,7 +50,7 @@
       <div>
         {{ visual_separator() }}
         <div>
-          <nav>
+          <nav aria-label="Legal information">
             <ul>
               <li><a href="#">Copyright questions</a></li>
               <li><a href="#">Press &#38; media</a></li>
@@ -80,22 +80,20 @@
       </div>
     </footer>
   </div>
-  <aside class="grid">
+  <section aria-label="Acknowledgements" class="grid">
     <div class="cell-1-4">
-      <nav>
-        <ul class="flex no-bullet">
-          <li class="shrink">
-            <a href="https://www.bl.uk" target="_blank" rel="noopener" title="Supported by the British Library">
-              <img src="{{ 'toja:static/img/logo-bl.gif'|static_url() }}" alt="British Library" style="max-height:80px;"/>
-            </a>
-          </li>
-          <li class="shrink margin-left">
-            <a href="https://www.edgehill.ac.uk" target="_blank" rel="noopener" title="Supported by Edge Hill University">
-              <img src="{{ 'toja:static/img/logo-ehu.png'|static_url() }}" alt="Edge Hill University" style="max-height:80px;"/>
-            </a>
-          </li>
-        </ul>
-      </nav>
+      <ul class="flex no-bullet">
+        <li class="shrink">
+          <a href="https://www.bl.uk" target="_blank" rel="noopener" title="Supported by the British Library">
+            <img src="{{ 'toja:static/img/logo-bl.gif'|static_url() }}" alt="British Library" style="max-height:80px;"/>
+          </a>
+        </li>
+        <li class="shrink margin-left">
+          <a href="https://www.edgehill.ac.uk" target="_blank" rel="noopener" title="Supported by Edge Hill University">
+            <img src="{{ 'toja:static/img/logo-ehu.png'|static_url() }}" alt="Edge Hill University" style="max-height:80px;"/>
+          </a>
+        </li>
+      </ul>
     </div>
     <div class="cell-4-7 align-right">
       <ul class="font-size-x-small no-bullet">

@@ -1062,7 +1062,7 @@ header nav ul {
       grid-column: 2;
       grid-row: 1; } }
 
-nav.joke-rating ul {
+div.joke-rating ul {
   list-style-type: none;
   display: -webkit-box;
   display: flex;
@@ -1070,14 +1070,14 @@ nav.joke-rating ul {
   justify-content: flex-end;
   margin: 0;
   padding: 0; }
-  nav.joke-rating ul li {
+  div.joke-rating ul li {
     margin-right: var(--spacing-large); }
-    nav.joke-rating ul li:before {
+    div.joke-rating ul li:before {
       content: "";
       margin: 0; }
-    nav.joke-rating ul li:last-of-type {
+    div.joke-rating ul li:last-of-type {
       margin-right: 0; }
-    nav.joke-rating ul li a {
+    div.joke-rating ul li a {
       display: -webkit-box;
       display: flex;
       -webkit-box-orient: horizontal;
@@ -1087,9 +1087,9 @@ nav.joke-rating ul {
       align-items: center;
       color: var(--color-mid);
       text-decoration: none; }
-      nav.joke-rating ul li a:hover {
+      div.joke-rating ul li a:hover {
         color: var(--color-brand); }
-      nav.joke-rating ul li a span {
+      div.joke-rating ul li a span {
         margin-left: var(--spacing-small); }
 
 .joke-snippet {
