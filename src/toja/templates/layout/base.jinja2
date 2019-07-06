@@ -25,17 +25,25 @@
   <div class="page">
     <header class="grid">
       <div><a href="{{ 'root'|route_url() }}"><img src="{{ 'toja:static/img/tmp-logo.svg'|static_url() }}" alt="Are we amused? | The Old Joke Archive"></a></div>
-      <nav>
-        <ul>
-          <li><a href="{{ 'search'|route_url() }}">Search</a></li>
-          <li><a href="#">About</a></li>
-          <li><a href="#">Contribute</a></li>
-          <li><a href="#">History</a></li>
-          <li><a href="#">Sign up</a></li>
-          <li><a href="#">Log in</a></li>
-        </ul>
+      <div>
+        <div>
+          <nav aria-label="Main navigation">
+            <ul>
+              <li><a href="{{ 'search'|route_url() }}">Search</a></li>
+              <li><a href="#">About</a></li>
+              <li><a href="#">Contribute</a></li>
+              <li><a href="#">History</a></li>
+            </ul>
+          </nav>
+          <nav aria-label="User navigation">
+            <ul>
+              <li><a href="#">Sign up</a></li>
+              <li><a href="#">Log in</a></li>
+            </ul>
+          </nav>
+        </div>
         {{ visual_separator() }}
-      </nav>
+      </div>
     </header>
     <main>{% block main %}{% endblock main %}</main>
     <footer class="grid margin-top margin-bottom-negative">

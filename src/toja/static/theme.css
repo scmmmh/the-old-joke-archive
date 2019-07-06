@@ -981,11 +981,20 @@ header nav ul {
         text-decoration: none; }
 
 @media (min-width: 48rem) {
-  header div {
+  header div:nth-child(1) {
     grid-column: 1 / 3; }
-  header nav {
+  header div:nth-child(2) {
     grid-column: 4 / 7; }
-    header nav ul {
+    header div:nth-child(2) div {
+      display: -webkit-box;
+      display: flex; }
+      header div:nth-child(2) div nav:nth-child(1) {
+        -webkit-box-flex: 1;
+        flex: 1 1 auto; }
+      header div:nth-child(2) div nav:nth-child(2) {
+        -webkit-box-flex: 0;
+        flex: 0 0 auto; }
+    header div:nth-child(2) ul {
       display: -webkit-box;
       display: flex;
       -webkit-box-orient: horizontal;
@@ -996,10 +1005,10 @@ header nav ul {
       -webkit-column-count: 1;
       -moz-column-count: 1;
       column-count: 1; }
-      header nav ul li {
+      header div:nth-child(2) ul li {
         margin: 0;
         text-align: left; }
-        header nav ul li + li {
+        header div:nth-child(2) ul li + li {
           border-left: 1px solid var(--color-border); } }
 
 @media (min-width: 92rem) {
