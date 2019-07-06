@@ -18,14 +18,14 @@ footer {
             }
         }
 
-        &:first-child {
+        &:nth-child(1) {
             ul {
                 margin-top: var(--spacing);
                 margin-bottom: var(--spacing-large);
             }
         }
 
-        &:last-child {
+        &:nth-child(2) {
             ul {
                 display: flex;
                 flex-direction: row;
@@ -40,15 +40,18 @@ footer {
 
 @media (min-width:48em) {
     footer {
-        nav:first-child {
-            grid-column: 2 / 6;
+        nav {
+            &:nth-child(1) {
+                grid-column: 2 / 6;
 
-            ul {
-                column-count: 3;
+                ul {
+                    column-count: 3;
+                }
             }
-        }
-        nav:last-child {
-            grid-column: 6 / 7;
+
+            &:nth-child(2) {
+                grid-column: 6 / 7;
+            }
         }
     }
 }
