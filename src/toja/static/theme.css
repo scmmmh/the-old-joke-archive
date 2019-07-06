@@ -646,7 +646,9 @@ h5, h6 {
   height: 24px; }
 
 .icon path, .icon g {
-  fill: var(--color-mid); }
+  fill: var(--color-mid);
+  -webkit-transition: fill var(--duration-quickly) ease;
+  transition: fill var(--duration-quickly) ease; }
 
 a .icon path, a .icon g {
   fill: var(--color-accent); }
