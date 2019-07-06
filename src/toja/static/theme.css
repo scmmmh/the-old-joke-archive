@@ -635,6 +635,10 @@ h5, h6 {
 /*
  * Icon styling
  */
+.icon.mdi, .icon.mdi {
+  width: 24px;
+  height: 24px; }
+
 .icon path, .icon g, .icon path, .icon g {
   fill: var(--color-accent); }
 
@@ -899,7 +903,10 @@ ul.filter-list li a {
   display: flex; }
   ul.filter-list li a > span {
     -webkit-box-flex: 1;
-    flex: 1 1; }
+    flex: 1 1 auto; }
+  ul.filter-list li a > svg {
+    -webkit-box-flex: 0;
+    flex: 0 0 auto; }
 
 ul.filter-list.expanded {
   border-bottom: var(--border-width-thin) solid var(--color-border);

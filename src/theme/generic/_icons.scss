@@ -2,10 +2,17 @@
  * Icon styling
  */
 .icon, .icon {
+
+    &.mdi {
+        width: 24px;
+        height: 24px;
+    }
+
     path, g {
         fill: var(--color-accent);
     }
 }
+
 a:hover {
     path, g {
         fill: var(--color-brand);

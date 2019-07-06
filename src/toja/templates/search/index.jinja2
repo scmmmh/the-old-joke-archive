@@ -4,6 +4,7 @@
 
 {% block main %}
 {% from 'toja:templates/macros/jokes.jinja2' import joke_snippet %}
+{% from 'toja:templates/macros/icons.jinja2' import icon %}
 <section class="grid">
   <section class="cell-1-5">
     <h1 class="alt-font"><span class="color-brand">Dialog</span> jokes containing <span class="color-brand">woman</span> in <span class="color-brand">Lloyd's Weekly Newspaper</span></h1>
@@ -44,69 +45,69 @@
   <form class="cell-6-7" action="{{ 'search'|route_url() }}">
     <h2 class="alt-font">Find something funny</h2>
     <div class="margin-bottom">
-      <input type="search" title="Search" aria-label="Search for jokes by keyword" value="woman">
+      <input type="search" title="Search" class="shrink" aria-label="Search for jokes by keyword" value="woman">
     </div>
     <h3 class="alt-font">Filters</h3>
     <section>
-      <h4 class="flex"><span>Category</span> <a href="#" class="shrink"><img src="{{ 'toja:static/img/icon-accordion-open.svg'|static_url() }}" alt="Close"></a></h4>
+      <h4 class="flex"><span>Category</span> <a href="#" class="shrink" aria-label="Collapse the list of categories">{{ icon('minus-box') }}</a></h4>
       <ul class="filter-list expanded">
         <li>
           <a href="#">
             <span>Dialog</span>
-            <img src="{{ 'toja:static/img/icon-filter-on.svg'|static_url() }}" alt="">
+            {{ icon('checkbox-marked') }}
           </a>
         </li>
         <li>
           <a href="#">
             <span>Question &amp; Answer</span>
-            <img src="{{ 'toja:static/img/icon-filter-off.svg'|static_url() }}" alt="">
+            {{ icon('checkbox-blank-outline') }}
           </a>
         </li>
         <li>
           <a href="#">
             <span>Humorous Definition</span>
-            <img src="{{ 'toja:static/img/icon-filter-off.svg'|static_url() }}" alt="">
+            {{ icon('checkbox-blank-outline') }}
           </a>
         </li>
         <li>
           <a href="#">
             <span>Story</span>
-            <img src="{{ 'toja:static/img/icon-filter-off.svg'|static_url() }}" alt="">
+            {{ icon('checkbox-blank-outline') }}
           </a>
         </li>
       </ul>
     </section>
     <section>
-      <h4 class="flex"><span>Tags</span> <a href="#" class="shrink"><img src="{{ 'toja:static/img/icon-accordion-closed.svg'|static_url() }}" alt="Open"></a></h4>
+      <h4 class="flex"><span>Tags</span> <a href="#" class="shrink" aria-label="Expand the list of tags">{{ icon('plus-box') }}</a></h4>
     </section>
     <section>
-      <h4 class="flex"><span>Source</span> <a href="#" class="shrink"><img src="{{ 'toja:static/img/icon-accordion-open.svg'|static_url() }}" alt="Close"></a></h4>
+      <h4 class="flex"><span>Source</span> <a href="#" class="shrink" aria-label="Collapse the list of sources">{{ icon('minus-box') }}</a></h4>
       <ul class="filter-list expanded">
         <li>
           <a href="#">
             <span>Daily Gazette</span>
-            <img src="{{ 'toja:static/img/icon-filter-off.svg'|static_url() }}" alt="">
+            {{ icon('checkbox-blank-outline') }}
           </a>
         </li>
         <li>
           <a href="#">
             <span>Hampshire Telegraph</span>
-            <img src="{{ 'toja:static/img/icon-filter-off.svg'|static_url() }}" alt="">
+            {{ icon('checkbox-blank-outline') }}
           </a>
         </li>
         <li>
           <a href="#">
             <span>Lloyd's Weekly Newspaper</span>
-            <img src="{{ 'toja:static/img/icon-filter-on.svg'|static_url() }}" alt="">
+            {{ icon('checkbox-marked') }}
           </a>
         </li>
       </ul>
     </section>
     <section>
-      <h4 class="flex"><span>Type of Joke</span> <a href="#" class="shrink"><img src="{{ 'toja:static/img/icon-accordion-closed.svg'|static_url() }}" alt="Open"></a></h4>
+      <h4 class="flex"><span>Joke Type</span> <a href="#" class="shrink" aria-label="Expand the list of joke types">{{ icon('plus-box') }}</a></h4>
     </section>
     <section>
-      <h4 class="flex"><span>Year</span> <a href="#" class="shrink"><img src="{{ 'toja:static/img/icon-accordion-closed.svg'|static_url() }}" alt="Open"></a></h4>
+      <h4 class="flex"><span>Year</span> <a href="#" class="shrink" aria-label="Expand the list of years">{{ icon('plus-box') }}</a></h4>
     </section>
     <div class="btn-group">
       <a href="{{ 'search'|route_url() }}" class="btn alt-secondary">Reset</a>

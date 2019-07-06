@@ -8,10 +8,11 @@ ul.filter-list {
             display: flex;
 
             > span {
-                flex: 1 1;
+                flex: 1 1 auto;
             }
 
-            > img {
+            > svg {
+                flex: 0 0 auto;
             }
         }
     }
