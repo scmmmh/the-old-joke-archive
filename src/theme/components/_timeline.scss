@@ -8,7 +8,7 @@
         padding-left: var(--spacing);
         padding-right: var(--spacing);
     }
-    
+
     @media (min-width: 64rem) {
         margin-left: auto;
         margin-right: auto;
@@ -108,8 +108,11 @@
                 }
 
                 &:hover {
-                    div:first-of-type:after {
-                        content: "";
+                    div:first-of-type {
+
+                        &:after {
+                            content: "";
+                        }
 
                         &:before {
                             content: url("/static/img/icon-timeline-hover.svg");
