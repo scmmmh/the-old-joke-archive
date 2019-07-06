@@ -58,4 +58,16 @@ textarea {
 
 input:focus, textarea:focus {
     outline: 0;
+
+    + button, + a.btn, + .btn {
+        path, g {
+            fill: var(--color-accent);
+        }
+        
+        svg:hover {
+            path, g {
+                fill: var(--color-brand);
+            }
+        }
+    }
 }

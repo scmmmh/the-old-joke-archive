@@ -58,6 +58,12 @@ button, a.btn, .btn {
             color: var(--color-text-alt);
         }
     }
+
+    svg:hover {
+        path, g {
+            fill: var(--color-brand);
+        }
+    }
 }
 
 /*

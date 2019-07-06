@@ -441,6 +441,8 @@ button, a.btn, .btn {
     button.alt-secondary:hover, a.btn.alt-secondary:hover, .btn.alt-secondary:hover {
       background-color: var(--color-button-hover);
       color: var(--color-text-alt); }
+  button svg:hover path, button svg:hover g, a.btn svg:hover path, a.btn svg:hover g, .btn svg:hover path, .btn svg:hover g {
+    fill: var(--color-brand); }
 
 /*
  * Button Groups
@@ -592,6 +594,10 @@ textarea {
 
 input:focus, textarea:focus {
   outline: 0; }
+  input:focus + button path, input:focus + button g, input:focus + a.btn path, input:focus + a.btn g, input:focus + .btn path, input:focus + .btn g, textarea:focus + button path, textarea:focus + button g, textarea:focus + a.btn path, textarea:focus + a.btn g, textarea:focus + .btn path, textarea:focus + .btn g {
+    fill: var(--color-accent); }
+  input:focus + button svg:hover path, input:focus + button svg:hover g, input:focus + a.btn svg:hover path, input:focus + a.btn svg:hover g, input:focus + .btn svg:hover path, input:focus + .btn svg:hover g, textarea:focus + button svg:hover path, textarea:focus + button svg:hover g, textarea:focus + a.btn svg:hover path, textarea:focus + a.btn svg:hover g, textarea:focus + .btn svg:hover path, textarea:focus + .btn svg:hover g {
+    fill: var(--color-brand); }
 
 /*
  * Headings
@@ -635,14 +641,17 @@ h5, h6 {
 /*
  * Icon styling
  */
-.icon.mdi, .icon.mdi {
+.icon.mdi {
   width: 24px;
   height: 24px; }
 
-.icon path, .icon g, .icon path, .icon g {
+.icon path, .icon g {
+  fill: var(--color-mid); }
+
+a .icon path, a .icon g {
   fill: var(--color-accent); }
 
-a:hover path, a:hover g {
+a:hover .icon path, a:hover .icon g {
   fill: var(--color-brand); }
 
 /*
