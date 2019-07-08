@@ -1,8 +1,8 @@
 /**
- * JavaScript that posts the URL of a link, instead of the default GET action.
+ * Plugin that posts the URL of a link, instead of the default GET action.
  */
-function postLink() {
-    function init(anchor) {
+(function() {
+    function setup_anchor(anchor) {
         anchor.addEventListener('click', function(ev) {
             ev.preventDefault();
             let form = document.createElement('form');
@@ -15,7 +15,6 @@ function postLink() {
 
     let anchors = document.querySelectorAll('a[data-action="post-link"]');
     for(let idx = 0; idx < anchors.length; idx++) {
-        init(anchors[idx]);
+        setup_anchor(anchors[idx]);
     }
-}
-postLink();
+})();

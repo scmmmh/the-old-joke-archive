@@ -32,7 +32,7 @@
           {% for message in request.session.pop_flash('info') %}
             <li>
               <span>{{ message }}</span>
-              <a aria-label="Close this message">{{ icon('close-circle') }}</a>
+              <a aria-label="Close this message" data-action="close-message">{{ icon('close-circle') }}</a>
             </li>
           {% endfor %}
         </ul>
@@ -40,5 +40,7 @@
     </section>
   {% endif %}
   {% block body %}{% endblock body %}
+  <script src="{{ 'toja:static/plugins.js'|static_url() }}"></script>
+  {% block body_scripts %}{% endblock body_scripts %}
 </body>
 </html>

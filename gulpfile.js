@@ -4,6 +4,16 @@ var gulp = require('gulp'),
     concat = require('gulp-concat'),
     pump = require('pump');
 
+gulp.task('frontend:plugins', function(cb) {
+    pump([
+        gulp.src('src/frontend/plugins/*.js'),
+        concat('plugins.js'),
+        gulp.dest('src/toja/static')
+    ], cb);
+});
+
+gulp.task('frontend', gulp.parallel('frontend:plugins'));
+
 gulp.task('theme:static', function(cb) {
     pump([
         gulp.src('src/theme/static/**/*.*'),
@@ -14,8 +24,8 @@ gulp.task('theme:static', function(cb) {
 gulp.task('theme:styles', function(cb) {
     pump([
         gulp.src([
-            'src/theme/app.scss',
-            'src/theme/fonts.scss'
+            'src/theme/fonts.scss',
+            'src/theme/app.scss'
         ]),
         sass({
             includePaths: ['node_modules/foundation-sites/scss']
@@ -30,7 +40,7 @@ gulp.task('theme:styles', function(cb) {
 
 gulp.task('theme', gulp.parallel('theme:static', 'theme:styles'));
 
-gulp.task('frontend', function(cb) {
+/*gulp.task('frontend', function(cb) {
     pump([
         gulp.src([
             'node_modules/fabricjs/index.js',
@@ -39,12 +49,12 @@ gulp.task('frontend', function(cb) {
         concat('frontend.js'),
         gulp.dest('src/toja/static/')
     ], cb);
-});
+});*/
 
 gulp.task('default', gulp.parallel('theme', 'frontend'));
 
 gulp.task('watch', gulp.series('default', function(cb) {
     gulp.watch('src/theme/**/*.scss', gulp.series('theme:styles'));
-    gulp.watch('src/frontend/**/*.js', gulp.series('frontend'));
+    gulp.watch('src/frontend/plugins/**/*.js', gulp.series('frontend:plugins'));
     cb();
 }));

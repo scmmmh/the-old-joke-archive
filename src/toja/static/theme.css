@@ -1,3 +1,10 @@
+@font-face {
+  font-family: 'blackriver-bold';
+  src: url("/static/fonts/blackriver-bold.woff2") format("woff2"), url("/static/fonts/blackriver-bold.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; }
+
 @charset "UTF-8";
 /* Basic Utilities */
 :root {
@@ -1462,10 +1469,3 @@ div.joke-rating ul {
         font-size: var(--font-size-x-small);
         text-align: center;
         color: var(--color-text-default); } }
-
-@font-face {
-  font-family: 'blackriver-bold';
-  src: url("/static/fonts/blackriver-bold.woff2") format("woff2"), url("/static/fonts/blackriver-bold.woff") format("woff");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap; }
