@@ -16,8 +16,13 @@
         </nav>
         <nav aria-label="User navigation">
           <ul>
-            <li><a href="#">Sign up</a></li>
-            <li><a href="#">Log in</a></li>
+            {% if request.current_user %}
+              <li><a href="{{ 'user.view'|route_url(uid=request.current_user.id) }}">{{ request.current_user.attributes.name }}</a></li>
+              <li><a href="{{ 'user.logout'|route_url() }}" class="post-link">Log out</a></li>
+            {% else %}
+              <li><a href="{{ 'user.register'|route_url() }}">Sign up</a></li>
+              <li><a href="{{ 'user.login'|route_url() }}">Log in</a></li>
+            {% endif %}
           </ul>
         </nav>
       </div>

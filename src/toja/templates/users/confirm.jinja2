@@ -1,0 +1,17 @@
+{% extends 'toja:templates/layout/minimal.jinja2' %}
+
+{% block title %}The Old Joke Archive | Set your Password{% endblock title %}
+
+{% block main %}
+{% from 'toja:templates/macros/forms.jinja2' import field with context %}
+<h1 class="alt-font">Set your Password</h1>
+<form action="{{ 'user.confirm'|route_url(email=request.matchdict['email'], token=request.matchdict['token']) }}" method="post" class="margin-top">
+  {{ field('password', 'password', 'Password') }}
+  {{ field('confirm_password', 'password', 'Confirm your Password') }}
+  <div class="flex align-center margin-top">
+    <div class="align-right">
+      <button>Set your Password</button>
+    </div>
+  </div>
+</form>
+{% endblock main %}

@@ -1,0 +1,11 @@
+{% extends 'toja:templates/layout/base.jinja2' %}
+
+{% block body %}
+<div class="grid">
+  <div class="cell-2-6">
+    <div class="page">
+      <main>{% block main %}{% endblock main %}</main>
+    </div>
+  </div>
+</div>
+{% endblock body %}

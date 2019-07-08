@@ -5,6 +5,12 @@ def includeme(config):
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('root', '/')
 
+    config.add_route('user.register', '/users/register')
+    config.add_route('user.confirm', '/users/confirm/:email/:token')
+    config.add_route('user.login', '/users/login')
+    config.add_route('user.logout', '/users/logout')
+    config.add_route('user.view', '/users/:uid')
+
     config.add_route('search', '/search')
 
     config.add_route('joke.view', '/jokes/:jid')

@@ -1,0 +1,19 @@
+{% macro input(name, type, attributes={}) %}
+<input type="{{ type }}" name="{{ name }}" {% for key, value in attributes.items() %}{{ key }}="{{ value }}"{% endfor %} {% if errors is defined and name in errors %} class="is-invalid-label"{% endif %} {% if values is defined and name in values %}value="{{ values[name] }}"{% endif %}/>
+{% endmacro %}
+
+{% macro field(name, type, label, attributes={}) %}
+<label{% if errors is defined and name in errors %} class="error"{% endif %}>{% if type not in ['checkbox', 'radio'] %}{{ label }}{% endif %}
+  {{ input(name, type, attributes) }}
+  {% if type in ['checkbox', 'radio'] %}{{ label }}{% endif %}
+  {% if errors is defined and name in errors %}<span class="message">{{ errors[name]|map('capitalize')|join(' ') }}</span>{% endif %}
+</label>
+{% endmacro %}
+
+{% macro select(name, values, selected, attributes={}) %}
+<select name="{{ name }}" {% for key, value in attributes.items() %}{{ key }}="{{ value }}"{% endfor %}>
+  {% for value in values %}
+    <option value="{{ value[0] }}"{% if value[0] == selected %} selected="selected"{% endif %}>{{ value[1] }}</option>
+  {% endfor %}
+</select>
+{% endmacro %}
