@@ -21,7 +21,7 @@
               <li><a href="{{ 'user.logout'|route_url() }}" data-action="post-link">Log out</a></li>
             {% else %}
               <li><a href="{{ 'user.register'|route_url() }}">Sign up</a></li>
-              <li><a href="{{ 'user.login'|route_url() }}">Log in</a></li>
+              <li><a href="{{ 'user.login'|route_url(_query={'redirect': request|encode_route }) }}">Log in</a></li>
             {% endif %}
           </ul>
         </nav>

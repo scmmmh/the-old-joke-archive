@@ -8,6 +8,7 @@ from sqlalchemy import and_
 
 from ..models import User
 # from ..permissions import require_permission, PERMISSIONS, GROUPS
+from ..routes import decode_route
 from ..util import get_config_setting, send_email, Validator
 
 
@@ -118,7 +119,8 @@ def confirm(request):
 
 
 login_schema = {'email': {'type': 'string', 'empty': False, 'validator': valid_email},
-                'password': {'type': 'string', 'empty': False}}
+                'password': {'type': 'string', 'empty': False},
+                'redirect': {'type': 'string'}}
 
 
 @view_config(route_name='user.login', renderer='toja:templates/users/login.jinja2')
@@ -135,7 +137,8 @@ def login(request):
                 hash.update(request.params['password'].encode('utf-8'))
                 if user.password == hash.hexdigest():
                     request.session['user-id'] = user.id
-                    return HTTPFound(location=request.route_url('root'))
+                    print(decode_route(request))
+                    return HTTPFound(location=decode_route(request, 'user.view', {'uid': user.id}))
             return {'errors': {'email': ['Either there is no user with this e-mail address ' +
                                          'or the password is incorrect.'],
                                'password': ['Either there is no user with this e-mail address ' +
