@@ -1,13 +1,17 @@
 /**
  * Font sizes
  */
- .font-size-x-small {
-     font-size: var(--font-size-x-small);
- }
+.font-size-x-small {
+    font-size: var(--font-size-x-small);
+}
 
- .font-size-small {
-     font-size: var(--font-size-small);
- }
+.font-size-small {
+    font-size: var(--font-size-small);
+}
+
+.font-size-medium {
+    font-size: var(--font-size-medium);
+}
 
 .font-size-large {
     font-size: var(--font-size-large);

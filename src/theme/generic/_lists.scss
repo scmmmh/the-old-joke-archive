@@ -28,8 +28,13 @@ ul {
     padding-left: 0;
 
     li {
+        margin-left: 0.75rem;
+        margin-bottom: var(--spacing-x-small);
+
         &:before {
-            content: "• ";
+            margin-left: -0.75rem;
+            margin-right: 0.25rem;
+            content: "•";
             color: var(--color-brand);
         }
     }

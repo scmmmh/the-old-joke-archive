@@ -41,12 +41,6 @@ def require_permission(permissions):
     return decorator(handler)
 
 
-def logged_in(request):
-    """Jinja2 filter that checks if the current user is logged in."""
-    return request.current_user is not None
-
-
 def includeme(config):
     """Inject the filters into the configuration."""
     config.get_jinja2_environment().filters['permitted'] = permitted
-    config.get_jinja2_environment().filters['logged_in'] = logged_in

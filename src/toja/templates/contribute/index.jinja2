@@ -1,0 +1,45 @@
+{% extends 'toja:templates/layout/default.jinja2' %}
+
+{% block title %}Contribute to the Old Joke Archive{% endblock title %}
+
+{% block main %}
+<section class="grid">
+  <h1 class="cell-1-7 alt-font">Contribute to the Old Joke Archive</h1>
+  <div class="cell-1-4">
+    <p>The archive's content relies on your contributions and its full scale cannot be achieved without you.</p>
+    <p>We have a number of different ways in which you can contribute. Whether you just want to do something simple
+      quickly, or if you want to get really involved in a difficult task, there is something for you.</p>
+  </div>
+  {% if request|logged_in %}
+  {% else %}
+    <div class="cell-1-4">
+      <h2>Available tasks</h2>
+      <ul>
+        <li><strong>Identify jokes in scans</strong> - Our source data often mixes jokes with other data or contains
+          multiple jokes in a single image. In this task find jokes and mark them out using a simple graphical tool.</li>
+        <li><strong>Verify identified jokes</strong> - The individual jokes extracted by our users need to be checked
+          that they have been extracted cleanly. To do this we provide you with a simple tool in which you simply make
+          yes or no decisions on each extracted joke.</li>
+        <li><strong>Transcribe jokes</strong> - The individual jokes are automatically processed to extract the joke
+          text. These texts then need to be manually checked and potentially corrected. Depending on the quality of the
+          source images, this might mean just fixing a typo here and there, but might also involve complex transcriptions.</li>
+        <li><strong>Verify classified jokes</strong> - The transcribed jokes are automatically classified, but this
+          needs to be verified and corrected using a very simple tool.</li>
+        <li><strong>Annotate jokes</strong> - In the joke texts we need to identify different elements such as speakers,
+          people, places, objects, and so on. Additionally, for many of these elements we need to then provide additional
+          information such as people's gender or occupation.</li>
+      </ul>
+    </div>
+    <div class="cell-5-7">
+      <h2>Attribution & Licensing</h2>
+      <p>All the work you do for the project is fully attributed to you. As a result, we require that you
+        <a href="{{ 'user.register'|route_url() }}">register</a> or
+        <a href="{{ 'user.login'|route_url(_query={'redirect': request|encode_route}) }}">log in</a>.</p>
+      <p>All the data you provide when undertaking tasks for the project are licensed under the
+        <a href="https://creativecommons.org/licenses/by/4.0" target="_blank" rel="noopener">Creative Commons Attribution 4.0</a>
+        license. This basically means that the project and anybody else is free to use the data you provide however
+        they see fit, as long as they abide by the license by attributing your contributions.</p>
+    </div>
+  {% endif %}
+</section>
+{% endblock main %}

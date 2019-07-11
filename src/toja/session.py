@@ -29,6 +29,11 @@ def require_logged_in():
     return decorator(handler)
 
 
+def logged_in(request):
+    """Jinja2 filter that checks if the current user is logged in."""
+    return request.current_user is not None
+
+
 def includeme(config):
     """Setup the session handling in the configuration."""
     secret = unhexlify(config.get_settings()['app.session_secret'].strip())
@@ -40,3 +45,5 @@ def includeme(config):
         'current_user',
         reify=True
     )
+
+    config.get_jinja2_environment().filters['logged_in'] = logged_in

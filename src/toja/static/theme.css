@@ -534,6 +534,9 @@ button, a.btn, .btn {
 .font-size-small {
   font-size: var(--font-size-small); }
 
+.font-size-medium {
+  font-size: var(--font-size-medium); }
+
 .font-size-large {
   font-size: var(--font-size-large); }
 
@@ -705,9 +708,14 @@ ul {
   list-style-type: none;
   margin-left: 0;
   padding-left: 0; }
-  ul li:before {
-    content: "• ";
-    color: var(--color-brand); }
+  ul li {
+    margin-left: 0.75rem;
+    margin-bottom: var(--spacing-x-small); }
+    ul li:before {
+      margin-left: -0.75rem;
+      margin-right: 0.25rem;
+      content: "•";
+      color: var(--color-brand); }
   ul.no-bullet li:before {
     content: "";
     display: none; }
@@ -1061,9 +1069,12 @@ header nav ul {
   -moz-column-count: 2;
   column-count: 2; }
   header nav ul li {
-    text-align: center; }
+    text-align: center;
+    margin-left: 0; }
     header nav ul li:before {
-      content: ""; }
+      content: "";
+      margin-left: 0;
+      margin-right: 0; }
     header nav ul li a {
       font-family: var(--font-family-alt);
       display: block;

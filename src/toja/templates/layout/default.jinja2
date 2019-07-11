@@ -10,13 +10,13 @@
           <ul>
             <li><a href="#">Browse</a></li>
             <li><a href="{{ 'search'|route_url() }}">Search</a></li>
-            <li><a href="#">Contribute</a></li>
+            <li><a href="{{ 'contribute'|route_url() }}">Contribute</a></li>
             <li><a href="#">About</a></li>
           </ul>
         </nav>
         <nav aria-label="User navigation">
           <ul>
-            {% if request.current_user %}
+            {% if request|logged_in %}
               <li><a href="{{ 'user.view'|route_url(uid=request.current_user.id) }}">{{ request.current_user.attributes.name }}</a></li>
               <li><a href="{{ 'user.logout'|route_url() }}" data-action="post-link">Log out</a></li>
             {% else %}
