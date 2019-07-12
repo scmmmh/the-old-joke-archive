@@ -129,7 +129,8 @@ def login(request):
     if request.method == 'POST':
         validator = Validator(login_schema)
         if validator.validate(request.params):
-            user = request.dbsession.query(User).filter(User.email == request.params['email']).first()
+            user = request.dbsession.query(User).filter(and_(User.email == request.params['email'],
+                                                             User.status == 'confirmed')).first()
             if user:
                 hash = sha512()
                 hash.update(user.salt.encode('utf-8'))
