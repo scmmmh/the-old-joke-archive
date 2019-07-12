@@ -1,15 +1,19 @@
 from decorator import decorator
-from pyramid.httpexceptions import HTTPForbidden
+from pyramid.httpexceptions import HTTPForbidden, HTTPFound
 
-PERMISSIONS = ['users.list',
+from .routes import encode_route
+
+
+PERMISSIONS = ['admin.view',
+               'users.list',
                'users.edit',
                'users.delete',
                'sources.list',
                'sources.upload',
                'sources.edit',
                'sources.delete']
-GROUPS = {'admin': ['users.list', 'users.edit', 'users.delete', 'sources.list', 'sources.upload', 'sources.edit',
-                    'sources.delete']}
+GROUPS = {'admin': ['admin.view', 'users.list', 'users.edit', 'users.delete', 'sources.list', 'sources.upload',
+                    'sources.edit', 'sources.delete']}
 PERMISSIONS_GROUPS = dict([permission, group] for group, permissions in GROUPS.items() for permission in permissions)
 
 
@@ -34,10 +38,13 @@ def permitted(request, permission):
 def require_permission(permissions):
     """Pyramid decorator to check permissions for a request."""
     def handler(f, *args, **kwargs):
-        if has_permission(args[0].current_user, permissions):
+        request = args[0]
+        if has_permission(request.current_user, permissions):
             return f(*args, **kwargs)
-        else:
+        elif request.current_user:
             raise HTTPForbidden()
+        else:
+            raise HTTPFound(request.route_url('user.login', _query={'redirect': encode_route(request)}))
     return decorator(handler)
 
 

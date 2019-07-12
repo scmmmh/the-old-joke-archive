@@ -21,7 +21,7 @@
   -->
 </head>
 
-<body>
+<body {% if request|permitted('admin.view') %}class="is-admin"{% endif %}>
   {% if request.session.peek_flash('info') %}
     <section role="region" aria-label="Messages" class="flash page">
       <div>

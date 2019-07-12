@@ -1,0 +1,14 @@
+{% extends 'toja:templates/layout/default.jinja2' %}
+
+{% block title %}The Old Joke Archive Administration{% endblock title %}
+
+{% block main %}
+<section class="grid">
+  <div class="cell-1-7">
+    <h1>Administration</h1>
+    <ul class="inline">
+      <li><a href="{{ 'user.index'|route_url() }}">Users</a></li>
+    </ul>
+  </div>
+</section>
+{% endblock main %}

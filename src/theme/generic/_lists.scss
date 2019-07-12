@@ -72,14 +72,21 @@ dd {
     display: flex;
     align-items: center;
 
-    li:before {
-        content: "";
-    }
+    li {
+        margin-left: 0;
 
-    li:not(:last-child) {
-        padding-right: var(--spacing-small);
-        margin-right: var(--spacing-small);
-        border-right: var(--border-width-thin) solid var(--color-border);
+        &:before {
+            content: "";
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        &:not(:last-child) {
+            padding-right: var(--spacing-small);
+            margin-right: var(--spacing-small);
+            border-right: var(--border-width-thin) solid var(--color-border);
+        }
+
     }
 
     &.comma {

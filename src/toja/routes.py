@@ -31,6 +31,7 @@ def includeme(config):
     config.add_static_view('static', 'static', cache_max_age=3600)
     config.add_route('root', '/')
 
+    config.add_route('user.index', '/users')
     config.add_route('user.register', '/users/register')
     config.add_route('user.confirm', '/users/confirm/:email/:token')
     config.add_route('user.login', '/users/login')
@@ -44,6 +45,8 @@ def includeme(config):
     config.add_route('contribute.workbench', '/contribute/workbench')
 
     config.add_route('joke.view', '/jokes/:jid')
+
+    config.add_route('admin.index', '/admin')
 
     # Jinja2 configuration
     config.get_jinja2_environment().filters['static_url'] = static_url_filter
