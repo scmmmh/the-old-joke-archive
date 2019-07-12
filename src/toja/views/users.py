@@ -1,6 +1,7 @@
 from copy import deepcopy
 from email_validator import validate_email, EmailNotValidError
 from hashlib import sha512
+from math import ceil
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 from pyramid.view import view_config
 from secrets import token_hex
@@ -48,7 +49,7 @@ def register(request):
         schema['email']['validator'].append(nonexistant_email)
         validator = Validator(schema)
         if validator.validate(request.params):
-            user = User(email=request.params['email'],
+            user = User(email=request.params['email'].lower(),
                         salt=None,
                         password=None,
                         status='new',
@@ -129,7 +130,7 @@ def login(request):
     if request.method == 'POST':
         validator = Validator(login_schema)
         if validator.validate(request.params):
-            user = request.dbsession.query(User).filter(and_(User.email == request.params['email'],
+            user = request.dbsession.query(User).filter(and_(User.email == request.params['email'].lower(),
                                                              User.status == 'confirmed')).first()
             if user:
                 hash = sha512()
@@ -162,9 +163,20 @@ def logout(request):
 @view_config(route_name='user.index', renderer='toja:templates/users/index.jinja2')
 @require_permission('users.list')
 def index(request):
-    """Handle displaying the list of users."""
-    users = request.dbsession.query(User).filter(User.status != 'deleted')
-    return {'users': users}
+    """Handle displaying the list of users. Supports filtering by email address and status."""
+    status = request.params.getall('status') if 'status' in request.params else ['confirmed']
+    page = 0
+    users = request.dbsession.query(User).filter(User.status.in_(status))
+    if 'q' in request.params and request.params['q'].strip():
+        users = users.filter(User.email.like('%%%s%%' % request.params['q'].strip().lower()))
+    total = users.count()
+    users = users.offset(page * 10).limit(page * 10 + 10)
+    return {'users': users,
+            'status': status,
+            'pagination': {'start': max(0, page - 2),
+                           'current': page,
+                           'end': min(ceil(total / 10), page + 2),
+                           'total': total}}
 
 
 @view_config(route_name='user.edit', renderer='toja:templates/users/edit.jinja2')
@@ -189,9 +201,14 @@ def edit(request):
             validator = Validator(edit_schema)
             if validator.validate(request.params):
                 user.attributes['name'] = request.params['name']
-                user.email = request.params['email']
+                user.email = request.params['email'].lower()
                 if request.params['password']:
-                    pass
+                    user.salt = token_hex(32)
+                    hash = sha512()
+                    hash.update(user.salt.encode('utf-8'))
+                    hash.update(b'$$')
+                    hash.update(request.params['password'].encode('utf-8'))
+                    user.password = hash.hexdigest()
                 if check_permission(request, request.current_user, 'users.edit'):
                     user.status = request.params['status']
                     user.trust = request.params['trust']
@@ -222,6 +239,10 @@ def delete(request):
     """Handle deleting users, both for admins and the users themselves."""
     user = request.dbsession.query(User).filter(User.id == request.matchdict['uid']).first()
     if user:
+        user.attributes['name'] = 'Deleted User'
+        user.email = ''
+        user.salt = ''
+        user.password = ''
         user.status = 'deleted'
         if check_permission(request, request.current_user, 'users.delete'):
             return HTTPFound(request.route_url('user.index'))

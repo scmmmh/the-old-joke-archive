@@ -3,7 +3,7 @@
 {% block title %}{% if user.id == request.current_user.id %}Edit my Profile{% else %}Edit {{ user.attributes.name }}{% endif %}{% endblock title %}
 
 {% block main %}
-{% from 'toja:templates/macros/forms.jinja2' import field, select %}
+{% from 'toja:templates/macros/forms.jinja2' import field, select with context %}
 <form action="{{ 'user.edit'|route_url(uid=user.id) }}" method="post" class="grid">
   <div class="cell-1-7">
     <h1 class="alt-font">{% if user.id == request.current_user.id %}Edit my Profile{% else %}Edit <span class="color-brand">{{ user.attributes.name }}</span>{% endif %}</h1>

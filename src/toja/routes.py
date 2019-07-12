@@ -15,7 +15,7 @@ def encode_route(request):
 
 
 def decode_route(request, default_route='root', default_route_params=None, default_route_query=None):
-    """Jinja2 filter"""
+    """Jinja2 filter that decodes and returns the route URL encoded with :func:`~toja.routes.encode_route`."""
     if 'redirect' in request.params and request.params['redirect']:
         try:
             data = json.loads(urlsafe_b64decode(request.params['redirect'].encode()).decode('utf-8'))
@@ -25,6 +25,26 @@ def decode_route(request, default_route='root', default_route_params=None, defau
     if not default_route_params:
         default_route_params = {}
     return request.route_url(default_route, **default_route_params, _query=default_route_query)
+
+
+def update_current_route(request, params=None, query=None):
+    if query:
+        tmp = []
+        for key in request.params.keys():
+            if key in query:
+                tmp.append((key, query[key]))
+            else:
+                for val in request.params.getall(key):
+                    tmp.append((key, val))
+        query = tmp
+    if params and query:
+        return request.current_route_url(**params, _query=query)
+    elif params:
+        return request.current_route_url(**params)
+    elif query:
+        return request.current_route_url(_query=query)
+    else:
+        return request.current_route_url()
 
 
 def includeme(config):
@@ -55,3 +75,4 @@ def includeme(config):
     config.get_jinja2_environment().filters['route_url'] = route_url_filter
     config.get_jinja2_environment().filters['encode_route'] = encode_route
     config.get_jinja2_environment().filters['decode_route'] = decode_route
+    config.get_jinja2_environment().filters['update_current_route'] = update_current_route

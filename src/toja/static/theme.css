@@ -430,19 +430,30 @@ button, a.btn, .btn {
   transition: var(--duration-promptly) all ease;
   text-decoration: none;
   line-height: 1; }
+  button svg.icon path, button svg.icon g, a.btn svg.icon path, a.btn svg.icon g, .btn svg.icon path, .btn svg.icon g {
+    fill: var(--color-text-alt); }
   button:hover, a.btn:hover, .btn:hover {
     background-color: var(--color-button-hover);
     color: var(--color-text-alt);
     text-decoration: none; }
+    button:hover svg.icon path, button:hover svg.icon g, a.btn:hover svg.icon path, a.btn:hover svg.icon g, .btn:hover svg.icon path, .btn:hover svg.icon g {
+      fill: var(--color-text-alt); }
   button:active, a.btn:active, .btn:active {
     background-color: var(--color-button-active);
     color: var(--color-text-alt);
     text-decoration: none; }
+  button.disabled, a.btn.disabled, .btn.disabled {
+    background-color: var(--color-base);
+    color: var(--color-mid);
+    cursor: not-allowed; }
   button.alt-large, a.btn.alt-large, .btn.alt-large {
     padding: var(--spacing-medium) var(--spacing-x-large); }
   button.alt-small, a.btn.alt-small, .btn.alt-small {
     padding: var(--spacing-small) var(--spacing-medium);
     font-size: var(--font-size-x-small); }
+    button.alt-small svg.icon, a.btn.alt-small svg.icon, .btn.alt-small svg.icon {
+      width: 16px;
+      height: 16px; }
   button.alt-block, a.btn.alt-block, .btn.alt-block {
     display: block;
     width: 100%;
@@ -450,9 +461,13 @@ button, a.btn, .btn {
   button.alt-secondary, a.btn.alt-secondary, .btn.alt-secondary {
     background-color: var(--color-base);
     color: var(--color-text-default); }
+    button.alt-secondary svg.icon path, button.alt-secondary svg.icon g, a.btn.alt-secondary svg.icon path, a.btn.alt-secondary svg.icon g, .btn.alt-secondary svg.icon path, .btn.alt-secondary svg.icon g {
+      fill: var(--color-text-default); }
     button.alt-secondary:hover, a.btn.alt-secondary:hover, .btn.alt-secondary:hover {
       background-color: var(--color-button-hover);
       color: var(--color-text-alt); }
+      button.alt-secondary:hover svg.icon path, button.alt-secondary:hover svg.icon g, a.btn.alt-secondary:hover svg.icon path, a.btn.alt-secondary:hover svg.icon g, .btn.alt-secondary:hover svg.icon path, .btn.alt-secondary:hover svg.icon g {
+        fill: var(--color-text-alt); }
   button svg:hover path, button svg:hover g, a.btn svg:hover path, a.btn svg:hover g, .btn svg:hover path, .btn svg:hover g {
     fill: var(--color-brand); }
 
@@ -791,6 +806,9 @@ dd {
  */
 .numeral {
   color: var(--color-brand); }
+
+.padding-left {
+  padding-left: var(--spacing); }
 
 /*
  * Paragraph styling
@@ -1324,7 +1342,7 @@ div.joke-rating ul {
       flex: 1 1; }
       .search-result-status .pagination li:before {
         content: ""; }
-      .search-result-status .pagination li a {
+      .search-result-status .pagination li a, .search-result-status .pagination li span {
         display: block;
         padding: var(--spacing-small) var(--spacing-medium);
         font-size: var(--font-size-x-small);

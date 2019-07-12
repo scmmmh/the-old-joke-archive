@@ -22,16 +22,35 @@ button, a.btn, .btn {
     text-decoration: none;
     line-height: 1;
 
+    svg.icon {
+        path, g {
+            fill: var(--color-text-alt);
+        }
+    }
+
     &:hover {
         background-color: var(--color-button-hover);
         color: var(--color-text-alt);
         text-decoration: none;
+
+        svg.icon {
+            path, g {
+                fill: var(--color-text-alt);
+            }
+        }
+
     }
 
     &:active {
         background-color: var(--color-button-active);
         color: var(--color-text-alt);
         text-decoration: none;
+    }
+
+    &.disabled {
+        background-color: var(--color-base);
+        color: var(--color-mid);
+        cursor: not-allowed;
     }
 
     &.alt-large {
@@ -41,6 +60,11 @@ button, a.btn, .btn {
     &.alt-small {
         padding: var(--spacing-small) var(--spacing-medium);
         font-size: var(--font-size-x-small);
+
+        svg.icon {
+            width: 16px;
+            height: 16px;
+        }
     }
 
     &.alt-block {
@@ -53,9 +77,21 @@ button, a.btn, .btn {
         background-color: var(--color-base);
         color: var(--color-text-default);
 
+        svg.icon {
+            path, g {
+                fill: var(--color-text-default);
+            }
+        }
+
         &:hover {
             background-color: var(--color-button-hover);
             color: var(--color-text-alt);
+
+            svg.icon {
+                path, g {
+                    fill: var(--color-text-alt);
+                }
+            }
         }
     }
 
