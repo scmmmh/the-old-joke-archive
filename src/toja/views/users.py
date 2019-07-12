@@ -91,7 +91,7 @@ confirmation_schema = {'password': {'type': 'string', 'empty': False},
 
 @view_config(route_name='user.confirm', renderer='toja:templates/users/confirm.jinja2')
 def confirm(request):
-    """Handles the user confirmation and setting a new password. Confirmed users are automatically logged in."""
+    """Handles the user confirmation and setting a new password.  users are automatically logged in."""
     user = request.dbsession.query(User).filter(and_(User.email == request.matchdict['email'],
                                                      User.status == 'new')).first()
     if user and 'validation_token' in user.attributes and \
@@ -105,7 +105,7 @@ def confirm(request):
                 hash.update(b'$$')
                 hash.update(request.params['password'].encode('utf-8'))
                 user.password = hash.hexdigest()
-                user.status = 'confirmed'
+                user.status = 'active'
                 del user.attributes['validation_token']
                 request.session['user-id'] = user.id
                 request.session.flash('You have updated your password.', 'info')
@@ -131,7 +131,7 @@ def login(request):
         validator = Validator(login_schema)
         if validator.validate(request.params):
             user = request.dbsession.query(User).filter(and_(User.email == request.params['email'].lower(),
-                                                             User.status == 'confirmed')).first()
+                                                             User.status == 'active')).first()
             if user:
                 hash = sha512()
                 hash.update(user.salt.encode('utf-8'))
@@ -164,7 +164,7 @@ def logout(request):
 @require_permission('users.list')
 def index(request):
     """Handle displaying the list of users. Supports filtering by email address and status."""
-    status = request.params.getall('status') if 'status' in request.params else ['confirmed']
+    status = request.params.getall('status') if 'status' in request.params else ['active']
     page = 0
     users = request.dbsession.query(User).filter(User.status.in_(status))
     if 'q' in request.params and request.params['q'].strip():
@@ -192,7 +192,7 @@ def edit(request):
                            'confirm_password': {'type': 'string', 'empty': True, 'matches': 'password'}}
             if check_permission(request, request.current_user, 'users.edit'):
                 edit_schema['status'] = {'type': 'string', 'required': True,
-                                         'allowed': ['new', 'confirmed', 'deleted', 'blocked']}
+                                         'allowed': ['new', 'active', 'deleted', 'blocked']}
                 edit_schema['trust'] = {'type': 'string', 'required': True,
                                         'allowed': ['low', 'medium', 'high', 'full']}
             if check_permission(request, request.current_user, 'users.edit_permissions'):

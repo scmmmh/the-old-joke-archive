@@ -19,7 +19,7 @@
     </fieldset>
     {% if request|permitted('users.edit') %}
       <fieldset>
-        {{ select('status', [('new', 'New'), ('confirmed', 'Confirmed'), ('deleted', 'Deleted'), ('blocked', 'Blocked')], user.status, 'Status') }}
+        {{ select('status', [('new', 'New'), ('active', 'Active'), ('deleted', 'Deleted'), ('blocked', 'Blocked')], user.status, 'Status') }}
         {{ select('trust', [('low', 'Low'), ('medium', 'Medium'), ('high', 'High'), ('full', 'Full')], user.trust, 'Trust') }}
       </fieldset>
     {% endif %}

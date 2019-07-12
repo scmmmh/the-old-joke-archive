@@ -15,7 +15,7 @@ def get_current_user(request):
     """
     if 'user-id' in request.session and hasattr(request, 'dbsession'):
         return request.dbsession.query(User).filter(and_(User.id == request.session['user-id'],
-                                                         User.status == 'confirmed')).first()
+                                                         User.status == 'active')).first()
     return None
 
 
