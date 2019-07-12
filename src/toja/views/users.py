@@ -158,15 +158,14 @@ def logout(request):
     return {}
 
 
-'''
-@view_config(route_name='users.list', renderer='toja:templates/users/list.jinja2')
-@require_permission('users.list')
+@view_config(route_name='user.index', renderer='toja:templates/users/index.jinja2')
 def index(request):
     """Handle displaying the list of users."""
     users = request.dbsession.query(User)
     return {'users': users}
 
 
+'''
 edit_permissions_schema = {'group': {'type': 'string', 'allowed': list(GROUPS.keys())},
                            'permission': {'type': 'string', 'allowed': PERMISSIONS}}
 
