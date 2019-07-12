@@ -20,5 +20,22 @@ class User(Base):
     attributes = Column(NestedMutableJson)
     created = Column(DateTime, default=datetime.now)
 
+    def allow(self, user, action):
+        """Check whether the given user is allowed to undertake the given action.
+
+        :param user: The user to check for
+        :type user: :class:`~toja.models.user.User`
+        :param action: The action to check (view, edit, delete)
+        :type action: ``str``
+        """
+        if action == 'view':
+            return True
+        elif action == 'edit':
+            return user.id == self.id
+        elif action == 'delete':
+            return user.id == self.id
+        else:
+            return False
+
 
 Index('users_email_ix', User.email, unique=True, mysql_length=191)

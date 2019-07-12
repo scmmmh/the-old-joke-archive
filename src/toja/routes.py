@@ -37,6 +37,8 @@ def includeme(config):
     config.add_route('user.login', '/users/login')
     config.add_route('user.logout', '/users/logout')
     config.add_route('user.view', '/users/:uid')
+    config.add_route('user.edit', '/users/:uid/edit')
+    config.add_route('user.delete', '/users/:uid/delete', request_method='POST')
 
     config.add_route('search', '/search')
 

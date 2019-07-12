@@ -1,13 +1,13 @@
 from copy import deepcopy
 from email_validator import validate_email, EmailNotValidError
 from hashlib import sha512
-from pyramid.httpexceptions import HTTPFound  # , HTTPNotFound, HTTPMethodNotAllowed
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 from pyramid.view import view_config
 from secrets import token_hex
 from sqlalchemy import and_
 
 from ..models import User
-# from ..permissions import require_permission, PERMISSIONS, GROUPS
+from ..permissions import require_permission, check_permission, PERMISSIONS, GROUPS
 from ..routes import decode_route
 from ..util import get_config_setting, send_email, Validator
 
@@ -159,87 +159,72 @@ def logout(request):
 
 
 @view_config(route_name='user.index', renderer='toja:templates/users/index.jinja2')
+@require_permission('users.list')
 def index(request):
     """Handle displaying the list of users."""
-    users = request.dbsession.query(User)
+    users = request.dbsession.query(User).filter(User.status != 'deleted')
     return {'users': users}
 
 
-'''
-edit_permissions_schema = {'group': {'type': 'string', 'allowed': list(GROUPS.keys())},
-                           'permission': {'type': 'string', 'allowed': PERMISSIONS}}
-
-
-@view_config(route_name='users.edit.permissions', renderer='toja:templates/users/edit_permissions.jinja2')
-@require_permission('users.edit')
-def edit_permissions(request):
-    """Handle updating a users permissions."""
+@view_config(route_name='user.edit', renderer='toja:templates/users/edit.jinja2')
+@require_permission('users.edit or @edit user uid')
+def edit(request):
+    """Handle editing users, both for admins and the users themselves."""
     user = request.dbsession.query(User).filter(User.id == request.matchdict['uid']).first()
     if user:
         if request.method == 'POST':
-            validator = Validator(edit_permissions_schema)
+            edit_schema = {'email': {'type': 'string', 'required': True, 'validator': [valid_email]},
+                           'name': {'type': 'string', 'required': True, 'empty': False},
+                           'password': {'type': 'string', 'empty': True},
+                           'confirm_password': {'type': 'string', 'empty': True, 'matches': 'password'}}
+            if check_permission(request, request.current_user, 'users.edit'):
+                edit_schema['status'] = {'type': 'string', 'required': True,
+                                         'allowed': ['new', 'confirmed', 'deleted', 'blocked']}
+                edit_schema['trust'] = {'type': 'string', 'required': True,
+                                        'allowed': ['low', 'medium', 'high', 'full']}
+            if check_permission(request, request.current_user, 'users.edit_permissions'):
+                edit_schema['group'] = {'type': 'string', 'allowed': list(GROUPS.keys())}
+                edit_schema['permission'] = {'type': 'string', 'allowed': list(PERMISSIONS.keys())}
+            validator = Validator(edit_schema)
             if validator.validate(request.params):
-                user.groups = request.params.getall('group')
-                user.permissions = request.params.getall('permission')
-                return HTTPFound(location=request.route_url('users.list'))
+                user.attributes['name'] = request.params['name']
+                user.email = request.params['email']
+                if request.params['password']:
+                    pass
+                if check_permission(request, request.current_user, 'users.edit'):
+                    user.status = request.params['status']
+                    user.trust = request.params['trust']
+                if check_permission(request, request.current_user, 'users.edit_permissions'):
+                    user.groups = request.params.getall('group')
+                    user.permissions = request.params.getall('permission')
+                if check_permission(request, request.current_user, 'users.edit'):
+                    return HTTPFound(request.route_url('user.index'))
+                else:
+                    return HTTPFound(request.route_url('user.view', uid=user.id))
             else:
                 return {'user': user,
-                        'permissions': PERMISSIONS,
                         'groups': GROUPS.keys(),
+                        'permissions': PERMISSIONS,
                         'errors': validator.errors,
                         'values': request.params}
-        return {'user': user,
-                'permissions': PERMISSIONS,
-                'groups': GROUPS.keys()}
-    else:
-        raise HTTPNotFound()
-
-
-edit_status_schema = {'status': {'type': 'string', 'empty': False, 'allowed': ['new', 'confirmed', 'blocked']}}
-
-
-@view_config(route_name='users.edit.status')
-@require_permission('users.edit')
-def edit_status(request):
-    """Handle updating the user's status."""
-    user = request.dbsession.query(User).filter(User.id == request.matchdict['uid']).first()
-    if user:
-        validator = Validator(edit_status_schema)
-        if validator.validate(request.params):
-            user.status = request.params['status']
-        return HTTPFound(location=request.route_url('users.list'))
-    else:
-        raise HTTPNotFound()
-
-
-edit_trust_schema = {'trust': {'type': 'string', 'empty': False, 'allowed': ['low', 'medium', 'full']}}
-
-
-@view_config(route_name='users.edit.trust')
-@require_permission('users.edit')
-def edit_trust(request):
-    """Handle updating the user's trust level."""
-    user = request.dbsession.query(User).filter(User.id == request.matchdict['uid']).first()
-    if user:
-        validator = Validator(edit_trust_schema)
-        if validator.validate(request.params):
-            user.trust = request.params['trust']
-        return HTTPFound(location=request.route_url('users.list'))
-    else:
-        raise HTTPNotFound()
-
-
-@view_config(route_name='users.delete')
-@require_permission('users.delete')
-def delete(request):
-    """Handle deleting a user."""
-    user = request.dbsession.query(User).filter(User.id == request.matchdict['uid']).first()
-    if user:
-        if request.method == 'POST':
-            request.dbsession.delete(user)
-            return HTTPFound(location=request.route_url('users.list'))
         else:
-            raise HTTPMethodNotAllowed()
+            return {'user': user,
+                    'groups': GROUPS.keys(),
+                    'permissions': PERMISSIONS}
     else:
         raise HTTPNotFound()
-'''
+
+
+@view_config(route_name='user.delete')
+@require_permission('users.delete or @delete user uid')
+def delete(request):
+    """Handle deleting users, both for admins and the users themselves."""
+    user = request.dbsession.query(User).filter(User.id == request.matchdict['uid']).first()
+    if user:
+        user.status = 'deleted'
+        if check_permission(request, request.current_user, 'users.delete'):
+            return HTTPFound(request.route_url('user.index'))
+        else:
+            return HTTPFound(request.route_url('root'))
+    else:
+        raise HTTPNotFound()

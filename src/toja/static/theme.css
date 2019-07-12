@@ -554,7 +554,7 @@ form {
   padding: 0; }
 
 fieldset {
-  margin: 0 0 var(--spacing) 0;
+  margin: 0 0 var(--spacing-xx-large) 0;
   padding: 0;
   border: 0; }
 
@@ -574,7 +574,8 @@ label {
 [type="time"],
 [type="search"],
 [type="text"],
-textarea {
+textarea,
+select {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -600,7 +601,8 @@ textarea {
   [type="time"]:focus,
   [type="search"]:focus,
   [type="text"]:focus,
-  textarea:focus {
+  textarea:focus,
+  select:focus {
     border: var(--border-width-thin) solid var(--color-mid); }
 
 .error {

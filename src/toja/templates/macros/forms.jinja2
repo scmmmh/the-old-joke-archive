@@ -10,10 +10,12 @@
 </label>
 {% endmacro %}
 
-{% macro select(name, values, selected, attributes={}) %}
-<select name="{{ name }}" {% for key, value in attributes.items() %}{{ key }}="{{ value }}"{% endfor %}>
-  {% for value in values %}
-    <option value="{{ value[0] }}"{% if value[0] == selected %} selected="selected"{% endif %}>{{ value[1] }}</option>
-  {% endfor %}
-</select>
+{% macro select(name, values, selected, label, attributes={}) %}
+<label{% if errors is defined and name in errors %} class="error"{% endif %}>{{ label }}
+  <select name="{{ name }}" {% for key, value in attributes.items() %}{{ key }}="{{ value }}"{% endfor %}>
+    {% for value in values %}
+      <option value="{{ value[0] }}"{% if value[0] == selected %} selected="selected"{% endif %}>{{ value[1] }}</option>
+    {% endfor %}
+  </select>
+</label>
 {% endmacro %}

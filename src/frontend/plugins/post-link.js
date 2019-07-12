@@ -5,11 +5,21 @@
     function setup_anchor(anchor) {
         anchor.addEventListener('click', function(ev) {
             ev.preventDefault();
-            let form = document.createElement('form');
-            form.setAttribute('action', anchor.getAttribute('href'));
-            form.setAttribute('method', 'post');
-            anchor.append(form);
-            form.submit();
+            if(anchor.getAttribute('data-confirm-prompt')) {
+                if(confirm(anchor.getAttribute('data-confirm-prompt'))) {
+                    let form = document.createElement('form');
+                    form.setAttribute('action', anchor.getAttribute('href'));
+                    form.setAttribute('method', 'post');
+                    anchor.append(form);
+                    form.submit();
+                }
+            } else {
+                let form = document.createElement('form');
+                form.setAttribute('action', anchor.getAttribute('href'));
+                form.setAttribute('method', 'post');
+                anchor.append(form);
+                form.submit();
+            }
         });
     }
 
