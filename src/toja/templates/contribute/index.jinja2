@@ -5,12 +5,42 @@
 {% block main %}
 <section class="grid">
   <h1 class="cell-1-7 alt-font">Contribute to the Old Joke Archive</h1>
-  <div class="cell-1-4">
+  <div class="cell-1-5">
     <p>The archive's content relies on your contributions and its full scale cannot be achieved without you.</p>
     <p>We have a number of different ways in which you can contribute. Whether you just want to do something simple
       quickly, or if you want to get really involved in a difficult task, there is something for you.</p>
   </div>
   {% if request|logged_in %}
+    <div class="cell-1-7 contribute-overview-grid">
+      {% if request|permitted('sources.new') %}
+        <section class="flex vertical">
+          <h2 class="shrink"><a href="">Add Source Data</a></h2>
+          <p>Provide new source data that contains historic joke material. Please ensure that you have the necessary
+            rights to provide the data.</p>
+          <p class="shrink margin-top"><a href="">Provide new source data &rarr;</a></p>
+        </section>
+      {% endif %}
+      {% if request|logged_in() and request.current_user.trust == 'full' %}
+        <section class="flex vertical">
+          <h2 class="shrink"><a href="">Transcription Workbench</a></h2>
+          <p>The transcription workbench allows you to undertake the full transcription workflow from source to
+            annotated joke.</p>
+          <p class="shrink margin-top"><a href="">Work on a source &rarr;</a></p>
+        </section>
+      {% endif %}
+      <section class="flex vertical">
+        <h2 class="shrink"><a href="">Identify Jokes</a></h2>
+        <p>Our source data often mixes jokes with other data or contains multiple jokes in a single image. In this task
+          find jokes and mark them out using a simple graphical tool.</p>
+        <p class="shrink margin-top"><a href="">1 sources to process &rarr;</a></p>
+      </section>
+      <section class="flex vertical">
+        <h2 class="shrink"><a href="">Verify idenfied Jokes</a></h2>
+        <p>The individual jokes extracted by our users need to be checked that they have been extracted cleanly. To do
+          this we provide you with a simple tool in which you simply make yes or no decisions on each extracted joke.</p>
+        <p class="shrink margin-top"><a href="">12 jokes to verify &rarr;</a></p>
+      </section>
+    </div>
   {% else %}
     <div class="cell-1-4">
       <h2>Available tasks</h2>

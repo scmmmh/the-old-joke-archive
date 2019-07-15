@@ -11,9 +11,13 @@ PERMISSIONS = OrderedDict((('admin.view', 'Access the Admin Interface'),
                            ('users.list', 'View all Users'),
                            ('users.edit', 'Edit all Users'),
                            ('users.edit_permissions', 'Edit all User\'s Permissions'),
-                           ('users.delete', 'Delete any Users')))
-GROUPS = {'admin': ['admin.view',
-                    'users.list', 'users.edit', 'users.edit_permissions', 'users.delete']}
+                           ('users.delete', 'Delete any Users'),
+                           ('sources.new', 'Add new Sources'),
+                           ('sources.edit', 'Edit all Sources'),
+                           ('sources.delete', 'Delete any Source')))
+GROUPS = OrderedDict((('admin', ('admin.view',
+                                 'users.list', 'users.edit', 'users.edit_permissions', 'users.delete')),
+                      ('data provider', ('sources.new', ))))
 PERMISSIONS_GROUPS = dict([permission, group] for group, permissions in GROUPS.items() for permission in permissions)
 
 OR = 1
