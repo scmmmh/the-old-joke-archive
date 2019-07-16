@@ -4,6 +4,19 @@ var gulp = require('gulp'),
     concat = require('gulp-concat'),
     pump = require('pump');
 
+gulp.task('frontend:apps:workbench', function(cb) {
+    pump([
+        gulp.src([
+            'src/frontend/apps/workbench/dist/js/chunk-vendors*',
+            'src/frontend/apps/workbench/dist/js/app*'
+        ]),
+        concat('workbench.js'),
+        gulp.dest('src/toja/static')
+    ], cb);
+});
+
+gulp.task('frontend:apps', gulp.parallel('frontend:apps:workbench'));
+
 gulp.task('frontend:plugins', function(cb) {
     pump([
         gulp.src('src/frontend/plugins/*.js'),
@@ -12,7 +25,7 @@ gulp.task('frontend:plugins', function(cb) {
     ], cb);
 });
 
-gulp.task('frontend', gulp.parallel('frontend:plugins'));
+gulp.task('frontend', gulp.parallel('frontend:plugins', 'frontend:apps'));
 
 gulp.task('theme:static', function(cb) {
     pump([
