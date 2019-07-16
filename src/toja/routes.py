@@ -56,6 +56,7 @@ def includeme(config):
     config.add_route('user.confirm', '/users/confirm/:email/:token')
     config.add_route('user.login', '/users/login')
     config.add_route('user.logout', '/users/logout')
+    config.add_route('user.forgotten_password', '/users/forgotten_password')
     config.add_route('user.view', '/users/:uid')
     config.add_route('user.edit', '/users/:uid/edit')
     config.add_route('user.delete', '/users/:uid/delete', request_method='POST')

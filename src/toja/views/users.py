@@ -91,9 +91,8 @@ confirmation_schema = {'password': {'type': 'string', 'empty': False},
 
 @view_config(route_name='user.confirm', renderer='toja:templates/users/confirm.jinja2')
 def confirm(request):
-    """Handles the user confirmation and setting a new password.  users are automatically logged in."""
-    user = request.dbsession.query(User).filter(and_(User.email == request.matchdict['email'],
-                                                     User.status == 'new')).first()
+    """Handles the user confirmation and setting a new password. Users are automatically logged in."""
+    user = request.dbsession.query(User).filter(User.email == request.matchdict['email']).first()
     if user and 'validation_token' in user.attributes and \
             user.attributes['validation_token'] == request.matchdict['token']:
         if request.method == 'POST':
@@ -116,7 +115,8 @@ def confirm(request):
                         'values': request.params}
         return {'user': user}
     else:
-        return {}
+        request.session.flash('Unfortunately that validation token is not valid for that e-mail address.', queue='info')
+        return HTTPFound(location=request.route_url('root'))
 
 
 login_schema = {'email': {'type': 'string', 'empty': False, 'validator': valid_email},
@@ -146,6 +146,45 @@ def login(request):
                                'password': ['Either there is no user with this e-mail address ' +
                                             'or the password is incorrect.']},
                     'values': request.params}
+        else:
+            return {'errors': validator.errors, 'values': request.params}
+    return {}
+
+
+forgotten_password_schema = {'email': {'type': 'string', 'empty': False, 'validator': valid_email}}
+
+
+@view_config(route_name='user.forgotten_password', renderer='toja:templates/users/forgotten_password.jinja2')
+def forgotten_password(request):
+    """Handle sending a link for a forgotten password."""
+    if request.method == 'POST':
+        validator = Validator(login_schema)
+        if validator.validate(request.params):
+            user = request.dbsession.query(User).filter(and_(User.email == request.params['email'].lower(),
+                                                             User.status == 'active')).first()
+            if user:
+                user.attributes['validation_token'] = token_hex(32)
+                request.dbsession.add(user)
+                send_email(request, user.email, get_config_setting(request,
+                                                                   'app.email.sender',
+                                                                   default='admin@the-old-joke-archive.org'),
+                           'Reset your password at The Old Joke Archive', '''Dear %(name)s,
+
+You have asked to have your password reset. To do so, plese click on the following link or copy it into your browser:
+
+%(url)s
+
+If you did not request this, then probably somebody is blindly trying e-mail addresses. As long as this person has
+no access to your e-mail account, they will neither be able to reset your password, nor to find out that this e-mail
+address works.
+
+Thank you,
+The Old Joke Archive
+''' % {'name': user.attributes['name'], 'url': request.route_url('user.confirm',
+                                                                 email=user.email,
+                                                                 token=user.attributes['validation_token'])})
+            request.session.flash('An email with a password reset link has been sent to the email address.', 'info')
+            return HTTPFound(request.route_url('root'))
         else:
             return {'errors': validator.errors, 'values': request.params}
     return {}
