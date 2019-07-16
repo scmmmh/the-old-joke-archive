@@ -1,0 +1,73 @@
+{% extends 'toja:templates/layout/default.jinja2' %}
+
+{% block title %}View all Sources{% endblock title %}
+
+{% block main %}
+{% from 'toja:templates/macros/icons.jinja2' import icon %}
+{% from 'toja:templates/macros/search.jinja2' import search_result_status %}
+<section class="grid">
+  <div class="cell-1-7">
+    <h1 class="alt-font">sources</h1>
+    <table>
+      <thead>
+        <tr>
+          <td colspan="2"></td>
+          <td colspan="3"><form role="search">
+            <div class="flex">
+              <div></div>
+              <div class="shrink">
+                <label><input type="checkbox" name="status" value="processing" {% if 'processing' in status %}checked="checked"{% endif %}/> Sources being processed</label>
+              </div>
+              <div class="shrink">
+                <label><input type="checkbox" name="status" value="completed" {% if 'completed' in status %}checked="checked"{% endif %}/> Completed Sources</label>
+              </div>
+              <div class="shrink">
+                <label><input type="checkbox" name="status" value="deleted" {% if 'deleted' in status %}checked="checked"{% endif %}/> Deleted Sources</label>
+              </div>
+              <div class="shrink padding-left">
+                <button aria-label="Start the search" class="alt-small alt-secondary">{{ icon('magnify') }}</button>
+              </div>
+          </div>
+          </form></td>
+        </tr>
+        <tr>
+          {% for label in request|config('app.sources.metadata.labels', target_type='list', default=[]) %}
+            <th>{{ label }}</th>
+          {% endfor %}
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for source in sources %}
+          <tr>
+            {% for name in request|config('app.sources.metadata.fields', target_type='list', default=[]) %}
+              {% if loop.index == 1 %}
+                <td><a href="{{ 'source.view'|route_url(sid=source.id) }}">{{ source.attributes[name] }}</a></td>
+              {% else %}
+                <td>{{ source.attributes[name] }}</td>
+              {% endif %}
+            {% endfor %}
+            <td>{{ source.status|title }}</td>
+            <td>
+              <ul class="inline">
+                {% if request|permitted('sources.edit') %}
+                  <li><a href="{{ 'source.edit'|route_url(sid=source.id) }}" aria-label="Edit {{ source.attributes.name }}">{{ icon('pencil') }}</a></li>
+                {% endif %}
+                {% if request|permitted('sources.delete') %}
+                  <li><a href="{{ 'source.delete'|route_url(sid=source.id) }}" data-action="post-link" data-confirm-prompt="Please confirm you wish to delete this source?" aria-label="Delete this source?">{{ icon('delete') }}</a></li>
+                {% endif %}
+              </ul>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="{{ request|config('app.sources.metadata.fields', target_type='list', default=[])|length + 3}}">{{ search_result_status(request, pagination, 'sources') }}</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</section>
+{% endblock main %}

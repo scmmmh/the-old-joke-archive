@@ -3,7 +3,7 @@
 {% block title %}Edit a Source{% endblock title %}
 
 {% block main %}
-{% from 'toja:templates/macros/forms.jinja2' import field with context %}
+{% from 'toja:templates/macros/forms.jinja2' import field, select with context %}
 <div class="grid">
   <form action="{{ 'source.edit'|route_url(sid=source.id) }}" method="post" class="cell-1-4">
     <h1 class="alt-font margin-bottom">Edit a Source</h1>
@@ -14,8 +14,15 @@
         {{ field(name, datatype, label, attributes={'value': source.attributes[name]}) }}
       {% endif %}
     {% endfor %}
+    {% if request|permitted('sources.admin') %}
+      {{ select('status', [('processing', 'Processing'), ('completed', 'Completed'), ('deleted', 'Deleted')], source.status, 'Status') }}
+    {% endif %}
     <div class="flex margin-top">
-      <div><a href="{{ 'source.view'|route_url(sid=source.id) }}">&larr; Don't update</a></div>
+      {% if request|permitted('sources.admin') %}
+        <div><a href="{{ 'source.index'|route_url() }}">&larr; Don't update</a></div>
+      {% else %}
+        <div><a href="{{ 'source.view'|route_url(sid=source.id) }}">&larr; Don't update</a></div>
+      {% endif %}
       <div class="shrink"><button>Update</button></div>
     </div>
   </form>

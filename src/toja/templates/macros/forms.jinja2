@@ -17,5 +17,6 @@
       <option value="{{ value[0] }}"{% if value[0] == selected %} selected="selected"{% endif %}>{{ value[1] }}</option>
     {% endfor %}
   </select>
+  {% if errors is defined and name in errors %}<span class="message">{{ errors[name]|map('capitalize')|join(' ') }}</span>{% endif %}
 </label>
 {% endmacro %}
