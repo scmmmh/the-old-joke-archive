@@ -36,7 +36,7 @@
 <section class="source-snippet">
   <div>
     <div class="source-image">
-      <img src="{{ 'source.image'|route_url(sid=source.id) }}" alt="">
+      <a href="{{ 'source.view'|route_url(sid=source.id) }}" data-action="image-popup"><img src="{{ 'source.image'|route_url(sid=source.id) }}" alt="The scanned joke image"></a>
     </div>
   </div>
   <div>
@@ -68,7 +68,7 @@
 <section class="joke-snippet">
   <div>
     <div class="source-image">
-      <img src="{{ 'toja:static/img/tmp-original.png'|static_url() }}" alt="">
+      <a href="#" data-action="image-popup"><img src="{{ 'toja:static/img/tmp-original.png'|static_url() }}" alt=""></a>
     </div>
   </div>
   <div>
