@@ -348,6 +348,14 @@ a {
     -webkit-transition: color var(--duration-quickly) ease;
     transition: color var(--duration-quickly) ease; }
 
+.application-container {
+  box-sizing: border-box;
+  height: calc(100vh - 6vw); }
+  .application-container > #app {
+    width: 100%;
+    height: 100%;
+    overflow: auto; }
+
 /*
  * Assorted small elements
  */

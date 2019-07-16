@@ -22,7 +22,7 @@
       {% endif %}
       {% if request|logged_in() and request.current_user.trust == 'full' %}
         <section class="flex vertical">
-          <h2 class="shrink"><a href="">Transcription Workbench</a></h2>
+          <h2 class="shrink"><a href="{{ 'contribute.workbench'|route_url() }}">Transcription Workbench</a></h2>
           <p>The transcription workbench allows you to undertake the full transcription workflow from source to
             annotated joke.</p>
           <p class="shrink margin-top"><a href="">Work on a source &rarr;</a></p>

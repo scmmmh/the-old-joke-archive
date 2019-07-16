@@ -5,3 +5,9 @@ from pyramid.view import view_config
 def index(request):
     """Handle the contribution landing page."""
     return {}
+
+
+@view_config(route_name='contribute.workbench', renderer='toja:templates/contribute/workbench.jinja2')
+def workbench(request):
+    """Handle the transcription workbench page."""
+    return {}

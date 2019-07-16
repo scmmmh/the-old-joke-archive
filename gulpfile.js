@@ -7,8 +7,8 @@ var gulp = require('gulp'),
 gulp.task('frontend:apps:workbench', function(cb) {
     pump([
         gulp.src([
-            'src/frontend/apps/workbench/dist/js/chunk-vendors*',
-            'src/frontend/apps/workbench/dist/js/app*'
+            'src/frontend/apps/workbench/dist/js/chunk-vendors*.js',
+            'src/frontend/apps/workbench/dist/js/app*.js'
         ]),
         concat('workbench.js'),
         gulp.dest('src/toja/static')

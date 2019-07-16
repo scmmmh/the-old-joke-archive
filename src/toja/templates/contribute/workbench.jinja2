@@ -1,0 +1,9 @@
+{% extends 'toja:templates/layout/application.jinja2' %}
+
+{% block title %}Transcription Workbench{% endblock title %}
+
+{% block main %}<div id="app"></div>{% endblock main %}
+
+{% block body_scripts %}
+<script src="{{ 'toja:static/workbench.js'|static_url() }}"></script>
+{% endblock body_scripts %}
