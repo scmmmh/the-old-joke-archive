@@ -9,7 +9,8 @@ from .routes import encode_route
 
 PERMISSIONS = OrderedDict((('admin.view', 'Access the Admin Interface'),
                            ('users.admin', 'Administer Users'),
-                           ('sources.admin', 'Administer Sources')))
+                           ('sources.admin', 'Administer Sources'),
+                           ('sources.new', 'Provide new Source Data')))
 GROUPS = OrderedDict((('admin', ('admin.view', 'users.admin')),
                       ('data provider', ('sources.new', )),
                       ('data admin', ('admin.view', 'sources.admin'))))
