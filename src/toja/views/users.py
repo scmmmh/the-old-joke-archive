@@ -200,7 +200,7 @@ def logout(request):
 
 
 @view_config(route_name='user.index', renderer='toja:templates/users/index.jinja2')
-@require_permission('users.list')
+@require_permission('users.admin')
 def index(request):
     """Handle displaying the list of users. Supports filtering by email address and status."""
     status = request.params.getall('status') if 'status' in request.params else ['active']
@@ -230,7 +230,7 @@ def view(request):
 
 
 @view_config(route_name='user.edit', renderer='toja:templates/users/edit.jinja2')
-@require_permission('users.edit or @edit user :uid')
+@require_permission('users.admin or @edit user :uid')
 def edit(request):
     """Handle editing users, both for admins and the users themselves."""
     user = request.dbsession.query(User).filter(User.id == request.matchdict['uid']).first()
@@ -240,12 +240,11 @@ def edit(request):
                            'name': {'type': 'string', 'required': True, 'empty': False},
                            'password': {'type': 'string', 'empty': True},
                            'confirm_password': {'type': 'string', 'empty': True, 'matches': 'password'}}
-            if check_permission(request, request.current_user, 'users.edit'):
+            if check_permission(request, request.current_user, 'users.admin'):
                 edit_schema['status'] = {'type': 'string', 'required': True,
                                          'allowed': ['new', 'active', 'deleted', 'blocked']}
                 edit_schema['trust'] = {'type': 'string', 'required': True,
                                         'allowed': ['low', 'medium', 'high', 'full']}
-            if check_permission(request, request.current_user, 'users.edit_permissions'):
                 edit_schema['group'] = {'type': 'string', 'allowed': list(GROUPS.keys())}
                 edit_schema['permission'] = {'type': 'string', 'allowed': list(PERMISSIONS.keys())}
             validator = Validator(edit_schema)
@@ -259,13 +258,12 @@ def edit(request):
                     hash.update(b'$$')
                     hash.update(request.params['password'].encode('utf-8'))
                     user.password = hash.hexdigest()
-                if check_permission(request, request.current_user, 'users.edit'):
+                if check_permission(request, request.current_user, 'users.admin'):
                     user.status = request.params['status']
                     user.trust = request.params['trust']
-                if check_permission(request, request.current_user, 'users.edit_permissions'):
                     user.groups = request.params.getall('group')
                     user.permissions = request.params.getall('permission')
-                if check_permission(request, request.current_user, 'users.edit'):
+                if check_permission(request, request.current_user, 'users.admin'):
                     return HTTPFound(request.route_url('user.index'))
                 else:
                     return HTTPFound(request.route_url('user.view', uid=user.id))
@@ -284,7 +282,7 @@ def edit(request):
 
 
 @view_config(route_name='user.delete')
-@require_permission('users.delete or @delete user :uid')
+@require_permission('users.admin or @delete user :uid')
 def delete(request):
     """Handle deleting users, both for admins and the users themselves."""
     user = request.dbsession.query(User).filter(User.id == request.matchdict['uid']).first()
@@ -294,7 +292,7 @@ def delete(request):
         user.salt = ''
         user.password = ''
         user.status = 'deleted'
-        if check_permission(request, request.current_user, 'users.delete'):
+        if check_permission(request, request.current_user, 'users.admin'):
             return HTTPFound(request.route_url('user.index'))
         else:
             return HTTPFound(request.route_url('root'))

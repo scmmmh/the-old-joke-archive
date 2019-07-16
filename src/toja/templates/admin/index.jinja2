@@ -7,7 +7,7 @@
   <div class="cell-1-7">
     <h1 class="alt-font">Administration</h1>
     <ul class="inline margin-top">
-      {% if request|permitted('users.list') %}
+      {% if request|permitted('users.admin') %}
         <li><a href="{{ 'user.index'|route_url() }}">Users</a></li>
       {% endif %}
       {% if request|permitted('sources.admin') %}

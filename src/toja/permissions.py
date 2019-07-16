@@ -8,18 +8,11 @@ from .routes import encode_route
 
 
 PERMISSIONS = OrderedDict((('admin.view', 'Access the Admin Interface'),
-                           ('users.list', 'View all Users'),
-                           ('users.edit', 'Edit all Users'),
-                           ('users.edit_permissions', 'Edit all User\'s Permissions'),
-                           ('users.delete', 'Delete any Users'),
-                           ('sources.admin', 'View all Sources'),
-                           ('sources.new', 'Add new Sources'),
-                           ('sources.edit', 'Edit all Sources'),
-                           ('sources.delete', 'Delete any Source')))
-GROUPS = OrderedDict((('admin', ('admin.view',
-                                 'users.list', 'users.edit', 'users.edit_permissions', 'users.delete')),
+                           ('users.admin', 'Administer Users'),
+                           ('sources.admin', 'Administer Sources')))
+GROUPS = OrderedDict((('admin', ('admin.view', 'users.admin')),
                       ('data provider', ('sources.new', )),
-                      ('data admin', ('sources.admin', 'sources.list', 'sources.edit', 'sources.delete'))))
+                      ('data admin', ('admin.view', 'sources.admin'))))
 PERMISSIONS_GROUPS = dict([permission, group] for group, permissions in GROUPS.items() for permission in permissions)
 
 OR = 1

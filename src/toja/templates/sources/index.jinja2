@@ -51,12 +51,8 @@
             <td>{{ source.status|title }}</td>
             <td>
               <ul class="inline">
-                {% if request|permitted('sources.edit') %}
-                  <li><a href="{{ 'source.edit'|route_url(sid=source.id) }}" aria-label="Edit {{ source.attributes.name }}">{{ icon('pencil') }}</a></li>
-                {% endif %}
-                {% if request|permitted('sources.delete') %}
-                  <li><a href="{{ 'source.delete'|route_url(sid=source.id) }}" data-action="post-link" data-confirm-prompt="Please confirm you wish to delete this source?" aria-label="Delete this source?">{{ icon('delete') }}</a></li>
-                {% endif %}
+                <li><a href="{{ 'source.edit'|route_url(sid=source.id) }}" aria-label="Edit {{ source.attributes.name }}">{{ icon('pencil') }}</a></li>
+                <li><a href="{{ 'source.delete'|route_url(sid=source.id) }}" data-action="post-link" data-confirm-prompt="Please confirm you wish to delete this source?" aria-label="Delete this source?">{{ icon('delete') }}</a></li>
               </ul>
             </td>
           </tr>

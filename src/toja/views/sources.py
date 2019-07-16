@@ -66,7 +66,7 @@ def index(request):
 
 
 @view_config(route_name='source.view', renderer='toja:templates/sources/view.jinja2')
-@require_permission('sources.list or @view image :sid')
+@require_permission('sources.admin or @view image :sid')
 def view(request):
     source = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['sid'],
                                                         Image.type == 'source',
@@ -78,7 +78,7 @@ def view(request):
 
 
 @view_config(route_name='source.edit', renderer='toja:templates/sources/edit.jinja2')
-@require_permission('sources.edit or @edit image :sid')
+@require_permission('sources.admin or @edit image :sid')
 def edit(request):
     source = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['sid'],
                                                         Image.type == 'source'))
@@ -120,7 +120,7 @@ def edit(request):
 
 
 @view_config(route_name='source.delete')
-@require_permission('sources.delete or @delete image :sid')
+@require_permission('sources.admin or @delete image :sid')
 def delete(request):
     source = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['sid'],
                                                         Image.type == 'source',
