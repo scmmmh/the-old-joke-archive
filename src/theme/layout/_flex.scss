@@ -17,8 +17,12 @@
     &.align-center {
         align-items: center;
     }
-    
+
     > .align-bottom {
         align-self: flex-end;
     }
+}
+
+.justify-end {
+    justify-content: flex-end;
 }

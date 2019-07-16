@@ -160,6 +160,10 @@
   .flex > .align-bottom {
     align-self: flex-end; }
 
+.justify-end {
+  -webkit-box-pack: end;
+  justify-content: flex-end; }
+
 .grid {
   padding: var(--spacing-small) 0; }
   .grid [class*="cell-"] {
@@ -1237,7 +1241,7 @@ div.joke-rating ul {
       div.joke-rating ul li a span {
         margin-left: var(--spacing-small); }
 
-.joke-snippet {
+.joke-snippet, .source-snippet {
   margin-bottom: var(--spacing-large);
   display: -webkit-box;
   display: flex;
@@ -1245,35 +1249,35 @@ div.joke-rating ul {
   -webkit-box-direction: reverse;
   flex-direction: column-reverse;
   position: relative; }
-  .joke-snippet a {
+  .joke-snippet a, .source-snippet a {
     position: relative;
     z-index: 1; }
-  .joke-snippet > div:first-child {
+  .joke-snippet > div:first-child, .source-snippet > div:first-child {
     display: -webkit-box;
     display: flex;
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
     flex-direction: column; }
-    .joke-snippet > div:first-child div {
+    .joke-snippet > div:first-child div, .source-snippet > div:first-child div {
       margin-bottom: var(--spacing-small); }
-  .joke-snippet > div .metadata {
+  .joke-snippet > div .metadata, .source-snippet > div .metadata {
     display: -webkit-box;
     display: flex; }
-    .joke-snippet > div .metadata > div:first-child {
+    .joke-snippet > div .metadata > div:first-child, .source-snippet > div .metadata > div:first-child {
       -webkit-box-flex: 1;
       flex: 1 1 auto; }
-    .joke-snippet > div .metadata > time {
+    .joke-snippet > div .metadata > time, .source-snippet > div .metadata > time {
       display: block;
       width: 6em;
       -webkit-box-flex: 0;
       flex: 0 0 auto; }
-      .joke-snippet > div .metadata > time span {
+      .joke-snippet > div .metadata > time span, .source-snippet > div .metadata > time span {
         display: block;
         text-align: center; }
-        .joke-snippet > div .metadata > time span:first-of-type {
+        .joke-snippet > div .metadata > time span:first-of-type, .source-snippet > div .metadata > time span:first-of-type {
           font-family: var(--font-family-alt);
           font-size: var(--font-size-x-large); }
-  .joke-snippet > div .source-image {
+  .joke-snippet > div .source-image, .source-snippet > div .source-image {
     margin-bottom: var(--spacing);
     padding: var(--spacing);
     height: 100px;
@@ -1281,37 +1285,48 @@ div.joke-rating ul {
     border-radius: var(--border-radius-medium);
     text-align: center;
     overflow: hidden; }
-    .joke-snippet > div .source-image img {
+    .joke-snippet > div .source-image img, .source-snippet > div .source-image img {
       max-width: none;
       max-height: none; }
-  .joke-snippet > div .snippet p {
+  .joke-snippet > div .snippet p, .source-snippet > div .snippet p {
     font-size: var(--font-size-small); }
-    .joke-snippet > div .snippet p strong {
+    .joke-snippet > div .snippet p strong, .source-snippet > div .snippet p strong {
       color: var(--color-brand); }
-  .joke-snippet > div .classification {
+  .joke-snippet > div .classification, .source-snippet > div .classification {
     margin-top: var(--spacing);
     display: -webkit-box;
     display: flex; }
-    .joke-snippet > div .classification ul {
+    .joke-snippet > div .classification ul, .source-snippet > div .classification ul {
       font-size: var(--font-size-small); }
-    .joke-snippet > div .classification > :first-child {
+    .joke-snippet > div .classification > :first-child, .source-snippet > div .classification > :first-child {
       -webkit-box-flex: 0;
       flex: 0 0 auto; }
-    .joke-snippet > div .classification > :last-child {
+    .joke-snippet > div .classification > :last-child, .source-snippet > div .classification > :last-child {
       -webkit-box-flex: 1;
       flex: 1 1 auto;
       padding-left: var(--spacing);
       -webkit-box-pack: end;
       justify-content: flex-end; }
-  .joke-snippet h2 {
+  .joke-snippet > div .actions, .source-snippet > div .actions {
+    margin-top: var(--spacing); }
+    .joke-snippet > div .actions ul, .source-snippet > div .actions ul {
+      padding-right: var(--spacing);
+      display: -webkit-box;
+      display: flex;
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: normal;
+      flex-direction: row;
+      -webkit-box-pack: end;
+      justify-content: flex-end; }
+  .joke-snippet h2, .source-snippet h2 {
     font-size: var(--font-size-x-large);
     margin-bottom: var(--spacing-small); }
-    .joke-snippet h2 a {
+    .joke-snippet h2 a, .source-snippet h2 a {
       color: var(--color-text-default);
       position: static; }
-      .joke-snippet h2 a:hover {
+      .joke-snippet h2 a:hover, .source-snippet h2 a:hover {
         text-decoration: underline; }
-      .joke-snippet h2 a:before {
+      .joke-snippet h2 a:before, .source-snippet h2 a:before {
         content: "";
         position: absolute;
         z-index: 0;
@@ -1320,15 +1335,15 @@ div.joke-rating ul {
         height: 100%;
         width: 100%; }
   @media (min-width: 64rem) {
-    .joke-snippet {
+    .joke-snippet, .source-snippet {
       -webkit-box-orient: horizontal;
       -webkit-box-direction: normal;
       flex-direction: row; }
-      .joke-snippet > div:first-child {
+      .joke-snippet > div:first-child, .source-snippet > div:first-child {
         width: 33.333333%; }
-        .joke-snippet > div:first-child .source-image {
+        .joke-snippet > div:first-child .source-image, .source-snippet > div:first-child .source-image {
           height: 120px; }
-      .joke-snippet > div:last-child {
+      .joke-snippet > div:last-child, .source-snippet > div:last-child {
         width: 66.666666%;
         padding-left: var(--spacing-large); } }
 

@@ -179,8 +179,19 @@ def index(request):
                            'total': total}}
 
 
+@view_config(route_name='user.view', renderer='toja:templates/users/view.jinja2')
+@require_permission('users.view or @view user :uid')
+def view(request):
+    """Handle displaying the user's profile."""
+    user = request.dbsession.query(User).filter(User.id == request.matchdict['uid']).first()
+    if user:
+        return {'user': user}
+    else:
+        raise HTTPNotFound()
+
+
 @view_config(route_name='user.edit', renderer='toja:templates/users/edit.jinja2')
-@require_permission('users.edit or @edit user uid')
+@require_permission('users.edit or @edit user :uid')
 def edit(request):
     """Handle editing users, both for admins and the users themselves."""
     user = request.dbsession.query(User).filter(User.id == request.matchdict['uid']).first()
@@ -234,7 +245,7 @@ def edit(request):
 
 
 @view_config(route_name='user.delete')
-@require_permission('users.delete or @delete user uid')
+@require_permission('users.delete or @delete user :uid')
 def delete(request):
     """Handle deleting users, both for admins and the users themselves."""
     user = request.dbsession.query(User).filter(User.id == request.matchdict['uid']).first()

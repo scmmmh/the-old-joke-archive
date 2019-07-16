@@ -1,0 +1,18 @@
+{% extends 'toja:templates/layout/default.jinja2' %}
+
+{% block title %}{{ user.attributes.name }}{% endblock title %}
+
+{% block main %}
+{% from 'toja:templates/macros/jokes.jinja2' import source_snippet with context %}
+<div class="grid">
+  <h1 class="cell-1-7 alt-font">{{ user.attributes.name }}</h1>
+  {% if user.sources %}
+    <section class="cell-1-4">
+      <h2>Sources</h2>
+      {% for source in user.sources %}
+        {{ source_snippet(source) }}
+      {% endfor %}
+    </section>
+  {% endif %}
+</div>
+{% endblock main %}

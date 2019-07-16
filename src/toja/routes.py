@@ -68,6 +68,11 @@ def includeme(config):
 
     config.add_route('joke.view', '/jokes/:jid')
 
+    config.add_route('source.view', '/sources/:sid')
+    config.add_route('source.image', '/sources/:sid/image')
+    config.add_route('source.edit', '/sources/:sid/edit')
+    config.add_route('source.delete', '/sources/:sid/delete', request_method='POST')
+
     config.add_route('admin.index', '/admin')
 
     # Jinja2 configuration

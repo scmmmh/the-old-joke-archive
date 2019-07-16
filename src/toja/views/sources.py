@@ -2,8 +2,9 @@ import os
 import shutil
 
 from mimetypes import guess_type
-from pyramid.httpexceptions import HTTPFound
+from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 from pyramid.view import view_config
+from sqlalchemy import and_
 
 from ..models import Image
 from ..permissions import require_permission
@@ -15,7 +16,8 @@ from ..util import get_config_setting, Validator
 def upload(request):
     """Handles the uploading of new sources."""
     if request.method == 'POST':
-        upload_source_schema = {'source': {'type': 'fieldstorage', 'required': True}}
+        upload_source_schema = {'source': {'type': 'fieldstorage', 'required': True},
+                                'license': {'type': 'string', 'required': True, 'allowed': ('on', )}}
         metadata = list(zip(get_config_setting(request, 'app.sources.metadata.fields', target_type='list', default=[]),
                             get_config_setting(request, 'app.sources.metadata.types', target_type='list', default=[])))
         for field, datatype in metadata:
@@ -43,3 +45,61 @@ def upload(request):
             return {'errors': validator.errors,
                     'values': request.params}
     return {}
+
+
+@view_config(route_name='source.view', renderer='toja:templates/sources/view.jinja2')
+@require_permission('sources.view or @view image :sid')
+def view(request):
+    source = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['sid'],
+                                                        Image.type == 'source',
+                                                        Image.status != 'deleted')).first()
+    if source:
+        return {'source': source}
+    else:
+        raise HTTPNotFound()
+
+
+@view_config(route_name='source.edit', renderer='toja:templates/sources/edit.jinja2')
+@require_permission('sources.edit or @edit image :sid')
+def edit(request):
+    source = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['sid'],
+                                                        Image.type == 'source',
+                                                        Image.status != 'deleted')).first()
+    if source:
+        if request.method == 'POST':
+            edit_source_schema = {}
+            metadata = list(zip(get_config_setting(request, 'app.sources.metadata.fields', target_type='list',
+                                                   default=[]),
+                                get_config_setting(request, 'app.sources.metadata.types', target_type='list',
+                                                   default=[])))
+            for field, datatype in metadata:
+                edit_source_schema[field] = {'type': 'string'}
+                if datatype == 'date':
+                    edit_source_schema[field]['regex'] = '([0-9]{4}-[0-9]{2}-[0-9]{2})?'
+            validator = Validator(edit_source_schema)
+            if validator.validate(request.params):
+                for name, _ in metadata:
+                    source.attributes[name] = request.params[name]
+                return HTTPFound(request.route_url('source.view', sid=source.id))
+            else:
+                return {'source': source,
+                        'errors': validator.errors,
+                        'values': request.params}
+        return {'source': source}
+    else:
+        raise HTTPNotFound()
+
+
+@view_config(route_name='source.delete')
+@require_permission('sources.delete or @delete image :sid')
+def delete(request):
+    source = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['sid'],
+                                                        Image.type == 'source',
+                                                        Image.status != 'deleted')).first()
+    if source:
+        if request.method == 'POST':
+            source.status = 'deleted'
+            return HTTPFound(request.route_url('user.view', uid=request.current_user.id))
+        return {'source': source}
+    else:
+        raise HTTPNotFound()

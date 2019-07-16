@@ -1,0 +1,32 @@
+{% extends 'toja:templates/layout/default.jinja2' %}
+
+{% block title %}Source Details{% endblock title %}
+
+{% block main %}
+<div class="grid">
+  <h1 class="cell-1-7 alt-font">Source Details</h1>
+  <div class="cell-1-4">
+    <img src="{{ 'source.image'|route_url(sid=source.id) }}" alt="Scan of the joke source"/>
+  </div>
+  <div class="cell-5-7">
+    <table>
+      <tbody>
+        {% for name, datatype, label in request|config('app.sources.metadata.fields', target_type='list', default=[])|zip(request|config('app.sources.metadata.types', target_type='list', default=[]), request|config('app.sources.metadata.labels', target_type='list', default=[])) %}
+          <tr>
+            <th scope="row">{{ label }}</th>
+            <td>{{ source.attributes[name] }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <ul class="inline justify-end">
+      {% if request|permitted('sources.edit or @edit image %i'|format(source.id)) %}
+        <li><a href="{{ 'source.edit'|route_url(sid=source.id) }}" aria-label="Edit this source">{{ icon('pencil') }}</a></li>
+      {% endif %}
+      {% if request|permitted('sources.delete or @delete image %i'|format(source.id)) %}
+        <li><a href="{{ 'source.delete'|route_url(sid=source.id) }}" aria-label="Delete this source" data-action="post-link" data-confirm-prompt="Please confirm you wish to delete this source?">{{ icon('delete') }}</a></li>
+      {% endif %}
+    </ul>
+  </div>
+</div>
+{% endblock main %}

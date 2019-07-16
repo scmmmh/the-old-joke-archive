@@ -3,7 +3,7 @@ from decorator import decorator
 from functools import lru_cache
 from pyramid.httpexceptions import HTTPForbidden, HTTPFound
 
-from .models import User
+from .models import User, Image
 from .routes import encode_route
 
 
@@ -23,13 +23,16 @@ PERMISSIONS_GROUPS = dict([permission, group] for group, permissions in GROUPS.i
 OR = 1
 AND = 2
 STATIC = 3
-DYNAMIC = 4
+DYNAMIC_ROUTE = 4
+DYNAMIC_ID = 5
 
 
 def class_lookup(class_name):
     if class_name == 'user':
         return User
-    raise Exception(message='Unknown class %s'.format(class_name))
+    elif class_name == 'image':
+        return Image
+    raise Exception('Unknown class {0}'.format(class_name))
 
 
 @lru_cache()
@@ -52,7 +55,12 @@ def compile_permission(permission):
         elif perm == 'and':
             tmp.append(AND)
         elif perm.startswith('@'):
-            tmp.append((DYNAMIC, perm[1:], class_lookup(permission.pop()), permission.pop()))
+            cls = class_lookup(permission.pop())
+            oid = permission.pop()
+            if oid.startswith(':'):
+                tmp.append((DYNAMIC_ROUTE, perm[1:], cls, oid[1:]))
+            else:
+                tmp.append((DYNAMIC_ID, perm[1:], cls, oid))
         else:
             tmp.append((STATIC, perm))
     permission = []
@@ -91,8 +99,14 @@ def check_permission(request, user, permission):
                 stack.append(perm[1] in PERMISSIONS and (perm[1] in user.permissions or
                                                          (perm[1] in PERMISSIONS_GROUPS and
                                                           PERMISSIONS_GROUPS[perm[1]] in user.groups)))
-            elif perm[0] == DYNAMIC:
+            elif perm[0] == DYNAMIC_ROUTE:
                 obj = request.dbsession.query(perm[2]).filter(perm[2].id == request.matchdict[perm[3]]).first()
+                if obj is not None:
+                    stack.append(obj.allow(user, perm[1]))
+                else:
+                    stack.append(False)
+            elif perm[0] == DYNAMIC_ID:
+                obj = request.dbsession.query(perm[2]).filter(perm[2].id == perm[3]).first()
                 if obj is not None:
                     stack.append(obj.allow(user, perm[1]))
                 else:

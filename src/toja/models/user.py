@@ -1,5 +1,6 @@
 from datetime import datetime
 from sqlalchemy import (Column, Index, Integer, Unicode, DateTime)
+from sqlalchemy.orm import relationship
 from sqlalchemy_json import NestedMutableJson
 
 from .meta import Base
@@ -19,6 +20,10 @@ class User(Base):
     permissions = Column(NestedMutableJson)
     attributes = Column(NestedMutableJson)
     created = Column(DateTime, default=datetime.now)
+
+    sources = relationship('Image',
+                           primaryjoin="and_(User.id == Image.owner_id, Image.type == 'source', " +
+                                       "Image.status != 'deleted')")
 
     def allow(self, user, action):
         """Check whether the given user is allowed to undertake the given action.

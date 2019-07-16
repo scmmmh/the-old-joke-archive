@@ -8,8 +8,13 @@
   <form action="{{ 'contribute.sources'|route_url() }}" method="post" enctype="multipart/form-data" class="cell-1-4">
     <h1 class="alt-font margin-bottom">Contribute new Sources</h1>
     {{ field('source', 'file', 'Source file') }}
+    {{ field('license', 'checkbox', 'Please confirm that you are permitted to upload this  source image under a CC-BY-4.0 license. For more details on the license, please use the Copyright questions link in the page\'s footer')}}
     {% for name, datatype, label in request|config('app.sources.metadata.fields', target_type='list', default=[])|zip(request|config('app.sources.metadata.types', target_type='list', default=[]), request|config('app.sources.metadata.labels', target_type='list', default=[])) %}
-      {{ field(name, datatype, label) }}
+      {% if datatype == 'date' %}
+        {{ field(name, 'text', label) }}
+      {% else %}
+        {{ field(name, datatype, label) }}
+      {% endif %}
     {% endfor %}
     <div class="flex margin-top">
       <div><a href="{{ 'contribute'|route_url() }}">&larr; Don't contribute</a></div>
