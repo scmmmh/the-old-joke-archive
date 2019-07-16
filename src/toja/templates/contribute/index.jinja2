@@ -14,10 +14,10 @@
     <div class="cell-1-7 contribute-overview-grid">
       {% if request|permitted('sources.new') %}
         <section class="flex vertical">
-          <h2 class="shrink"><a href="">Add Source Data</a></h2>
+          <h2 class="shrink"><a href="{{ 'contribute.sources'|route_url() }}">Add Source Data</a></h2>
           <p>Provide new source data that contains historic joke material. Please ensure that you have the necessary
             rights to provide the data.</p>
-          <p class="shrink margin-top"><a href="">Provide new source data &rarr;</a></p>
+          <p class="shrink margin-top"><a href="{{ 'contribute.sources'|route_url() }}">Provide new source data &rarr;</a></p>
         </section>
       {% endif %}
       {% if request|logged_in() and request.current_user.trust == 'full' %}

@@ -589,6 +589,7 @@ label {
 [type="time"],
 [type="search"],
 [type="text"],
+[type="file"],
 textarea,
 select {
   -webkit-appearance: none;
@@ -616,6 +617,7 @@ select {
   [type="time"]:focus,
   [type="search"]:focus,
   [type="text"]:focus,
+  [type="file"]:focus,
   textarea:focus,
   select:focus {
     border: var(--border-width-thin) solid var(--color-mid); }
