@@ -1,0 +1,21 @@
+{% extends 'toja:templates/layout/default.jinja2' %}
+
+{% block title %}Sources available for editing in the workbench{% endblock title %}
+
+{% block main %}
+{% from 'toja:templates/macros/icons.jinja2' import icon %}
+{% from 'toja:templates/macros/search.jinja2' import search_result_status with context %}
+{% from 'toja:templates/macros/sources.jinja2' import source_snippet with context %}
+<section class="grid">
+  <section class="cell-1-5">
+    <h1 class="alt-font">Sources</h1>
+    {{ search_result_status(request, pagination, 'sources') }}
+    <ol class="search-results">
+      {% for source in sources %}
+        <li>{{ source_snippet(source) }}</li>
+      {% endfor %}
+    </ol>
+    {{ search_result_status(request, pagination, 'sources') }}
+  </section>
+</section>
+{% endblock main %}

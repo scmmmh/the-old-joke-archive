@@ -42,9 +42,9 @@ class Image(Base):
         if action == 'view':
             return True
         elif action == 'edit':
-            return user.id == self.owner_id
+            return user is not None and user.id == self.owner_id
         elif action == 'delete':
-            return user.id == self.owner_id
+            return user is not None and user.id == self.owner_id
 
 
 Index('images_parent_ix', Image.parent_id)

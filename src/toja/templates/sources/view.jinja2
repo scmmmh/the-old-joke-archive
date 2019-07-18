@@ -3,6 +3,7 @@
 {% block title %}Source Details{% endblock title %}
 
 {% block main %}
+{% from 'toja:templates/macros/sources.jinja2' import source_edit_menu with context %}
 <div class="grid">
   <h1 class="cell-1-7 alt-font">Source Details</h1>
   <div class="cell-1-4">
@@ -19,14 +20,6 @@
         {% endfor %}
       </tbody>
     </table>
-    <ul class="inline justify-end">
-      {% if request|permitted('sources.edit or @edit image %i'|format(source.id)) %}
-        <li><a href="{{ 'source.edit'|route_url(sid=source.id) }}" aria-label="Edit this source">{{ icon('pencil') }}</a></li>
-      {% endif %}
-      {% if request|permitted('sources.delete or @delete image %i'|format(source.id)) %}
-        <li><a href="{{ 'source.delete'|route_url(sid=source.id) }}" aria-label="Delete this source" data-action="post-link" data-confirm-prompt="Please confirm you wish to delete this source?">{{ icon('delete') }}</a></li>
-      {% endif %}
-    </ul>
-  </div>
+    {{ source_edit_menu(source) }}
 </div>
 {% endblock main %}

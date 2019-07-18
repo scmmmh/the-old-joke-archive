@@ -85,16 +85,14 @@ def check_permission(request, user, permission):
     :param permission: The permission to check for
     :type permission: ``str``
     """
-    if user is None:
-        return False
     permission = compile_permission(permission)
     stack = []
     for perm in permission:
         if isinstance(perm, tuple):
             if perm[0] == STATIC:
-                stack.append(perm[1] in PERMISSIONS and (perm[1] in user.permissions or
-                                                         (perm[1] in PERMISSIONS_GROUPS and
-                                                          PERMISSIONS_GROUPS[perm[1]] in user.groups)))
+                stack.append(user and perm[1] in PERMISSIONS and (perm[1] in user.permissions or
+                                                                  (perm[1] in PERMISSIONS_GROUPS and
+                                                                   PERMISSIONS_GROUPS[perm[1]] in user.groups)))
             elif perm[0] == DYNAMIC_ROUTE:
                 obj = request.dbsession.query(perm[2]).filter(perm[2].id == request.matchdict[perm[3]]).first()
                 if obj is not None:

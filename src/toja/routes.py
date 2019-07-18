@@ -28,6 +28,7 @@ def decode_route(request, default_route='root', default_route_params=None, defau
 
 
 def update_current_route(request, params=None, query=None):
+    """Update the current route with new parameters or query."""
     if query:
         tmp = []
         for key in request.params.keys():
@@ -36,6 +37,8 @@ def update_current_route(request, params=None, query=None):
             else:
                 for val in request.params.getall(key):
                     tmp.append((key, val))
+        for key, value in query.items():
+            tmp.append((key, value))
         query = tmp
     if params and query:
         return request.current_route_url(**params, _query=query)
@@ -66,6 +69,7 @@ def includeme(config):
     config.add_route('contribute', '/contribute')
     config.add_route('contribute.sources', '/contribute/sources')
     config.add_route('contribute.workbench', '/contribute/workbench')
+    config.add_route('contribute.workbench.edit', '/contribute/workbench/:sid')
 
     config.add_route('joke.view', '/jokes/:jid')
 

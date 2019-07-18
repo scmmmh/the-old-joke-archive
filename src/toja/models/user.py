@@ -36,9 +36,9 @@ class User(Base):
         if action == 'view':
             return True
         elif action == 'edit':
-            return user.id == self.id
+            return user is not None and user.id == self.id
         elif action == 'delete':
-            return user.id == self.id
+            return user is not None and user.id == self.id
         else:
             return False
 
