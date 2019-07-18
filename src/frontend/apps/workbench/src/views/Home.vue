@@ -3,7 +3,7 @@
     <div>This is the menu bar</div>
     <div>Image goes here</div>
     <div>List of extracted jokes</div>
-    <div>Transcription interface</div>
+    <div>Transcription and Annotation interface</div>
   </div>
 </template>
 
