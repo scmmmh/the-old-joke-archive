@@ -1,5 +1,8 @@
 {% extends 'toja:templates/layout/base.jinja2' %}
 
 {% block body %}
-<main class="application-container">{% block main %}{% endblock main %}</main>
+<main class="page application-container">
+  <div>{% include 'toja:templates/layout/_header.jinja2' %}</div>
+  {% block main %}{% endblock main %}
+</main>
 {% endblock body %}

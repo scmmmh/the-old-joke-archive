@@ -1,7 +1,9 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+  <div>
+    <div>This is the menu bar</div>
+    <div>Image goes here</div>
+    <div>List of extracted jokes</div>
+    <div>Transcription interface</div>
   </div>
 </template>
 

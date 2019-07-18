@@ -349,12 +349,18 @@ a {
     transition: color var(--duration-quickly) ease; }
 
 .application-container {
-  box-sizing: border-box;
-  height: calc(100vh - 6vw); }
-  .application-container > #app {
-    width: 100%;
-    height: 100%;
-    overflow: auto; }
+  height: calc(100vh - 6rem - 130px);
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  flex-direction: column; }
+  .application-container > *:nth-child(1) {
+    -webkit-box-flex: 0;
+    flex: 0 0 auto; }
+  .application-container > *:nth-child(2) {
+    -webkit-box-flex: 1;
+    flex: 1 1 auto; }
 
 /*
  * Assorted small elements
@@ -1123,26 +1129,28 @@ footer nav:nth-child(2) ul {
 /*
  * Header styling
  */
-header nav ul {
-  list-style-type: none;
-  margin: var(--spacing) 0 0 0;
-  padding: 0;
-  -webkit-column-count: 2;
-  -moz-column-count: 2;
-  column-count: 2; }
-  header nav ul li {
-    text-align: center;
-    margin-left: 0; }
-    header nav ul li:before {
-      content: "";
-      margin-left: 0;
-      margin-right: 0; }
-    header nav ul li a {
-      font-family: var(--font-family-alt);
-      display: block;
-      padding: var(--spacing-x-small) var(--spacing); }
-      header nav ul li a:hover {
-        text-decoration: none; }
+header {
+  margin-bottom: var(--spacing-large); }
+  header nav ul {
+    list-style-type: none;
+    margin: var(--spacing) 0 0 0;
+    padding: 0;
+    -webkit-column-count: 2;
+    -moz-column-count: 2;
+    column-count: 2; }
+    header nav ul li {
+      text-align: center;
+      margin-left: 0; }
+      header nav ul li:before {
+        content: "";
+        margin-left: 0;
+        margin-right: 0; }
+      header nav ul li a {
+        font-family: var(--font-family-alt);
+        display: block;
+        padding: var(--spacing-x-small) var(--spacing); }
+        header nav ul li a:hover {
+          text-decoration: none; }
 
 @media (min-width: 48rem) {
   header div:nth-child(1) {
@@ -1579,3 +1587,20 @@ div.joke-rating ul {
         font-size: var(--font-size-x-small);
         text-align: center;
         color: var(--color-text-default); } }
+
+#app.workbench > div {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas: "header header header" "one two three";
+  height: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto; }
+  #app.workbench > div > div:nth-child(1) {
+    grid-area: header; }
+  #app.workbench > div > div:nth-child(2) {
+    grid-area: one; }
+  #app.workbench > div > div:nth-child(3) {
+    grid-area: two; }
+  #app.workbench > div > div:nth-child(4) {
+    grid-area: three; }
