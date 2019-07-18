@@ -3,7 +3,7 @@
 {% block title %}{{ user.attributes.name }}{% endblock title %}
 
 {% block main %}
-{% from 'toja:templates/macros/jokes.jinja2' import source_snippet with context %}
+{% from 'toja:templates/macros/sources.jinja2' import source_snippet with context %}
 <div class="grid">
   <div class="cell-1-7 flex">
     <h1 class="alt-font">{{ user.attributes.name }}</h1>
