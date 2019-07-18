@@ -52,11 +52,14 @@ def upload(request):
 @require_permission('sources.admin')
 def index(request):
     status = request.params.getall('status') if 'status' in request.params else ['processing']
-    page = 0
+    try:
+        page = int(request.params['page'])
+    except Exception:
+        page = 0
     sources = request.dbsession.query(Image).filter(and_(Image.type == 'source',
                                                          Image.status.in_(status)))
     total = sources.count()
-    sources = sources.offset(page * 10).limit(page * 10 + 10)
+    sources = sources.offset(page * 10).limit(10)
     return {'sources': sources,
             'status': status,
             'pagination': {'start': max(0, page - 2),
