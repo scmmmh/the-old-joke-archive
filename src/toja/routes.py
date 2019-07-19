@@ -81,6 +81,13 @@ def includeme(config):
 
     config.add_route('admin.index', '/admin')
 
+    config.add_route('api', '/api')
+    config.add_route('api.sources.get', '/api/sources', request_method='GET')
+    config.add_route('api.sources.post', '/api/sources', request_method='POST')
+    config.add_route('api.source.get', '/api/sources/:sid', request_method='GET')
+    config.add_route('api.source.put', '/api/sources/:sid', request_method='PUT')
+    config.add_route('api.source.delete', '/api/sources/:sid', request_method='DELETE')
+
     # Jinja2 configuration
     config.get_jinja2_environment().filters['static_url'] = static_url_filter
     config.get_jinja2_environment().filters['route_url'] = route_url_filter

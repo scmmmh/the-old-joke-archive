@@ -349,18 +349,20 @@ a {
     transition: color var(--duration-quickly) ease; }
 
 .application-container {
-  height: calc(100vh - 6rem - 130px);
   display: -webkit-box;
   display: flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
-  flex-direction: column; }
+  flex-direction: column;
+  height: calc(100vh - 7rem);
+  box-sizing: border-box; }
   .application-container > *:nth-child(1) {
     -webkit-box-flex: 0;
     flex: 0 0 auto; }
   .application-container > *:nth-child(2) {
     -webkit-box-flex: 1;
-    flex: 1 1 auto; }
+    flex: 1 1 auto;
+    overflow: hidden; }
 
 /*
  * Assorted small elements
@@ -1591,16 +1593,22 @@ div.joke-rating ul {
 #app.workbench > div {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: auto 1fr;
-  grid-template-areas: "header header header" "one two three";
+  grid-column-gap: var(--spacing-x-large);
+  grid-row-gap: var(--spacing-x-large);
   height: 100%;
   max-width: var(--max-width);
   margin: 0 auto; }
-  #app.workbench > div > div:nth-child(1) {
-    grid-area: header; }
-  #app.workbench > div > div:nth-child(2) {
-    grid-area: one; }
-  #app.workbench > div > div:nth-child(3) {
-    grid-area: two; }
-  #app.workbench > div > div:nth-child(4) {
-    grid-area: three; }
+  #app.workbench > div > div {
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    flex-direction: column;
+    overflow: hidden; }
+    #app.workbench > div > div > nav {
+      -webkit-box-flex: 0;
+      flex: 0 0 auto; }
+    #app.workbench > div > div > div {
+      -webkit-box-flex: 1;
+      flex: 1 1 auto;
+      overflow: auto; }

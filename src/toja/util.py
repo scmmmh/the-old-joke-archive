@@ -131,6 +131,11 @@ class Validator(cerberus.Validator):
             self._error(field, 'The value does not match.')
 
 
+def date_to_json(date):
+    """Converts a date into ISO-XXX representation for use in JSON data."""
+    return date.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+
 def includeme(config):
     config.get_jinja2_environment().filters['config'] = get_config_setting
     config.get_jinja2_environment().filters['zip'] = zip

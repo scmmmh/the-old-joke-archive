@@ -1,7 +1,8 @@
 .application-container {
-    height: calc(100vh - 6rem - 130px);
     display: flex;
     flex-direction: column;
+    height: calc(100vh - 7rem);
+    box-sizing: border-box;
 
     > *:nth-child(1) {
         flex: 0 0 auto;
@@ -9,5 +10,6 @@
 
     > *:nth-child(2) {
         flex: 1 1 auto;
+        overflow: hidden;
     }
 }
