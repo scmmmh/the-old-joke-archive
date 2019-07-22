@@ -1,10 +1,11 @@
 from binascii import unhexlify
 from decorator import decorator
-from pyramid.httpexceptions import HTTPForbidden
+from pyramid.httpexceptions import HTTPFound
 from pyramid_nacl_session import EncryptedCookieSessionFactory
 from sqlalchemy import and_
 
 from .models import User
+from .routes import encode_route
 
 
 def get_current_user(request):
@@ -25,7 +26,7 @@ def require_logged_in():
         if args[0].current_user is not None:
             return f(*args, **kwargs)
         else:
-            raise HTTPForbidden()
+            raise HTTPFound(args[0].route_url('user.login', _query={'redirect': encode_route(args[0])}))
     return decorator(handler)
 
 
