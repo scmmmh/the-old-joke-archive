@@ -22,6 +22,7 @@ decorator = "*"
 cerberus = "*"
 sqlalchemy-json = "*"
 email-validator = "*"
+pillow = "*"
 
 [requires]
 python_version = "3.7"

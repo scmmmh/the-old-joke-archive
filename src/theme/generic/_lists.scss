@@ -101,3 +101,53 @@ dd {
         }
     }
 }
+
+.menu {
+    display: flex;
+    align-items: center;
+
+    li {
+        margin-left: 0;
+        margin-right: 0;
+
+        &:before {
+            content: "";
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        &[role="separator"] {
+            margin-left: var(--spacing);
+        }
+
+        [role="menuitem"] {
+            display: block;
+            padding: var(--spacing-small);
+
+            > * {
+                vertical-align: middle;
+            }
+
+            &[aria-hidden="true"] {
+                display: none;
+            }
+
+            &[aria-current="true"] {
+                background: var(--color-brand);
+                border-radius: var(--border-radius-small);
+
+                svg path, svg g {
+                    fill: var(--color-light);
+                }
+            }
+
+            &[disabled="disabled"] {
+                cursor: not-allowed;
+                
+                svg path, svg g {
+                    fill: var(--color-mid);
+                }
+            }
+        }
+    }
+}

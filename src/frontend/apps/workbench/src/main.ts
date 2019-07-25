@@ -2,11 +2,15 @@ import Vue from 'vue';
 import App from './App.vue';
 import router from './router';
 import makeStore from './store';
+import { Config } from '@/interfaces';
 
 Vue.config.productionTip = false;
 
 const configElement = document.getElementById('config');
-let config = {};
+let config: Config = {
+    baseURL: '',
+    sourceId: '',
+};
 if (configElement) {
     config = JSON.parse(configElement.innerHTML);
 }

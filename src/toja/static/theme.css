@@ -798,6 +798,37 @@ dd {
     .inline.comma li:not(:last-child):after {
       content: ", "; }
 
+.menu {
+  display: -webkit-box;
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center; }
+  .menu li {
+    margin-left: 0;
+    margin-right: 0; }
+    .menu li:before {
+      content: "";
+      margin-left: 0;
+      margin-right: 0; }
+    .menu li[role="separator"] {
+      margin-left: var(--spacing); }
+    .menu li [role="menuitem"] {
+      display: block;
+      padding: var(--spacing-small); }
+      .menu li [role="menuitem"] > * {
+        vertical-align: middle; }
+      .menu li [role="menuitem"][aria-hidden="true"] {
+        display: none; }
+      .menu li [role="menuitem"][aria-current="true"] {
+        background: var(--color-brand);
+        border-radius: var(--border-radius-small); }
+        .menu li [role="menuitem"][aria-current="true"] svg path, .menu li [role="menuitem"][aria-current="true"] svg g {
+          fill: var(--color-light); }
+      .menu li [role="menuitem"][disabled="disabled"] {
+        cursor: not-allowed; }
+        .menu li [role="menuitem"][disabled="disabled"] svg path, .menu li [role="menuitem"][disabled="disabled"] svg g {
+          fill: var(--color-mid); }
+
 /*
  * Margin helpers
  */

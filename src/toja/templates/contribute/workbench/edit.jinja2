@@ -6,7 +6,11 @@
 
 {% block body_scripts %}
 <script id="config" type="application/json">
-{"baseURL": ""}
+{
+  "baseURL": "{{ 'api'|route_url() }}",
+  "sourceId": {{ request.matchdict.sid }}
+}
 </script>
-<script src="{{ 'toja:static/workbench.js'|static_url() }}"></script>
+<script src="{{ 'toja:static/workbench/chunk-vendors.js'|static_url() }}"></script>
+<script src="{{ 'toja:static/workbench/app.js'|static_url() }}"></script>
 {% endblock body_scripts %}
