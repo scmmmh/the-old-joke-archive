@@ -21,7 +21,10 @@ class Image(Base):
 
     owner = relationship('User')
     parent = relationship('Image', remote_side=[id])
-    children = relationship('Image', remote_side=[parent_id], cascade="all,delete,delete-orphan")
+    children = relationship('Image',
+                            primaryjoin="and_(Image.id == remote(Image.parent_id), "
+                                        "Image.status != 'deleted')",
+                            cascade="all,delete,delete-orphan")
     # reviews = relationship('Review', secondary='images_reviews')
 
     def padded_id(self):

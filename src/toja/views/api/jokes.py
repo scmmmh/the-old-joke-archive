@@ -33,7 +33,8 @@ def to_jsonapi(request, joke):
 def jokes_get(request):
     """GET all the joke :class:`~toja.models.image.Image` for a source :class:`~toja.models.image.Image`
     (identified by the parameter ``sid``)."""
-    jokes = request.dbsession.query(Image).filter(Image.parent_id == request.matchdict['sid'])
+    jokes = request.dbsession.query(Image).filter(and_(Image.parent_id == request.matchdict['sid'],
+                                                       Image.status != 'deleted'))
     return {'data': [to_jsonapi(request, joke) for joke in jokes]}
 
 
@@ -189,15 +190,12 @@ def joke_delete(request):
     source :class:`~toja.models.image.Image` (identified by the parameter ``sid``)."""
     if request.current_user.trust != 'full':
         raise HTTPForbidden()
-    storage_path = get_config_setting(request, 'app.images.storage.path')
-    if storage_path is None:
-        raise HTTPNotFound()
     source = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['sid'],
                                                         Image.status == 'processing')).first()
     joke = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['jid'],
                                                       Image.parent_id == request.matchdict['sid'])).first()
     if source is None or joke is None:
         raise HTTPNotFound()
-    os.unlink(os.path.join(storage_path, *joke.padded_id()))
-    request.dbsession.delete(joke)
+    joke.status = 'deleted'
+    request.dbsession.add(joke)
     return HTTPNoContent()

@@ -30,6 +30,9 @@
 
     .joke-list {
         div > ul {
+            margin-top: 0;
+            margin-bottom: 0;
+            
             li {
                 margin-left: 0;
                 padding-bottom: var(--spacing);

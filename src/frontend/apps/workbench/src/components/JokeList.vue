@@ -1,5 +1,5 @@
 <template>
-    <div class="joke-list" v-if="jokes">
+    <div class="joke-list">
         <nav>
             <ul role="menu" class="menu">
                 <li role="presentation">
@@ -12,7 +12,7 @@
             </ul>
         </nav>
         <div>
-            <ul>
+            <ul v-if="jokes.length > 0">
                 <li v-for="joke in jokes">
                     <a v-if="joke === selectedJoke" class="selected" @click="select(joke)">
                         <img v-bind:src="joke.attributes.raw"/>
@@ -22,10 +22,8 @@
                     </a>
                 </li>
             </ul>
+            <p v-else>Draw joke outlines on the left-hand side to extract jokes.</p>
         </div>
-    </div>
-    <div v-else>
-        <p>Draw joke outlines on the left-hand side to extract jokes.</p>
     </div>
 </template>
 
