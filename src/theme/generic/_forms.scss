@@ -35,7 +35,8 @@ label {
 [type="text"],
 [type="file"],
 textarea,
-select {
+select,
+.ProseMirror {
     -webkit-appearance: none;
     appearance: none;
     display: block;

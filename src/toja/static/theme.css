@@ -613,7 +613,8 @@ label {
 [type="text"],
 [type="file"],
 textarea,
-select {
+select,
+.ProseMirror {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -641,7 +642,8 @@ select {
   [type="text"]:focus,
   [type="file"]:focus,
   textarea:focus,
-  select:focus {
+  select:focus,
+  .ProseMirror:focus {
     border: var(--border-width-thin) solid var(--color-mid); }
 
 .error {
@@ -1666,3 +1668,27 @@ div.joke-rating ul {
         border: 1px solid var(--color-brand); }
     #app.workbench .joke-list div > ul li img {
       max-width: 100%; }
+
+#app.workbench .joke-transcriber {
+  position: relative;
+  overflow: hidden; }
+  #app.workbench .joke-transcriber .ProseMirror {
+    height: 100%;
+    box-sizing: border-box;
+    overflow: auto;
+    margin: 0; }
+  #app.workbench .joke-transcriber div.overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background: #ffffffaa; }
+    #app.workbench .joke-transcriber div.overlay p {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 80%;
+      -webkit-transform: translate(-50%, -50%);
+      transform: translate(-50%, -50%); }
