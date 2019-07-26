@@ -2,7 +2,7 @@
   <div>
     <joke-selector></joke-selector>
     <joke-list></joke-list>
-    <div>Transcription and Annotation interface</div>
+    <joke-transcriber></joke-transcriber>
   </div>
 </template>
 
@@ -10,11 +10,13 @@
 import { Component, Vue } from 'vue-property-decorator';
 import JokeSelector from '@/components/JokeSelector.vue';
 import JokeList from '@/components/JokeList.vue';
+import JokeTranscriber from '@/components/JokeTranscriber.vue';
 
 @Component({
     components: {
         JokeSelector,
         JokeList,
+        JokeTranscriber,
     },
     mounted() {
         this.$store.dispatch('loadSource');

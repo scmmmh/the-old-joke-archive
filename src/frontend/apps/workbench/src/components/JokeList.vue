@@ -1,5 +1,5 @@
 <template>
-    <div class="joke-list">
+    <div class="joke-list" v-if="jokes">
         <nav>
             <ul role="menu" class="menu">
                 <li role="presentation">
@@ -23,6 +23,9 @@
                 </li>
             </ul>
         </div>
+    </div>
+    <div v-else>
+        <p>Draw joke outlines on the left-hand side to extract jokes.</p>
     </div>
 </template>
 
