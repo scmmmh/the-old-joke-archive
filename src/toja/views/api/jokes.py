@@ -2,7 +2,7 @@ import json
 import os
 
 from PIL import Image as PILImage
-from pyramid.httpexceptions import HTTPNotFound, HTTPForbidden, HTTPBadRequest
+from pyramid.httpexceptions import HTTPNotFound, HTTPForbidden, HTTPBadRequest, HTTPNoContent
 from pyramid.view import view_config
 from sqlalchemy import and_
 
@@ -176,3 +176,24 @@ def joke_put(request):
             raise HTTPBadRequest()
     except json.JSONDecodeError:
         raise HTTPBadRequest()
+
+
+@view_config(route_name='api.joke.delete', renderer='json')
+@require_logged_in()
+def joke_delete(request):
+    """Deletes a single joke :class:`~toja.models.image.Image` (identified by the parameter ``jid``) inside a
+    source :class:`~toja.models.image.Image` (identified by the parameter ``sid``)."""
+    if request.current_user.trust != 'full':
+        raise HTTPForbidden()
+    storage_path = get_config_setting(request, 'app.images.storage.path')
+    if storage_path is None:
+        raise HTTPNotFound()
+    source = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['sid'],
+                                                        Image.status == 'processing')).first()
+    joke = request.dbsession.query(Image).filter(and_(Image.id == request.matchdict['jid'],
+                                                      Image.parent_id == request.matchdict['sid'])).first()
+    if source is None or joke is None:
+        raise HTTPNotFound()
+    os.unlink(os.path.join(storage_path, *joke.padded_id()))
+    request.dbsession.delete(joke)
+    return HTTPNoContent()

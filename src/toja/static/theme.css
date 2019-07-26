@@ -41,6 +41,7 @@
   --color-base: #e9eeef;
   --color-border: #a1abad;
   --color-light: #fff;
+  --color-light-gray: #ddd;
   --color-mid: #656d6f;
   --color-dark: #373b3c;
   --color-darkest: #2b2b2b;
@@ -1624,8 +1625,6 @@ div.joke-rating ul {
 #app.workbench > div {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  grid-column-gap: var(--spacing-x-large);
-  grid-row-gap: var(--spacing-x-large);
   height: 100%;
   max-width: var(--max-width);
   margin: 0 auto; }
@@ -1635,7 +1634,11 @@ div.joke-rating ul {
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
     flex-direction: column;
-    overflow: hidden; }
+    overflow: hidden;
+    padding-left: var(--spacing);
+    padding-right: var(--spacing); }
+    #app.workbench > div > div:not(:last-child) {
+      border-right: 1px solid var(--color-light-gray); }
     #app.workbench > div > div > nav {
       -webkit-box-flex: 0;
       flex: 0 0 auto; }
@@ -1643,3 +1646,20 @@ div.joke-rating ul {
       -webkit-box-flex: 1;
       flex: 1 1 auto;
       overflow: auto; }
+
+#app.workbench .joke-list div > ul li {
+  margin-left: 0;
+  padding-bottom: var(--spacing);
+  margin-bottom: var(--spacing);
+  border-bottom: 1px solid var(--color-light-gray); }
+  #app.workbench .joke-list div > ul li:before {
+    content: "";
+    margin-left: 0;
+    margin-right: 0; }
+  #app.workbench .joke-list div > ul li a {
+    display: block;
+    border: 1px solid var(--color-light); }
+    #app.workbench .joke-list div > ul li a.selected {
+      border: 1px solid var(--color-brand); }
+  #app.workbench .joke-list div > ul li img {
+    max-width: 100%; }

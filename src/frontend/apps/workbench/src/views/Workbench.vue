@@ -1,18 +1,20 @@
 <template>
   <div>
     <joke-selector></joke-selector>
-    <div>List of extracted jokes</div>
+    <joke-list></joke-list>
     <div>Transcription and Annotation interface</div>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import JokeSelector from '@/components/JokeSelector.vue'; // @ is an alias to /src
+import JokeSelector from '@/components/JokeSelector.vue';
+import JokeList from '@/components/JokeList.vue';
 
 @Component({
     components: {
         JokeSelector,
+        JokeList,
     },
     mounted() {
         this.$store.dispatch('loadSource');

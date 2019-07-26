@@ -12,6 +12,7 @@ function makeInitialState(config: Config): State {
         sourceId: config.sourceId,
         source: {},
         jokes: [],
+        selected: null,
     };
 }
 
@@ -25,11 +26,19 @@ export default function makeStore(config: Config) {
             updateJokesList(state, jokes: Joke[]) {
                 state.jokes = jokes;
             },
+            selectJoke(state, joke: Joke) {
+                if (state.selected === joke) {
+                    state.selected = null;
+                } else {
+                    state.selected = joke;
+                }
+            },
         },
         actions: {
             loadSource(store) {
                 axios.get(store.state.baseURL + '/sources/' + store.state.sourceId).then((response) => {
                     store.commit('updateSource', response.data.data);
+                    store.dispatch('loadJokes');
                 });
             },
             loadJokes(store) {
@@ -72,6 +81,12 @@ export default function makeStore(config: Config) {
                         });
                     }
                 });
+            },
+            deleteJoke(store, joke: Joke) {
+                axios.delete(store.state.baseURL + '/sources/' + store.state.sourceId + '/jokes/' + joke.id).
+                      then((response) => {
+                          store.dispatch('loadJokes');
+                      });
             },
         },
     });

@@ -3,6 +3,7 @@ export interface State {
     sourceId: string;
     source: object;
     jokes: Joke[];
+    selected: Joke | null;
 }
 
 export interface Config {
