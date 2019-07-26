@@ -5,6 +5,7 @@ export interface State {
     source: object;
     jokes: Joke[];
     selected: Joke | null;
+    transcription: Transcription | null;
 }
 
 export interface Config {
@@ -30,4 +31,17 @@ export interface BBox {
     left: number;
     width: number;
     height: number;
+}
+
+export interface Transcription {
+    type: string;
+    id: number;
+    attributes: TranscriptionAttributes;
+}
+
+export interface TranscriptionAttributes {
+    source_id: number;
+    owner_id: number;
+    text: object;
+    status: string;
 }

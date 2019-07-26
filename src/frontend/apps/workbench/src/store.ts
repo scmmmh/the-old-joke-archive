@@ -2,7 +2,7 @@ import axios from 'axios';
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-import { State, Config, Joke } from '@/interfaces';
+import { State, Config, Joke, Transcription } from '@/interfaces';
 
 Vue.use(Vuex);
 
@@ -14,6 +14,7 @@ function makeInitialState(config: Config): State {
         source: {},
         jokes: [],
         selected: null,
+        transcription: null,
     };
 }
 
@@ -30,9 +31,13 @@ export default function makeStore(config: Config) {
             selectJoke(state, joke: Joke) {
                 if (state.selected === joke) {
                     state.selected = null;
+                    state.transcription = null;
                 } else {
                     state.selected = joke;
                 }
+            },
+            setTranscription(state, transcription: Transcription) {
+                state.transcription = transcription;
             },
         },
         actions: {
@@ -51,6 +56,29 @@ export default function makeStore(config: Config) {
                 }).then((response) => {
                     store.commit('updateJokesList', response.data.data);
                 });
+            },
+            loadTranscription(store) {
+                if (store.state.selected) {
+                    axios.get(store.state.baseURL + '/transcriptions', {
+                        params: {
+                            'filter[owner_id]': store.state.userId,
+                            'filter[source_id]': store.state.selected.id,
+                        },
+                    }).then((response) => {
+                        if (response.data.data.length === 0) {
+                            store.commit('setTranscription', {
+                                type: 'transcriptions',
+                                attributes: {
+                                    source_id: store.state.selected.id,
+                                    text: '',
+                                    status: 'new',
+                                },
+                            });
+                        } else {
+                            store.commit('setTranscription', response.data.data[0]);
+                        }
+                    });
+                }
             },
             addJoke(store, bbox) {
                 axios.post(store.state.baseURL + '/jokes', {
@@ -93,6 +121,23 @@ export default function makeStore(config: Config) {
                       then((response) => {
                           store.dispatch('loadJokes');
                       });
+            },
+            updateTranscription(store, attrs: object) {
+                const transcription = { ...store.state.transcription } as Transcription;
+                transcription.attributes = { ...transcription.attributes, ...attrs };
+                if (transcription.id) {
+                    axios.patch(store.state.baseURL + '/transcriptions/' + transcription.id, {
+                        data: transcription,
+                    }).then((response) => {
+                        store.commit('setTranscription', response.data.data);
+                    });
+                } else {
+                    axios.post(store.state.baseURL + '/transcriptions', {
+                        data: transcription,
+                    }).then((response) => {
+                        store.commit('setTranscription', response.data.data);
+                    });
+                }
             },
         },
     });

@@ -93,6 +93,11 @@ def includeme(config):
     config.add_route('api.joke.get', '/api/jokes/:jid', request_method='GET')
     config.add_route('api.joke.put', '/api/jokes/:jid', request_method='PUT')
     config.add_route('api.joke.delete', '/api/jokes/:jid', request_method='DELETE')
+    config.add_route('api.transcriptions.get', '/api/transcriptions', request_method='GET')
+    config.add_route('api.transcriptions.post', '/api/transcriptions', request_method='POST')
+    config.add_route('api.transcription.get', '/api/transcriptions/:tid', request_method='GET')
+    config.add_route('api.transcription.patch', '/api/transcriptions/:tid', request_method='PATCH')
+    config.add_route('api.transcription.delete', '/api/transcriptions/:tid', request_method='DELETE')
 
     # Jinja2 configuration
     config.get_jinja2_environment().filters['static_url'] = static_url_filter
