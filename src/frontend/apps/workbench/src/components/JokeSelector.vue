@@ -262,7 +262,7 @@ export default class JokeSelector extends Vue {
             bbox.top = bbox.top - this.$data.canvas.viewportTransform[5];
             this.$store.dispatch('addJoke', bbox);
             this.$data.newRect = null;
-            this.$data.mode = 'edit';
+            this.setMode('edit');
         }
     }
 

@@ -31,7 +31,7 @@ def upload(request):
             image = Image(owner=request.current_user,
                           type='source',
                           status='processing',
-                          attributes={'mimetype': guess_type(request.params['source'].filename)})
+                          attributes={'mimetype': guess_type(request.params['source'].filename)[0]})
             for field, _ in metadata:
                 image.attributes[field] = request.params[field]
             request.dbsession.add(image)

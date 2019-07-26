@@ -33,17 +33,17 @@ import { Joke } from '@/interfaces';
 @Component
 export default class JokeList extends Vue {
 
-        // **************
-        // Event handlers
-        // **************
+    // **************
+    // Event handlers
+    // **************
 
-        public select(joke: Joke) {
-            this.$store.commit('selectJoke', joke);
-        }
+    public select(joke: Joke) {
+        this.$store.commit('selectJoke', joke);
+    }
 
-        public deleteSelected() {
-            this.$store.dispatch('deleteJoke', this.$store.state.selected);
-        }
+    public deleteSelected() {
+        this.$store.dispatch('deleteJoke', this.$store.state.selected);
+    }
 
     // ************
     // Dynamic data

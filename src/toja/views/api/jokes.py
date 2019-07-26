@@ -1,6 +1,7 @@
 import json
 import os
 
+from base64 import b64encode
 from PIL import Image as PILImage
 from pyramid.httpexceptions import HTTPNotFound, HTTPForbidden, HTTPBadRequest, HTTPNoContent
 from pyramid.view import view_config
@@ -13,10 +14,13 @@ from toja.util import date_to_json, Validator, get_config_setting
 
 def to_jsonapi(request, joke):
     """Render a joke :class:`~toja.models.image.Image`."""
+    storage_path = get_config_setting(request, 'app.images.storage.path')
+    with open(os.path.join(storage_path, *joke.padded_id()), 'rb') as in_f:
+        raw_data = b64encode(in_f.read())
     attrs = {'status': joke.status,
              'created': date_to_json(joke.created),
              'updated': date_to_json(joke.updated) if joke.updated else None,
-             'raw': request.route_url('joke.image', jid=joke.id),
+             'raw': 'data:{0};base64,{1}'.format(joke.attributes['mimetype'], raw_data.decode('utf8')),
              'parent_id': joke.parent_id}
     attrs.update(joke.attributes)
     return {'type': 'jokes',
