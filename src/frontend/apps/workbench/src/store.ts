@@ -10,6 +10,7 @@ function makeInitialState(config: Config): State {
     return {
         baseURL: config.baseURL,
         sourceId: config.sourceId,
+        userId: config.userId,
         source: {},
         jokes: [],
         selected: null,
@@ -42,12 +43,17 @@ export default function makeStore(config: Config) {
                 });
             },
             loadJokes(store) {
-                axios.get(store.state.baseURL + '/sources/' + store.state.sourceId + '/jokes').then((response) => {
+                axios.get(store.state.baseURL + '/jokes', {
+                    params: {
+                        'filter[owner_id]': store.state.userId,
+                        'filter[parent_id]': store.state.sourceId,
+                    },
+                }).then((response) => {
                     store.commit('updateJokesList', response.data.data);
                 });
             },
             addJoke(store, bbox) {
-                axios.post(store.state.baseURL + '/sources/' + store.state.sourceId + '/jokes', {
+                axios.post(store.state.baseURL + '/jokes', {
                     data: {
                         type: 'jokes',
                         attributes: {
@@ -66,7 +72,7 @@ export default function makeStore(config: Config) {
                     if (joke.id === jid) {
                         joke = { ...joke };
                         joke.attributes = { ...joke.attributes, ...attrs };
-                        axios.put(store.state.baseURL + '/sources/' + store.state.sourceId + '/jokes/' + joke.id, {
+                        axios.put(store.state.baseURL + '/jokes/' + joke.id, {
                             data: joke,
                         }).then((response) => {
                             const newJokes: Joke[] = [];
@@ -83,7 +89,7 @@ export default function makeStore(config: Config) {
                 });
             },
             deleteJoke(store, joke: Joke) {
-                axios.delete(store.state.baseURL + '/sources/' + store.state.sourceId + '/jokes/' + joke.id).
+                axios.delete(store.state.baseURL + '/jokes/' + joke.id).
                       then((response) => {
                           store.dispatch('loadJokes');
                       });

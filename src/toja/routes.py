@@ -88,11 +88,11 @@ def includeme(config):
     config.add_route('api.source.get', '/api/sources/:sid', request_method='GET')
     config.add_route('api.source.put', '/api/sources/:sid', request_method='PUT')
     config.add_route('api.source.delete', '/api/sources/:sid', request_method='DELETE')
-    config.add_route('api.jokes.get', '/api/sources/:sid/jokes', request_method='GET')
-    config.add_route('api.jokes.post', '/api/sources/:sid/jokes', request_method='POST')
-    config.add_route('api.joke.get', '/api/sources/:sid/jokes/:jid', request_method='GET')
-    config.add_route('api.joke.put', '/api/sources/:sid/jokes/:jid', request_method='PUT')
-    config.add_route('api.joke.delete', '/api/sources/:sid/jokes/:jid', request_method='DELETE')
+    config.add_route('api.jokes.get', '/api/jokes', request_method='GET')
+    config.add_route('api.jokes.post', '/api/jokes', request_method='POST')
+    config.add_route('api.joke.get', '/api/jokes/:jid', request_method='GET')
+    config.add_route('api.joke.put', '/api/jokes/:jid', request_method='PUT')
+    config.add_route('api.joke.delete', '/api/jokes/:jid', request_method='DELETE')
 
     # Jinja2 configuration
     config.get_jinja2_environment().filters['static_url'] = static_url_filter

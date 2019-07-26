@@ -9,7 +9,8 @@ Vue.config.productionTip = false;
 const configElement = document.getElementById('config');
 let config: Config = {
     baseURL: '',
-    sourceId: '',
+    sourceId: null,
+    userId: null,
 };
 if (configElement) {
     config = JSON.parse(configElement.innerHTML);
