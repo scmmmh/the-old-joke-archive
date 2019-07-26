@@ -17,7 +17,7 @@ def to_jsonapi(request, source):
         raw_data = b64encode(in_f.read())
     attrs = {'status': source.status,
              'created': date_to_json(source.created),
-             'updated': date_to_json(source.updated),
+             'updated': date_to_json(source.updated) if source.updated else None,
              'raw': 'data:{0};base64,{1}'.format(source.attributes['mimetype'], raw_data.decode('utf8'))}
     attrs.update(source.attributes)
     return {'type': 'sources',
