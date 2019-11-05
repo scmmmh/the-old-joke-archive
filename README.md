@@ -1,14 +1,8 @@
-toja README
-==================
+The Old Joke Archive
+====================
 
-Getting Started
----------------
+Building the Frontend
+---------------------
 
-- cd <directory containing this file>
-
-- $VENV/bin/pip install -e .
-
-- $VENV/bin/initialize_toja_db development.ini
-
-- $VENV/bin/pserve development.ini
-
+* In the project root directory run ``gulp watch``
+* In the ``src/frontend/apps/{app-to-build}`` directory run ``yarn build``
