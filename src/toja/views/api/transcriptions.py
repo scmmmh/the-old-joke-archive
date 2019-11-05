@@ -19,6 +19,8 @@ def transcriptions_get(request):
             transcriptions = transcriptions.filter(Transcription.source_id == request.params[key])
         if key == 'filter[owner_id]':
             transcriptions = transcriptions.filter(Transcription.owner_id == request.params[key])
+        if key == 'filter[status]':
+            transcriptions = transcriptions.filter(Transcription.status == request.params[key])
     return {'data': [transcription.to_jsonapi() for transcription in transcriptions]}
 
 

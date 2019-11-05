@@ -23,6 +23,8 @@ cerberus = "*"
 sqlalchemy-json = "*"
 email-validator = "*"
 pillow = "*"
+dramatiq = {extras = ["rabbitmq", "watch"],version = "*"}
+tesserocr = "*"
 
 [requires]
 python_version = "3.7"

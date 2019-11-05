@@ -59,20 +59,41 @@ export default function makeStore(config: Config) {
             },
             loadTranscription(store) {
                 if (store.state.selected) {
+                    const selectedId = store.state.selected.id;
                     axios.get(store.state.baseURL + '/transcriptions', {
                         params: {
                             'filter[owner_id]': store.state.userId,
-                            'filter[source_id]': store.state.selected.id,
+                            'filter[source_id]': selectedId,
                         },
                     }).then((response) => {
                         if (response.data.data.length === 0) {
-                            store.commit('setTranscription', {
-                                type: 'transcriptions',
-                                attributes: {
-                                    source_id: store.state.selected.id,
-                                    text: '',
-                                    status: 'new',
+                            // If there is no existing transcription by the user, fetch the generic OCR transcription
+                            axios.get(store.state.baseURL + '/transcriptions', {
+                                params: {
+                                    'filter[source_id]': selectedId,
+                                    'filter[status]': 'ocr',
                                 },
+                            }).then((response2) => {
+                                // If there is no OCR transcription, set an empty text, otherwise set the OCR text
+                                if (response2.data.data.length === 0) {
+                                    store.commit('setTranscription', {
+                                        type: 'transcriptions',
+                                        attributes: {
+                                            source_id: selectedId,
+                                            text: '',
+                                            status: 'new',
+                                        },
+                                    });
+                                } else {
+                                    store.commit('setTranscription', {
+                                        type: 'transcriptions',
+                                        attributes: {
+                                            source_id: selectedId,
+                                            text: response2.data.data[0].attributes.text,
+                                            status: 'new',
+                                        },
+                                    });
+                                }
                             });
                         } else {
                             store.commit('setTranscription', response.data.data[0]);

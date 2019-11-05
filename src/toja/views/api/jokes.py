@@ -9,6 +9,7 @@ from sqlalchemy import and_
 
 from toja.models import Image
 from toja.session import require_logged_in
+from toja.tasks.ocr import run_ocr
 from toja.util import date_to_json, Validator, get_config_setting
 
 
@@ -96,6 +97,7 @@ def jokes_post(request):
                                             params['data']['attributes']['bbox']['height']))
                 os.makedirs(os.path.join(storage_path, *joke.padded_id()[0:2]), exist_ok=True)
                 joke_img.save(os.path.join(storage_path, *joke.padded_id()), format='jpeg')
+                run_ocr.send(joke.id)
                 return {'data': to_jsonapi(request, joke)}
             else:
                 raise HTTPBadRequest()
@@ -162,6 +164,7 @@ def joke_put(request):
             joke_img.save(os.path.join(storage_path, *joke.padded_id()), format='jpeg')
             joke.attributes['bbox'] = params['data']['attributes']['bbox']
             request.dbsession.add(joke)
+            run_ocr.send(joke.id)
             return {'data': to_jsonapi(request, joke)}
         else:
             raise HTTPBadRequest()
