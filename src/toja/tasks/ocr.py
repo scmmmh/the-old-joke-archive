@@ -45,11 +45,12 @@ def run_ocr(jid):
                                               status='ocr',
                                               attributes={})
             img = PILImage.open(os.path.join(storage_path, *joke.padded_id()))
-            raw_text = tesserocr.image_to_text(img).strip().replace('--', '—').replace('\n\n', '\n')
+            raw_text = tesserocr.image_to_text(img).strip().replace('--', '—')
             transcription.text = {'type': 'doc',
                                   'content': [{'type': 'paragraph',
                                                'content': [{'type': 'text',
-                                                            'text': para}]} for para in raw_text.split('\n')]}
+                                                            'text': para.replace('\n', ' ')}]}
+                                              for para in raw_text.split('\n\n')]}
             dbsession.add(transcription)
         else:
             raise OCRException("Joke not found in the database")
