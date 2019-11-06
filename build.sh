@@ -10,7 +10,7 @@ git pull
 export PIPENV_VENV_IN_PROJECT=True
 pipenv install
 pipenv run pip install -e .
-pipenv run toja -c production.ini#toja init-db
+pipenv run toja -c production.ini init-db
 
 # An optional script to be run after building
 if [ -f 'post-build' ]

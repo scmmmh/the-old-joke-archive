@@ -1,6 +1,11 @@
 The Old Joke Archive
 ====================
 
+Dependencies
+------------
+
+* Tesseract + Dev Libraries
+
 Building the Frontend
 ---------------------
 
