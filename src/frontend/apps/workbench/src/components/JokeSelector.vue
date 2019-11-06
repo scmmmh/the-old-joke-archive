@@ -210,10 +210,10 @@ export default class JokeSelector extends Vue {
         this.$data.startMouseY = ev.offsetY;
         if (this.$data.mode === 'add') {
             this.$data.newRect = new fabric.Rect({
-                left: ev.offsetX - this.$data.canvas.viewportTransform[4],
-                top: ev.offsetY / this.$data.zoom - this.$data.canvas.viewportTransform[5],
+                left: (ev.offsetX - this.$data.canvas.viewportTransform[4]) / this.$data.zoom,
+                top: (ev.offsetY - this.$data.canvas.viewportTransform[5]) / this.$data.zoom,
                 width: 0,
-                height: 10,
+                height: 0,
                 fill: 'transparent',
                 stroke: '#00aa00',
                 hasRotatingPoint: false,
@@ -239,10 +239,8 @@ export default class JokeSelector extends Vue {
                 this.$data.startMouseY = ev.offsetY;
             } else if (this.$data.mode === 'add') {
                 this.$data.newRect.set({
-                    width: (ev.offsetX - this.$data.startMouseX) / this.$data.zoom
-                            - this.$data.canvas.viewportTransform[4],
-                    height: (ev.offsetY - this.$data.startMouseY) / this.$data.zoom
-                             - this.$data.canvas.viewportTransform[5],
+                    width: (ev.offsetX - this.$data.startMouseX) / this.$data.zoom,
+                    height: (ev.offsetY - this.$data.startMouseY) / this.$data.zoom,
                 });
                 this.$data.canvas.renderAll();
             }
@@ -256,11 +254,8 @@ export default class JokeSelector extends Vue {
     public mouseUp(ev: MouseEvent) {
         this.$data.dragging = false;
         if (this.$data.mode === 'add') {
+            this.$store.dispatch('addJoke', this.$data.newRect.getBoundingRect(true, true));
             this.$data.canvas.remove(this.$data.newRect);
-            const bbox = this.$data.newRect.getBoundingRect(true, true);
-            bbox.left = bbox.left - this.$data.canvas.viewportTransform[4];
-            bbox.top = bbox.top - this.$data.canvas.viewportTransform[5];
-            this.$store.dispatch('addJoke', bbox);
             this.$data.newRect = null;
             this.setMode('edit');
         }
