@@ -308,13 +308,15 @@ export default class JokeSelector extends Vue {
      * Saves changes to the current selection, updating the bounding box.
      */
     public saveChanges() {
-        this.$store.dispatch('updateJoke', {
-            jid: this.$data.selected.sourceData.id,
-            attrs: {
-                bbox: this.$data.selected.getBoundingRect(true, true),
-            },
-        });
-        this.$data.canvas.discardActiveObject().renderAll();
+        if (!this.nothingSelected) {
+            this.$store.dispatch('updateJoke', {
+                jid: this.$data.selected.sourceData.id,
+                attrs: {
+                    bbox: this.$data.selected.getBoundingRect(true, true),
+                },
+            });
+            this.$data.canvas.discardActiveObject().renderAll();
+        }
     }
 
     // ************
