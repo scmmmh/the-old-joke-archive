@@ -29,7 +29,6 @@ export default function makeStore(config: Config) {
                 state.jokes = jokes;
             },
             selectJoke(state, joke: Joke) {
-                console.log(joke);
                 if (state.selected === joke || joke === null) {
                     state.selected = null;
                     state.transcription = null;
