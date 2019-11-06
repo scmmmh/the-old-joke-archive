@@ -386,7 +386,7 @@ export default class JokeSelector extends Vue {
                     hasRotatingPoint: false,
                     hasBorders: false,
                     transparentCorners: false,
-                    selectable: false,
+                    selectable: this.$data.mode === 'edit',
                     cornerColor: '#000000',
                     sourceData: joke,
                 });
