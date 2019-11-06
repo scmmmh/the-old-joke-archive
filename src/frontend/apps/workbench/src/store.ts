@@ -29,7 +29,8 @@ export default function makeStore(config: Config) {
                 state.jokes = jokes;
             },
             selectJoke(state, joke: Joke) {
-                if (state.selected === joke) {
+                console.log(joke);
+                if (state.selected === joke || joke === null) {
                     state.selected = null;
                     state.transcription = null;
                 } else {
@@ -140,6 +141,7 @@ export default function makeStore(config: Config) {
             deleteJoke(store, joke: Joke) {
                 axios.delete(store.state.baseURL + '/jokes/' + joke.id).
                       then((response) => {
+                          store.commit('selectJoke', null);
                           store.dispatch('loadJokes');
                       });
             },
