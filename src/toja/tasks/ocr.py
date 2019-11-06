@@ -50,7 +50,7 @@ def run_ocr(jid):
                                   'content': [{'type': 'paragraph',
                                                'content': [{'type': 'text',
                                                             'text': para.replace('\n', ' ')}]}
-                                              for para in raw_text.split('\n\n')]}
+                                              for para in raw_text.split('\n\n') if para.strip() != '']}
             dbsession.add(transcription)
         else:
             raise OCRException("Joke not found in the database")
