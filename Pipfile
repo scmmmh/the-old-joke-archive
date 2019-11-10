@@ -8,6 +8,7 @@ pyramid-debugtoolbar = "*"
 toja = {editable = true,path = "."}
 flake8 = "*"
 flake8-print = "*"
+pre-commit = "*"
 
 [packages]
 pyramid = "*"
