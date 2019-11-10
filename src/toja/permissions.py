@@ -14,7 +14,13 @@ PERMISSIONS = OrderedDict((('admin.view', 'Access the Admin Interface'),
 GROUPS = OrderedDict((('admin', ('admin.view', 'users.admin')),
                       ('data provider', ('sources.new', )),
                       ('data admin', ('admin.view', 'sources.admin'))))
-PERMISSIONS_GROUPS = dict([permission, group] for group, permissions in GROUPS.items() for permission in permissions)
+PERMISSIONS_GROUPS = {}
+for group, permissions in GROUPS.items():
+    for permission in permissions:
+        if permission in PERMISSIONS_GROUPS:
+            PERMISSIONS_GROUPS[permission].add(group)
+        else:
+            PERMISSIONS_GROUPS[permission] = set([group])
 
 OR = 1
 AND = 2
@@ -90,9 +96,12 @@ def check_permission(request, user, permission):
     for perm in permission:
         if isinstance(perm, tuple):
             if perm[0] == STATIC:
+                print(PERMISSIONS_GROUPS)
+                print(PERMISSIONS_GROUPS[perm[1]])
                 stack.append(user and perm[1] in PERMISSIONS and (perm[1] in user.permissions or
                                                                   (perm[1] in PERMISSIONS_GROUPS and
-                                                                   PERMISSIONS_GROUPS[perm[1]] in user.groups)))
+                                                                   len(PERMISSIONS_GROUPS[perm[1]].
+                                                                       intersection(set(user.groups))) > 0)))
             elif perm[0] == DYNAMIC_ROUTE:
                 obj = request.dbsession.query(perm[2]).filter(perm[2].id == request.matchdict[perm[3]]).first()
                 if obj is not None:
