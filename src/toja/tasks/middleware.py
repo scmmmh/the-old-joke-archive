@@ -6,7 +6,10 @@ from pyramid.paster import get_appsettings, setup_logging
 from threading import local
 
 from toja.models import get_engine, get_tm_session, get_session_factory
-from toja.util import CACHED_SETTINGS, convert_type
+from toja.util import convert_type
+
+
+CACHED_SETTINGS = {}
 
 
 class ConfigMiddleware(dramatiq.Middleware):
