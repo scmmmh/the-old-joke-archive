@@ -118,8 +118,6 @@ def check_permission(request, user, permission):
             stack.append(stack.pop() or stack.pop())
         elif perm == AND:
             stack.append(stack.pop() and stack.pop())
-    print('Test')
-    print('Another')
     if stack:
         return stack.pop()
     else:
