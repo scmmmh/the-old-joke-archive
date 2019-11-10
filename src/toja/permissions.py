@@ -96,8 +96,6 @@ def check_permission(request, user, permission):
     for perm in permission:
         if isinstance(perm, tuple):
             if perm[0] == STATIC:
-                print(PERMISSIONS_GROUPS)
-                print(PERMISSIONS_GROUPS[perm[1]])
                 stack.append(user and perm[1] in PERMISSIONS and (perm[1] in user.permissions or
                                                                   (perm[1] in PERMISSIONS_GROUPS and
                                                                    len(PERMISSIONS_GROUPS[perm[1]].
