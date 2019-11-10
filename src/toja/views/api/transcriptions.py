@@ -100,6 +100,5 @@ def transcription_patch(request):
         else:
             raise HTTPNotFound()
     else:
-        print(validator.errors)
         raise HTTPBadRequest()
     return {'data': {}}

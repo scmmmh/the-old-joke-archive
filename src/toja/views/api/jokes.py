@@ -184,8 +184,6 @@ def joke_delete(request):
     source = request.dbsession.query(Image).filter(and_(Image.id == joke.parent_id,
                                                         Image.type == 'source',
                                                         Image.status == 'processing')).first()
-    print(joke)
-    print(source)
     if source is None or joke is None:
         raise HTTPNotFound()
     joke.status = 'deleted'

@@ -139,7 +139,6 @@ def login(request):
                 hash.update(request.params['password'].encode('utf-8'))
                 if user.password == hash.hexdigest():
                     request.session['user-id'] = user.id
-                    print(decode_route(request))
                     return HTTPFound(location=decode_route(request, 'user.view', {'uid': user.id}))
             return {'errors': {'email': ['Either there is no user with this e-mail address ' +
                                          'or the password is incorrect.'],
