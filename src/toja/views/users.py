@@ -286,11 +286,14 @@ def delete(request):
     """Handle deleting users, both for admins and the users themselves."""
     user = request.dbsession.query(User).filter(User.id == request.matchdict['uid']).first()
     if user:
-        user.attributes['name'] = 'Deleted User'
-        user.email = 'deleted-{0}@the-old-joke-archive.org'.format(user.id)
-        user.salt = ''
-        user.password = ''
-        user.status = 'deleted'
+        if user.status == 'new':
+            request.dbsession.delete(user)
+        else:
+            user.attributes['name'] = 'Deleted User'
+            user.email = 'deleted-{0}@the-old-joke-archive.org'.format(user.id)
+            user.salt = ''
+            user.password = ''
+            user.status = 'deleted'
         if check_permission(request, request.current_user, 'users.admin'):
             return HTTPFound(request.route_url('user.index'))
         else:
