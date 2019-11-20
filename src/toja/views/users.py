@@ -287,7 +287,7 @@ def delete(request):
     user = request.dbsession.query(User).filter(User.id == request.matchdict['uid']).first()
     if user:
         user.attributes['name'] = 'Deleted User'
-        user.email = ''
+        user.email = 'deleted-{0}@the-old-joke-archive.org'.format(user.id)
         user.salt = ''
         user.password = ''
         user.status = 'deleted'
