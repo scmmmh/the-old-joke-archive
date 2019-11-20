@@ -390,6 +390,9 @@ pre {
   word-wrap: break-word;
   font-family: inherit; }
 
+nav {
+  margin-bottom: var(--spacing); }
+
 /*
  * Blockquotes
  */
@@ -802,7 +805,8 @@ dd {
   display: -webkit-box;
   display: flex;
   -webkit-box-align: center;
-  align-items: center; }
+  align-items: center;
+  margin: 0; }
   .menu li {
     margin-left: 0;
     margin-right: 0; }
