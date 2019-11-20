@@ -11,9 +11,9 @@
     "gulp-sass": "^4.0.2"
   },
   "dependencies": {
-    "cypress": "^3.4.1",
+    "cypress": "^3.6.1",
     "fabricjs": "^1.0.0",
-    "gulp-autoprefixer": "^7.0.0",
+    "gulp-autoprefixer": "^7.0.1",
     "gulp-concat": "^2.6.1",
     "openseadragon": "^2.4.1",
     "pump": "^3.0.0"

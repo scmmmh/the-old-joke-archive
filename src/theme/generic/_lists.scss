@@ -133,6 +133,7 @@ dd {
             }
 
             &[aria-current="true"] {
+                color: var(--color-light);
                 background: var(--color-brand);
                 border-radius: var(--border-radius-small);
 
@@ -143,7 +144,7 @@ dd {
 
             &[disabled="disabled"] {
                 cursor: not-allowed;
-                
+
                 svg path, svg g {
                     fill: var(--color-mid);
                 }
