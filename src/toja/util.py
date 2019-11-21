@@ -1,10 +1,12 @@
 import cerberus
+import json
 import logging
 import smtplib
 
 from cgi import FieldStorage
 from email.mime.text import MIMEText
 from email.utils import formatdate
+from markupsafe import Markup
 
 
 def convert_type(value, target_type, default=None):
@@ -136,6 +138,12 @@ def date_to_json(date):
     return date.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
+def to_json(value):
+    """Converts the value to JSON and marks it as safe Markup."""
+    return Markup(json.dumps(value))
+
+
 def includeme(config):
     config.get_jinja2_environment().filters['config'] = get_config_setting
     config.get_jinja2_environment().filters['zip'] = zip
+    config.get_jinja2_environment().filters['to_json'] = to_json

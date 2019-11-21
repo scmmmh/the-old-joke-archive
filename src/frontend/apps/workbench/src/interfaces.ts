@@ -2,6 +2,7 @@ export interface State {
     baseURL: string;
     sourceId: number | null;
     userId: number | null;
+    annotations: any | null;
     source: object;
     jokes: Joke[];
     selected: Joke | null;
@@ -12,6 +13,7 @@ export interface Config {
     baseURL: string;
     sourceId: number | null;
     userId: number | null;
+    annotations: any | null;
 }
 
 export interface Joke {

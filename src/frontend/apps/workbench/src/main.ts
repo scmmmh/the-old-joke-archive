@@ -11,6 +11,7 @@ let config: Config = {
     baseURL: '',
     sourceId: null,
     userId: null,
+    annotations: {},
 };
 if (configElement) {
     config = JSON.parse(configElement.innerHTML);

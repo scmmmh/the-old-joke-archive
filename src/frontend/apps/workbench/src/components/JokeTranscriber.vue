@@ -19,17 +19,8 @@
             </ul>
             <editor-menu-bar :editor="editor" v-slot="{ commands, isActive }">
                 <ul role="menu" class="menu">
-                    <li role="presentation">
-                        <a role="menuitem" :aria-current="isActive.title() ? 'true' : null" @click="commands.title">Title</a>
-                    </li>
-                    <li role="presentation">
-                        <a role="menuitem" :aria-current="isActive.speaker() ? 'true' : null" @click="commands.speaker">Speaker</a>
-                    </li>
-                    <li role="presentation">
-                        <a role="menuitem" :aria-current="isActive.speech() ? 'true' : null" @click="commands.speech">Speech</a>
-                    </li>
-                    <li role="presentation">
-                        <a role="menuitem" :aria-current="isActive.attribution() ? 'true' : null" @click="commands.attribution">Attribution</a>
+                    <li v-for="(value, key) in annotations">
+                        <a role="menuitem" :aria-current="isActive[key]()" @click="commands[key]">{{ value.label }}</a>
                     </li>
                 </ul>
             </editor-menu-bar>
@@ -61,12 +52,9 @@ export default class JokeTranscriber extends Vue {
     public data() {
         return {
             editor: new Editor({
-                extensions: [
-                    new ConfigurableMark('title'),
-                    new ConfigurableMark('speaker'),
-                    new ConfigurableMark('speech'),
-                    new ConfigurableMark('attribution'),
-                ],
+                extensions: Object.keys(this.$store.state.annotations).map((key: string) => {
+                    return new ConfigurableMark(key);
+                }),
             }),
         };
     }
@@ -96,6 +84,10 @@ export default class JokeTranscriber extends Vue {
     // ************
     // Dynamic data
     // ************
+
+    public get annotations() {
+        return this.$store.state.annotations;
+    }
 
     public get noTranscription() {
         return this.$store.state.transcription === null;
