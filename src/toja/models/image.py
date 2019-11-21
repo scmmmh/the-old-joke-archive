@@ -25,6 +25,12 @@ class Image(Base):
                             primaryjoin="and_(Image.id == remote(Image.parent_id), "
                                         "Image.status != 'deleted')",
                             cascade="all,delete,delete-orphan")
+    transcriptions = relationship('Transcription',
+                                  order_by='desc(Transcription.created)')
+    transcription = relationship('Transcription',
+                                 primaryjoin="and_(Image.id == Transcription.source_id, "
+                                             "Transcription.status == 'final')",
+                                 uselist=False)
     # reviews = relationship('Review', secondary='images_reviews')
 
     def padded_id(self):

@@ -1,60 +1,57 @@
 {% extends 'toja:templates/layout/default.jinja2' %}
 
-{% block title %}Another Lapsus{% endblock title %}
+{% block title %}{{ joke.attributes.title }}{% endblock title %}
 {% block main %}
 {% from 'toja:templates/macros/jokes.jinja2' import joke_ratings, joke_snippet %}
 {% from 'toja:templates/macros/ui.jinja2' import visual_separator %}
+{% from 'toja:templates/macros/transcriptions.jinja2' import format_transcription %}
 <section class="grid">
   <div class="cell-1-4">
     <div class="flex" style="align-items:center;">
-      <h1 class="alt-font">Another Lapsus</h1>
+      <h1 class="alt-font">{{ joke.attributes.title }}</h1>
       <div class="shrink hide-small">
-        {{ joke_ratings({'laugh': 10201, 'boo': 328, 'groan': 243}) }}
+        {% if joke.attributes.ratings %}
+          {{ joke_ratings(joke.attributes.ratings) }}
+        {% else %}
+          {{ joke_ratings({'laugh': 0, 'boo': 0, 'groan': 0})}}
+        {% endif %}
       </div>
     </div>
     <blockquote>
-      <p>Lovely Woman: Just look at this? It's the best photo I've ever had taken. All the crudities of features
-        absolutely toned down.</p>
-      <p>Plain Man: Yes, by jove! He's a deuced good photographer.</p>
-      <p>Lovely Woman (bitten): He is. If I were you, when you have your photo taken I'd go to the same man.</p>
-      <cite>Judy.</cite>
+      {{ format_transcription(joke.transcription.text) }}
     </blockquote>
     <div class="show-small">
       {{ joke_ratings({'laugh': 10201, 'boo': 328, 'groan': 243}) }}
     </div>
     <div class="align-center margin-bottom">
-      <img src="{{ 'toja:static/img/tmp-original.png'|static_url() }}"/>
+      <img src="{{ 'joke.image'|route_url(jid=joke.id) }}"/>
     </div>
     <h2>Transcriptions</h2>
-    <blockquote>
-      <cite class="with-badge">
-        <img src="{{ 'toja:static/img/icon-verified-on.svg'|static_url() }}" alt="Transcription accepted"/>
-        <span>Transcribed by <a href="#">Mark Hall</a> on March 14th in the year 2019</span>
-      </cite>
-      <p>Another Lapsus.&mdash;Lovely Woman: Just look at this? It's the best photo I've ever had taken. All the
-        crudities of features absolutely toned down.&mdash;Plain Man: Yes, by jove! He's a deuced good
-        photographer.&mdash;Lovely Woman (bitten): He is. If I were you, when you have your photo taken I'd go to the
-        same man.&mdash;Judy.</p>
-    </blockquote>
-    <blockquote>
-      <cite class="with-badge">
-        <img src="{{ 'toja:static/img/icon-verified-on.svg'|static_url() }}" alt="Transcription accepted"/>
-        <span>Transcribed by <a href="#">Andy Clarke</a> on May 25th in the year 2019</span>
-      </cite>
-      <p>Another Lapsus.&mdash;Lovely Woman: Just look at this? It's the best photo I've ever had taken. All the
-        crudities of features absolutely toned down.&mdash;Plain Man: Yes, by jove! He's a deuced good
-        photographer.&mdash;Lovely Woman (bitten): He is. If I were you, when you have your photo taken I'd go to the
-        same man.&mdash;Judy.</p>
-    </blockquote>
-    <blockquote>
-      <cite class="with-badge">
-        <img src="{{ 'toja:static/img/icon-verified-off.svg'|static_url() }}" alt="Transcription accepted"/>
-        <span>Transcribed by <a href="#">David Walsh</a> on April 1st in the year 2019</span>
-      </cite>
-      <p>VERY, VERY AMBIGUOUS.&mdash;His Wife’s Mother: Only think! This is the last night we shall all be together.
-        Tomorrow I shall be far from here. Sixty miles away, isn’t it, Jane ?&mdash;Adolphus (interrupting) : Oh, sixty
-        miles is quite near enough.&mdash;Ariel.</p>
-    </blockquote>
+    {% for transcription in joke.transcriptions %}
+      <blockquote>
+        <cite class="with-badge">
+          {% if transcription.status in ['accepted', 'final'] %}
+            <img src="{{ 'toja:static/img/icon-verified-on.svg'|static_url() }}" alt="Transcription accepted"/>
+          {% else %}
+            <img src="{{ 'toja:static/img/icon-verified-off.svg'|static_url() }}" alt="Transcription not yet accepted"/>
+          {% endif %}
+          <span>
+            {% if transcription.owner %}
+              Transcribed by <a href="{{ 'user.view'|route_url(uid=transcription.owner.id) }}">{{ transcription.owner.attributes.name }}</a>
+            {% else %}
+              <span>Automatically transcribed</span>
+            {% endif %}
+            on
+            {% if transcription.updated %}
+              {{ transcription.updated|fancy_date }}
+            {% else %}
+              {{ transcription.created|fancy_date }}
+            {% endif %}
+          </span>
+        </cite>
+        {{ format_transcription(transcription.text) }}
+      </blockquote>
+    {% endfor %}
   </div>
   <div class="cell-5-7">
     <h2>Metadata</h2>

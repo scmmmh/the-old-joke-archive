@@ -54,7 +54,7 @@ def transcriptions_post(request):
                                           owner=request.current_user,
                                           text=json.loads(json.dumps(params['data']['attributes']['text']).
                                                           replace('--', '—')),
-                                          status='confirmed',
+                                          status='final',
                                           attributes={})
             request.dbsession.add(transcription)
             request.dbsession.flush()

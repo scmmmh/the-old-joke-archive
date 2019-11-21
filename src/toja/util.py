@@ -138,12 +138,15 @@ def date_to_json(date):
     return date.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
-def to_json(value):
-    """Converts the value to JSON and marks it as safe Markup."""
-    return Markup(json.dumps(value))
+def fancy_date(value):
+    return value.strftime('%B %d in the year %Y')
+
+
+def format_transcription(transcription):
+    return 'Text'
 
 
 def includeme(config):
     config.get_jinja2_environment().filters['config'] = get_config_setting
     config.get_jinja2_environment().filters['zip'] = zip
-    config.get_jinja2_environment().filters['to_json'] = to_json
+    config.get_jinja2_environment().filters['fancy_date'] = fancy_date

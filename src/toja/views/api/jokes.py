@@ -102,6 +102,7 @@ def jokes_post(request):
             else:
                 raise HTTPBadRequest()
         else:
+            print(validator.errors)
             raise HTTPBadRequest()
     except json.JSONDecodeError:
         raise HTTPBadRequest()

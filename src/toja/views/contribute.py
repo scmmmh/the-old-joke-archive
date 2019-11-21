@@ -51,7 +51,7 @@ def workbench_edit(request):
                                                                   default=key)}))
 
         return {'config': {'baseURL': request.route_url('api'),
-                           'sourceId': request.matchdict['sid'],
+                           'sourceId': int(request.matchdict['sid']),
                            'userId': request.current_user.id,
                            'annotations': OrderedDict(annotations)}}
     else:

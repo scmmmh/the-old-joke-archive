@@ -6,7 +6,7 @@
 
 {% block body_scripts %}
 <script id="config" type="application/json">
-{{ config|to_json() }}
+{{ config|tojson() }}
 </script>
 <script src="{{ 'toja:static/workbench/chunk-vendors.js'|static_url() }}"></script>
 <script src="{{ 'toja:static/workbench/app.js'|static_url() }}"></script>
