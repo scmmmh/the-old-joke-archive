@@ -7,6 +7,9 @@ from .meta import Base
 
 
 class Transcription(Base):
+    """The :class:`~toja.models.transcription.Transcription` represents a single transcription of a joke
+    :class:`~toja.models.image.Image`.
+    """
 
     __tablename__ = 'transcriptions'
 
@@ -22,7 +25,19 @@ class Transcription(Base):
     source = relationship('Image')
     owner = relationship('User')
 
+    def pure_text(self):
+        """Returns just the text without any annotations."""
+        def node_text(node):
+            if node['type'] == 'text':
+                return node['text']
+            elif node['type'] == 'doc':
+                return '\n'.join([node_text(child) for child in node['content']])
+            else:
+                return ''.join([node_text(child) for child in node['content']])
+        return node_text(self.text)
+
     def to_jsonapi(self):
+        """Returns a JSONAPI representation of this :class:`~toja.models.transcription.Transcription`."""
         attrs = {'source_id': self.source_id,
                  'owner_id': self.owner_id,
                  'text': self.text,

@@ -13,6 +13,9 @@
       {% if request|permitted('sources.admin') %}
         <li><a href="{{ 'source.index'|route_url() }}">Sources</a></li>
       {% endif %}
+      {% if request|permitted('admin.search') %}
+        <li><a href="{{ 'admin.search'|route_url() }}">Search</a></li>
+      {% endif %}
     </ul>
   </div>
 </section>

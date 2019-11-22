@@ -8,6 +8,7 @@ def main(global_config, **settings):
     config.include('pyramid_jinja2')
     config.commit()
     config.include('.util')
+    config.include('.search')
     config.include('.models')
     config.include('.session')
     config.include('.permissions')

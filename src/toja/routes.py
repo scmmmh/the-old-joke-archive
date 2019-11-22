@@ -81,6 +81,7 @@ def includeme(config):
     config.add_route('source.delete', '/sources/:sid/delete', request_method='POST')
 
     config.add_route('admin.index', '/admin')
+    config.add_route('admin.search', '/admin/search')
 
     config.add_route('api', '/api')
     config.add_route('api.sources.get', '/api/sources', request_method='GET')

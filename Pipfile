@@ -27,6 +27,7 @@ email-validator = "*"
 pillow = "*"
 dramatiq = {extras = ["rabbitmq", "watch"],version = "*"}
 tesserocr = "*"
+elasticsearch-dsl = "<8.0.0,>=7.0.0"
 
 [requires]
 python_version = "3.7"

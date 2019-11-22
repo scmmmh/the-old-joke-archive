@@ -2,6 +2,7 @@ import dramatiq
 import os
 import transaction
 
+from elasticsearch_dsl import connections
 from pyramid.paster import get_appsettings, setup_logging
 from threading import local
 
@@ -109,3 +110,12 @@ class DBSessionMiddleware(dramatiq.Middleware):
         delattr(self.state, 'dbsession')
 
     after_skip_message = after_process_message
+
+
+class ElasticsearchMiddleware(dramatiq.Middleware):
+    """The :class:`~toja.tasks.middleware.ElasticsearchMiddleware` is a dramatiq
+    :class:`~dramatiq.middleware.Middleware` that sets up the Elasticsearch connection for the worker.
+    """
+
+    def before_worker_boot(self, broker, worker):
+        connections.create_connection(hosts=convert_type(ConfigMiddleware.settings()['app.elasticsearch.hosts'], 'list'))
