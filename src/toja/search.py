@@ -5,7 +5,7 @@ from .util import convert_type
 
 class Joke(Document):
     """Elasticsearch document holding one joke."""
-    
+
     text = Text()
 
     class Index:

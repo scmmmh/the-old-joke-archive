@@ -118,4 +118,5 @@ class ElasticsearchMiddleware(dramatiq.Middleware):
     """
 
     def before_worker_boot(self, broker, worker):
-        connections.create_connection(hosts=convert_type(ConfigMiddleware.settings()['app.elasticsearch.hosts'], 'list'))
+        connections.create_connection(hosts=convert_type(ConfigMiddleware.settings()['app.elasticsearch.hosts'],
+                                                         'list'))

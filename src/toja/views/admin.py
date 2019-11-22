@@ -1,4 +1,4 @@
-from elasticsearch_dsl import connections, Index
+from elasticsearch_dsl import Index
 from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
 

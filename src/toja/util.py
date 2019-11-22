@@ -1,12 +1,10 @@
 import cerberus
-import json
 import logging
 import smtplib
 
 from cgi import FieldStorage
 from email.mime.text import MIMEText
 from email.utils import formatdate
-from markupsafe import Markup
 
 
 def convert_type(value, target_type, default=None):
@@ -111,10 +109,10 @@ def send_email(request, recipient, sender, subject, text):  # pragma: no cover
             smtp.quit()
         except Exception as e:
             logging.getLogger("toja").error(str(e))
-            print(text)  # TODO: Remove
+            print(text)  # noqa TODO: Remove
     else:
         logging.getLogger("toja").error('Could not send e-mail as "app.email.smtp_host" setting not specified')
-        print(text)  # TODO: Remove
+        print(text)  # noqa TODO: Remove
 
 
 fieldstorage_type = cerberus.TypeDefinition('fieldstorage', (FieldStorage,), ())

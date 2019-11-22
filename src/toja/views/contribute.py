@@ -1,5 +1,3 @@
-import json
-
 from collections import OrderedDict
 from math import ceil
 from pyramid.httpexceptions import HTTPForbidden
