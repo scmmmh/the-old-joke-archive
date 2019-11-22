@@ -2,6 +2,7 @@ import click
 
 from .config import create_config
 from .db import init_db
+from .cron import cron
 
 
 @click.group()
@@ -12,3 +13,4 @@ def main(config):
 
 main.add_command(create_config)
 main.add_command(init_db)
+main.add_command(cron)
