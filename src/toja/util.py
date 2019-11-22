@@ -137,14 +137,17 @@ def date_to_json(date):
 
 
 def fancy_date(value):
+    """Generate a fancy date string."""
     return value.strftime('%B %d in the year %Y')
 
 
-def format_transcription(transcription):
-    return 'Text'
+def strftime(value, format):
+    """Apply a stftime format to a date value."""
+    return value.strftime(format)
 
 
 def includeme(config):
     config.get_jinja2_environment().filters['config'] = get_config_setting
     config.get_jinja2_environment().filters['zip'] = zip
     config.get_jinja2_environment().filters['fancy_date'] = fancy_date
+    config.get_jinja2_environment().filters['strftime'] = strftime

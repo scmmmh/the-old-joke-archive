@@ -41,6 +41,7 @@
           <th>Name</th>
           <th>E-Mail</th>
           <th>Status</th>
+          <th>Registered</th>
           <th>Trust</th>
           <th>Actions</th>
         </tr>
@@ -51,6 +52,7 @@
             <td><a href="{{ 'user.view'|route_url(uid=user.id) }}">{{ user.attributes.name }}</a></td>
             <td><a href="mailto:{{ user.email }}">{{ user.email }}</a></td>
             <td>{{ user.status|title }}</td>
+            <td>{{ user.created|fancy_date }} at {{ user.created|strftime('%H:%M') }}</td>
             <td>{{ user.trust|title }}</td>
             <td>
               <ul class="inline">
