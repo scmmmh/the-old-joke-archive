@@ -6,6 +6,7 @@ from sqlalchemy import and_
 
 from toja.models import Image, Transcription
 from toja.session import require_logged_in
+from toja.tasks import index_joke
 from toja.util import Validator
 
 
@@ -58,6 +59,7 @@ def transcriptions_post(request):
                                           attributes={})
             request.dbsession.add(transcription)
             request.dbsession.flush()
+            index_joke.send(tid=transcription.id)
             return {'data': transcription.to_jsonapi()}
         else:
             raise HTTPNotFound()
@@ -96,6 +98,7 @@ def transcription_patch(request):
         if transcription:
             transcription.text = json.loads(json.dumps(params['data']['attributes']['text']).replace('--', '—'))
             request.dbsession.add(transcription)
+            index_joke.send(tid=transcription.id)
             return {'data': transcription.to_jsonapi()}
         else:
             raise HTTPNotFound()

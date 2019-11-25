@@ -30,35 +30,32 @@
 </div>
 {% endmacro %}
 
-{% macro joke_snippet() %}
+{% macro joke_snippet(joke) %}
+{% from 'toja:templates/macros/transcriptions.jinja2' import format_transcription %}
 <section class="joke-snippet">
   <div>
     <div class="source-image">
-      <a href="#" data-action="image-popup"><img src="{{ 'toja:static/img/tmp-original.png'|static_url() }}" alt=""></a>
+      <a href="#" data-action="image-popup"><img src="{{ 'joke.image'|route_url(jid=joke.id) }}" alt=""></a>
     </div>
   </div>
   <div>
     <div class="metadata">
       <div>
-        <h2><a href="{{ 'joke.view'|route_url(jid=1) }}">Lloyd’s Weekly Newspaper</a></h2>
-        <p>Jokes of the day</p>
+        <h2>Untitled</h2>
+        <p>Unundertitled</p>
       </div>
       <time>
-        <span>1891</span>
-        <span>12 April</span>
+        <span>Year</span>
+        <span>Day Month</span>
       </time>
     </div>
-    <div class="snippet" style="width:100%;">
-      <p>Another Lapsus.&mdash;Lovely <strong>Woman</strong>: Just look at this? It's the best photo I've ever had
-        taken. All the crudities absolutely toned down.	&hellip;
-    </div>
+    <div class="snippet" style="width:100%;">{{ format_transcription(joke.transcription.text) }}</div>
     <div class="classification">
       <ul class="inline">
-        <li><a href="#">Dialog</a></li>
+        <li><a href="#">Categories</a></li>
       </ul>
       <ul class="inline">
-        <li><a href="#">beauty</a></li>
-        <li><a href="#">photograph</a></li>
+        <li><a href="#">Tags</a></li>
     </div>
   </div>
 </section>
