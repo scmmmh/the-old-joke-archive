@@ -41,12 +41,12 @@
   <div>
     <div class="metadata">
       <div>
-        <h2>Untitled</h2>
-        <p>Unundertitled</p>
+        <h2><a href="{{ 'joke.view'|route_url(jid=joke.id) }}">{{ joke.attribute(request|config('app.jokes.fields.title')) }}</a></h2>
+        <p>{{ joke.attribute(request|config('app.jokes.fields.sub_title')) }}</p>
       </div>
       <time>
-        <span>Year</span>
-        <span>Day Month</span>
+        <span>{{ joke.attribute(request|config('app.jokes.fields.date'))|fancy_date(format='year') }}</span>
+        <span>{{ joke.attribute(request|config('app.jokes.fields.date'))|fancy_date(format='month-day') }}</span>
       </time>
     </div>
     <div class="snippet" style="width:100%;">{{ format_transcription(joke.transcription.text) }}</div>

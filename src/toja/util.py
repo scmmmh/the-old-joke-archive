@@ -3,8 +3,10 @@ import logging
 import smtplib
 
 from cgi import FieldStorage
+from datetime import datetime
 from email.mime.text import MIMEText
 from email.utils import formatdate
+from jinja2 import Undefined
 
 
 def convert_type(value, target_type, default=None):
@@ -136,9 +138,95 @@ def date_to_json(date):
     return date.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
-def fancy_date(value):
-    """Generate a fancy date string."""
-    return value.strftime('%B %d in the year %Y')
+MONTHS = {1: 'January',
+          2: 'February',
+          3: 'March',
+          4: 'April',
+          5: 'May',
+          6: 'June',
+          7: 'July',
+          8: 'August',
+          9: 'September',
+          10: 'October',
+          11: 'November',
+          12: 'December'}
+
+
+def fancy_date(value, format='long'):
+    """Generate a fancy date string. Handles both :class:`~datetime.datetime` objects and potentially partial
+    YYYY-MM-DD string values. The format is one of:
+
+    * long - Month day in the year (with fallbacks for missing data)
+    * year - Just a year
+    * month - Just a month as the month name
+    * day - Just the day of the month with suffix
+    * any combination of the last three separated by ``'-'``, with an optional `'`?`'` prefix to optional parts."""
+    if format == 'long':
+        if isinstance(value, datetime):
+            day = fancy_date(value, format='day')
+            month = fancy_date(value, format='month')
+            year = fancy_date(value, format='year')
+            if year:
+                if month:
+                    if day:
+                        return '{0} {1} in the year {2}'.format(month, day, year)
+                    else:
+                        return '{0} in the year {1}'.format(month, year)
+                else:
+                    return year
+            return Undefined(format='long')
+        else:
+            pass
+    elif format == 'year':
+        if isinstance(value, datetime):
+            return value.year
+        else:
+            value = value.split('-')
+            if len(value) >= 1:
+                return int(value[0])
+        return Undefined(name='year')
+    elif format == 'month':
+        month = Undefined(name='month')
+        if isinstance(value, datetime):
+            month = value.month
+        else:
+            value = value.split('-')
+            if len(value) >= 2:
+                month = int(value[1])
+        if month:
+            return MONTHS[month]
+        return month
+    elif format == 'day':
+        day = Undefined(name='day')
+        if isinstance(value, datetime):
+            day = value.day
+        else:
+            value = value.split('-')
+            if len(value) == 3:
+                day = int(value[2])
+        if day:
+            if day in [1, 21, 31]:
+                return '{0}st'.format(day)
+            elif day in [2, 22]:
+                return '{0}nd'.format(day)
+            elif day == 3:
+                return '{0}rd'.format(day)
+            else:
+                return '{0}th'.format(day)
+        return day
+    else:
+        format = format.split('-')
+        result = []
+        for part in format:
+            if part.startswith('?'):
+                part_value = fancy_date(value, part[1:])
+            else:
+                part_value = fancy_date(value, part)
+            if part_value:
+                result.append(part_value)
+            elif not part.startswith('?'):
+                return Undefined(name=format)
+        return ' '.join(result)
 
 
 def strftime(value, format):

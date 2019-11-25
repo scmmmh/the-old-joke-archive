@@ -57,35 +57,14 @@
     <h2>Metadata</h2>
     <table class="layout-1-2">
       <tbody>
-        <tr>
-          <th scope="row">Source</th>
-          <td><a href="#">Lloyd's Weekly Newspaper</a></td>
-        </tr>
-        <tr>
-          <th scope="row">Section</th>
-          <td><a href="#">Jokes of the day</a></td>
-        </tr>
-        <tr>
-          <th scope="row">Source type</th>
-          <td><a href="#">Newspaper</a></td>
-        </tr>
-        <tr>
-          <th scope="row">Joke type</th>
-          <td><a href="#">Dialog</a></td>
-        </tr>
-        <tr>
-          <th scope="row">Keywords</th>
-          <td>
-            <ul class="inline comma">
-              <li><a href="#">beauty</a></li>
-              <li><a href="#">photograph</a></li>
-            </ul>
-          </td>
-        </tr>
-        <tr>
-          <th scope="row">Publication Date</th>
-          <td><a href="#">12/04/1891</a></td>
-        </tr>
+        {% for field, dtype, label in metadata_config %}
+          {% if field in joke.parent.attributes and joke.parent.attributes[field] %}
+          <tr>
+            <th scope="row">{{ label }}</th>
+            <td><a href="">{% if dtype == 'date' %}{{ joke.parent.attributes[field]|fancy_date('long') }}{% else %}{{ joke.parent.attributes[field] }}{% endif %}</td></td>
+          </tr>
+          {% endif %}
+        {% endfor %}
       </tbody>
     </table>
     <h2>Characters</h2>
@@ -149,10 +128,10 @@
   <div class="cell-1-7">{{ visual_separator() }}</div>
   <h2 class="cell-1-7 align-center alt-font">Laugh at this!</h2>
   <div class="cell-1-4">
-    {{ joke_snippet() }}
+    {{ joke_snippet(joke) }}
   </div>
   <div class="cell-4-7">
-    {{ joke_snippet() }}
+    {{ joke_snippet(joke) }}
   </div>
 </section>
 {% endblock main %}

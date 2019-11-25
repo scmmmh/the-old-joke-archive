@@ -1,4 +1,5 @@
 from datetime import datetime
+from jinja2 import Undefined
 from sqlalchemy import (Column, Index, Integer, Unicode, ForeignKey, DateTime)
 from sqlalchemy.orm import relationship
 from sqlalchemy_json import NestedMutableJson
@@ -32,6 +33,21 @@ class Image(Base):
                                              "Transcription.status == 'final')",
                                  uselist=False)
     # reviews = relationship('Review', secondary='images_reviews')
+
+    def attribute(self, path):
+        if path:
+            if path.startswith('source.'):
+                if self.parent:
+                    return self.parent.attribute(path[7:])
+                else:
+                    return Undefined(name=path)
+            else:
+                if path in self.attributes:
+                    return self.attributes[path]
+                else:
+                    return Undefined(name=path)
+        else:
+            return Undefined()
 
     def padded_id(self):
         """Returns the id padded with zeroes as a triple."""

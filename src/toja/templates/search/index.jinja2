@@ -3,7 +3,7 @@
 {% block title %}{% for part in title %}{{ part[1] }} {% endfor %}{% endblock title %}
 
 {% block main %}
-{% from 'toja:templates/macros/jokes.jinja2' import joke_snippet %}
+{% from 'toja:templates/macros/jokes.jinja2' import joke_snippet with context%}
 {% from 'toja:templates/macros/icons.jinja2' import icon %}
 <section class="grid">
   <section class="cell-1-5">

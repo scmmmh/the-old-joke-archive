@@ -24,7 +24,7 @@ def upload(request):
         for field, datatype in metadata:
             upload_source_schema[field] = {'type': 'string'}
             if datatype == 'date':
-                upload_source_schema[field]['regex'] = '([0-9]{4}-[0-9]{2}-[0-9]{2})?'
+                upload_source_schema[field]['regex'] = '([0-9]{4}(-[0-9]{2}(-[0-9]{2})?)?)?'
         validator = Validator(upload_source_schema)
         storage_path = get_config_setting(request, 'app.images.storage.path')
         if validator.validate(request.params) and storage_path:
@@ -102,7 +102,7 @@ def edit(request):
             for field, datatype in metadata:
                 edit_source_schema[field] = {'type': 'string'}
                 if datatype == 'date':
-                    edit_source_schema[field]['regex'] = '([0-9]{4}-[0-9]{2}-[0-9]{2})?'
+                    edit_source_schema[field]['regex'] = '([0-9]{4}(-[0-9]{2}(-[0-9]{2})?)?)?'
             validator = Validator(edit_source_schema)
             if validator.validate(request.params):
                 for name, _ in metadata:
