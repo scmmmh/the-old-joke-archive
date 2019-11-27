@@ -9,6 +9,7 @@ toja = {editable = true,path = "."}
 flake8 = "*"
 flake8-print = "*"
 pre-commit = "*"
+tox = "*"
 
 [packages]
 pyramid = "*"

@@ -19,7 +19,13 @@ requires = [
     'click',
     'pyramid_nacl_session',
     'decorator',
-    'cerberus'
+    'cerberus',
+    'sqlalchemy_json',
+    'email_validator',
+    'pillow',
+    'dramatiq[rabbitmq, watch]',
+    'tesserocr',
+    'elasticsearch-dsl<8.0.0,>=7.0.0'
     ]
 
 tests_require = [
