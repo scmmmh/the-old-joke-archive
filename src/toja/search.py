@@ -1,4 +1,5 @@
-from elasticsearch_dsl import connections, Document, Text, Keyword, Date
+from elasticsearch_dsl import (connections, Document, Text, Keyword, Date, FacetedSearch, TermsFacet,
+                               DateHistogramFacet)
 
 from .util import convert_type
 
@@ -13,6 +14,18 @@ class Joke(Document):
 
     class Index:
         name = 'toja_jokes'
+
+
+class JokeSearch(FacetedSearch):
+    """Faceted search helper."""
+
+    doc_types = (Joke, )
+    fields = ['text']
+    facets = {
+        'pub_title': TermsFacet(field='pub_title'),
+        'pub_section': TermsFacet(field='pub_section'),
+        'pub_date': DateHistogramFacet(field='pub_date', interval='year')
+    }
 
 
 def update_search_param(request, parameter, new_value):

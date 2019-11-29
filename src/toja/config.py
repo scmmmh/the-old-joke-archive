@@ -13,12 +13,16 @@ ANNOTATIONS = [{'name': 'title', 'label': 'Titel'},
                {'name': 'aside', 'label': 'Aside'},
                {'name': 'question', 'label': 'Question'},
                {'name': 'answer', 'label': 'Answer'}]
+SEARCH_FACETS = [{'name': 'pub_title', 'type': 'text', 'label': 'Publication'},
+                 {'name': 'pub_section', 'type': 'text', 'label': 'Section'},
+                 {'name': 'pub_date', 'type': 'date', 'label': 'Date'}]
 
 SETTINGS = {'SOURCE_METADATA': SOURCE_METADATA,
             'JOKE_SNIPPET_FIELD_TITLE': JOKE_SNIPPET_FIELD_TITLE,
             'JOKE_SNIPPET_FIELD_SUBTITLE': JOKE_SNIPPET_FIELD_SUBTITLE,
             'JOKE_SNIPPET_FIELD_DATE': JOKE_SNIPPET_FIELD_DATE,
-            'ANNOTATIONS': ANNOTATIONS}
+            'ANNOTATIONS': ANNOTATIONS,
+            'SEARCH_FACETS': SEARCH_FACETS}
 
 
 def get_setting(request, setting):

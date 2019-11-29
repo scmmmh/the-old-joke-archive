@@ -2,7 +2,7 @@ import math
 
 from pyramid.view import view_config
 
-from ..search import Joke
+from ..search import JokeSearch
 from ..models import Image
 
 
@@ -21,12 +21,12 @@ def index(request):
             pass
 
     # Process parameters
-    query = Joke.search()
     if q:
-        query = query.query('match', text=q)
+        query = JokeSearch(q)
         title.append((None, 'containing'))
         title.append(('color-brand', q))
     else:
+        query = JokeSearch()
         title.insert(0, (None, 'All'))
 
     # Run search
@@ -45,4 +45,5 @@ def index(request):
                            'page_start': page_start,
                            'page_end': page_end},
             'jokes': jokes,
+            'facets': results.facets,
             'title': title}
