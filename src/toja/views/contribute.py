@@ -6,7 +6,7 @@ from sqlalchemy import and_
 
 from ..models import Image
 from ..session import require_logged_in
-from ..util import get_config_setting
+from ..config import ANNOTATIONS
 
 
 @view_config(route_name='contribute', renderer='toja:templates/contribute/index.jinja2')
@@ -42,11 +42,7 @@ def workbench(request):
 def workbench_edit(request):
     """Handle the transcription workbench page for a single source."""
     if request.current_user.trust == 'full':
-        annotations = []
-        for key in get_config_setting(request, 'app.annotations', target_type='list'):
-            annotations.append((key, {'label': get_config_setting(request,
-                                                                  'app.annotations.{0}.label'.format(key),
-                                                                  default=key)}))
+        annotations = [(annotation['name'], annotation) for annotation in ANNOTATIONS]
 
         return {'config': {'baseURL': request.route_url('api'),
                            'sourceId': int(request.matchdict['sid']),

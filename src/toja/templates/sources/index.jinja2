@@ -31,8 +31,8 @@
           </form></td>
         </tr>
         <tr>
-          {% for label in request|config('app.sources.metadata.labels', target_type='list', default=[]) %}
-            <th>{{ label }}</th>
+          {% for field in request|setting('SOURCE_METADATA') %}
+            <th>{{ field.label }}</th>
           {% endfor %}
           <th>Status</th>
           <th>Actions</th>
@@ -41,11 +41,11 @@
       <tbody>
         {% for source in sources %}
           <tr>
-            {% for name in request|config('app.sources.metadata.fields', target_type='list', default=[]) %}
+            {% for field in request|setting('SOURCE_METADATA') %}
               {% if loop.index == 1 %}
-                <td><a href="{{ 'source.view'|route_url(sid=source.id) }}">{{ source.attributes[name] }}</a></td>
+                <td><a href="{{ 'source.view'|route_url(sid=source.id) }}">{{ source.attributes[field.name] }}</a></td>
               {% else %}
-                <td>{{ source.attributes[name] }}</td>
+                <td>{{ source.attributes[field.name] }}</td>
               {% endif %}
             {% endfor %}
             <td>{{ source.status|title }}</td>

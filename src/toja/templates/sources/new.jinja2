@@ -9,11 +9,11 @@
     <h1 class="alt-font margin-bottom">Contribute new Sources</h1>
     {{ field('source', 'file', 'Source file') }}
     {{ field('license', 'checkbox', 'Please confirm that you are permitted to upload this  source image under a CC-BY-4.0 license. For more details on the license, please use the Copyright questions link in the page\'s footer')}}
-    {% for name, datatype, label in request|config('app.sources.metadata.fields', target_type='list', default=[])|zip(request|config('app.sources.metadata.types', target_type='list', default=[]), request|config('app.sources.metadata.labels', target_type='list', default=[])) %}
-      {% if datatype == 'date' %}
-        {{ field(name, 'text', label) }}
+    {% for metadata_field in request|setting('SOURCE_METADATA') %}
+      {% if metadata_field.type == 'date' %}
+        {{ field(metadata_field.name, 'text', metadata_field.label) }}
       {% else %}
-        {{ field(name, datatype, label) }}
+        {{ field(metadata_field.name, metadata_field.type, metadata_field.label) }}
       {% endif %}
     {% endfor %}
     <div class="flex margin-top">

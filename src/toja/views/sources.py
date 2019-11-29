@@ -10,6 +10,7 @@ from sqlalchemy import and_
 from ..models import Image
 from ..permissions import require_permission, check_permission
 from ..util import get_config_setting, Validator
+from ..config import SOURCE_METADATA
 
 
 @view_config(route_name='contribute.sources', renderer='toja:templates/sources/new.jinja2')
@@ -19,12 +20,10 @@ def upload(request):
     if request.method == 'POST':
         upload_source_schema = {'source': {'type': 'fieldstorage', 'required': True},
                                 'license': {'type': 'string', 'required': True, 'allowed': ('on', )}}
-        metadata = list(zip(get_config_setting(request, 'app.sources.metadata.fields', target_type='list', default=[]),
-                            get_config_setting(request, 'app.sources.metadata.types', target_type='list', default=[])))
-        for field, datatype in metadata:
-            upload_source_schema[field] = {'type': 'string'}
-            if datatype == 'date':
-                upload_source_schema[field]['regex'] = '([0-9]{4}(-[0-9]{2}(-[0-9]{2})?)?)?'
+        for field in SOURCE_METADATA:
+            upload_source_schema[field['name']] = {'type': 'string'}
+            if field['type'] == 'date':
+                upload_source_schema[field['name']]['regex'] = '([0-9]{4}(-[0-9]{2}(-[0-9]{2})?)?)?'
         validator = Validator(upload_source_schema)
         storage_path = get_config_setting(request, 'app.images.storage.path')
         if validator.validate(request.params) and storage_path:
@@ -32,8 +31,8 @@ def upload(request):
                           type='source',
                           status='processing',
                           attributes={'mimetype': guess_type(request.params['source'].filename)[0]})
-            for field, _ in metadata:
-                image.attributes[field] = request.params[field]
+            for field in SOURCE_METADATA:
+                image.attributes[field['name']] = request.params[field['name']]
             request.dbsession.add(image)
             request.dbsession.flush()
             padded_id = image.padded_id()
@@ -95,18 +94,14 @@ def edit(request):
                 edit_source_schema['status'] = {'type': 'string',
                                                 'required': True,
                                                 'allowed': ['processing', 'completed', 'deleted']}
-            metadata = list(zip(get_config_setting(request, 'app.sources.metadata.fields', target_type='list',
-                                                   default=[]),
-                                get_config_setting(request, 'app.sources.metadata.types', target_type='list',
-                                                   default=[])))
-            for field, datatype in metadata:
-                edit_source_schema[field] = {'type': 'string'}
-                if datatype == 'date':
-                    edit_source_schema[field]['regex'] = '([0-9]{4}(-[0-9]{2}(-[0-9]{2})?)?)?'
+            for field in SOURCE_METADATA:
+                edit_source_schema[field['name']] = {'type': 'string'}
+                if field['type'] == 'date':
+                    edit_source_schema[field['name']]['regex'] = '([0-9]{4}(-[0-9]{2}(-[0-9]{2})?)?)?'
             validator = Validator(edit_source_schema)
             if validator.validate(request.params):
-                for name, _ in metadata:
-                    source.attributes[name] = request.params[name]
+                for field in SOURCE_METADATA:
+                    source.attributes[field['name']] = request.params[field['name']]
                 if check_permission(request, request.current_user, 'sources.admin'):
                     source.status = request.params['status']
                 if check_permission(request, request.current_user, 'sources.admin'):

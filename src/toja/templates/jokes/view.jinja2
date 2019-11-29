@@ -2,7 +2,7 @@
 
 {% block title %}{{ joke.attributes.title }}{% endblock title %}
 {% block main %}
-{% from 'toja:templates/macros/jokes.jinja2' import joke_ratings, joke_snippet %}
+{% from 'toja:templates/macros/jokes.jinja2' import joke_ratings, joke_snippet with context %}
 {% from 'toja:templates/macros/ui.jinja2' import visual_separator %}
 {% from 'toja:templates/macros/transcriptions.jinja2' import format_transcription %}
 <section class="grid">
@@ -57,12 +57,12 @@
     <h2>Metadata</h2>
     <table class="layout-1-2">
       <tbody>
-        {% for field, dtype, label in metadata_config %}
-          {% if field in joke.parent.attributes and joke.parent.attributes[field] %}
-          <tr>
-            <th scope="row">{{ label }}</th>
-            <td><a href="">{% if dtype == 'date' %}{{ joke.parent.attributes[field]|fancy_date('long') }}{% else %}{{ joke.parent.attributes[field] }}{% endif %}</td></td>
-          </tr>
+        {% for field in request|setting('SOURCE_METADATA') %}
+          {% if field.name in joke.parent.attributes and joke.parent.attributes[field.name] %}
+            <tr>
+              <th scope="row">{{ field.label }}</th>
+              <td><a href="">{% if field.type == 'date' %}{{ joke.parent.attributes[field.name]|fancy_date('long') }}{% else %}{{ joke.parent.attributes[field.name] }}{% endif %}</td></td>
+            </tr>
           {% endif %}
         {% endfor %}
       </tbody>

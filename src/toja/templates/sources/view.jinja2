@@ -12,10 +12,10 @@
   <div class="cell-5-7">
     <table>
       <tbody>
-        {% for name, datatype, label in request|config('app.sources.metadata.fields', target_type='list', default=[])|zip(request|config('app.sources.metadata.types', target_type='list', default=[]), request|config('app.sources.metadata.labels', target_type='list', default=[])) %}
+        {% for metadata_field in request|setting('SOURCE_METADATA') %}
           <tr>
-            <th scope="row">{{ label }}</th>
-            <td>{{ source.attributes[name] }}</td>
+            <th scope="row">{{ metadata_field.label }}</th>
+            <td>{% if metadata_field.type == 'date' %}{{ source.attributes[metadata_field.name]|fancy_date('long') }}{% else %}{{ source.attributes[metadata_field.name] }}{% endif %}</td>
           </tr>
         {% endfor %}
       </tbody>

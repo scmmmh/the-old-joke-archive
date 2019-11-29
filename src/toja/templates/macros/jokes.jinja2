@@ -41,12 +41,12 @@
   <div>
     <div class="metadata">
       <div>
-        <h2><a href="{{ 'joke.view'|route_url(jid=joke.id) }}">{{ joke.attribute(request|config('app.jokes.fields.title')) }}</a></h2>
-        <p>{{ joke.attribute(request|config('app.jokes.fields.sub_title')) }}</p>
+        <h2><a href="{{ 'joke.view'|route_url(jid=joke.id) }}">{{ joke.attribute(request|setting('JOKE_SNIPPET_FIELD_TITLE')) }}</a></h2>
+        <p>{{ joke.attribute(request|setting('JOKE_SNIPPET_FIELD_SUBTITLE')) }}</p>
       </div>
       <time>
-        <span>{{ joke.attribute(request|config('app.jokes.fields.date'))|fancy_date(format='year') }}</span>
-        <span>{{ joke.attribute(request|config('app.jokes.fields.date'))|fancy_date(format='month-day') }}</span>
+        <span>{{ joke.attribute(request|setting('JOKE_SNIPPET_FIELD_DATE'))|fancy_date(format='year') }}</span>
+        <span>{{ joke.attribute(request|setting('JOKE_SNIPPET_FIELD_DATE'))|fancy_date(format='month-day') }}</span>
       </time>
     </div>
     <div class="snippet" style="width:100%;">{{ format_transcription(joke.transcription.text) }}</div>

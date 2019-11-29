@@ -5,6 +5,7 @@ from sqlalchemy import and_
 from .middleware import DBSessionMiddleware
 from ..models import Transcription
 from ..search import Joke
+from ..config import SOURCE_METADATA
 
 
 @dramatiq.actor()
@@ -31,4 +32,11 @@ def index_joke(tid):
     if transcription:
         joke = Joke(text=transcription.pure_text(),
                     meta={'id': transcription.source.id})
+        for field in SOURCE_METADATA:
+            value = transcription.source.attribute('source.{0}'.format(field['name']))
+            if value:
+                if field['type'] == 'date':
+                    if len(value.split('-')) < 3:
+                        value = '{0}{1}'.format(value, '-01' * (3 - len(value.split('-'))))
+                joke[field['name']] = value
         joke.save()

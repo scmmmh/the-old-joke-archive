@@ -7,11 +7,11 @@
 <div class="grid">
   <form action="{{ 'source.edit'|route_url(sid=source.id) }}" method="post" class="cell-1-4">
     <h1 class="alt-font margin-bottom">Edit a Source</h1>
-    {% for name, datatype, label in request|config('app.sources.metadata.fields', target_type='list', default=[])|zip(request|config('app.sources.metadata.types', target_type='list', default=[]), request|config('app.sources.metadata.labels', target_type='list', default=[])) %}
+    {% for metadata_field in request|setting('SOURCE_METADATA') %}
       {% if datatype == 'date' %}
-        {{ field(name, 'text', label, attributes={'value': source.attributes[name]}) }}
+        {{ field(metadata_field.name, 'text', label, attributes={'value': source.attributes[metadata_field.name]}) }}
       {% else %}
-        {{ field(name, datatype, label, attributes={'value': source.attributes[name]}) }}
+        {{ field(metadata_field.name, metadata_field.type, metadata_field.label, attributes={'value': source.attributes[metadata_field.name]}) }}
       {% endif %}
     {% endfor %}
     {% if request|permitted('sources.admin') %}

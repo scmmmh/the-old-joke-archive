@@ -161,22 +161,21 @@ def fancy_date(value, format='long'):
     * month - Just a month as the month name
     * day - Just the day of the month with suffix
     * any combination of the last three separated by ``'-'``, with an optional `'`?`'` prefix to optional parts."""
+    if not value:
+        return value
     if format == 'long':
-        if isinstance(value, datetime):
-            day = fancy_date(value, format='day')
-            month = fancy_date(value, format='month')
-            year = fancy_date(value, format='year')
-            if year:
-                if month:
-                    if day:
-                        return '{0} {1} in the year {2}'.format(month, day, year)
-                    else:
-                        return '{0} in the year {1}'.format(month, year)
+        day = fancy_date(value, format='day')
+        month = fancy_date(value, format='month')
+        year = fancy_date(value, format='year')
+        if year:
+            if month:
+                if day:
+                    return '{0} {1} in the year {2}'.format(month, day, year)
                 else:
-                    return year
-            return Undefined(format='long')
-        else:
-            pass
+                    return '{0} in the year {1}'.format(month, year)
+            else:
+                return year
+        return Undefined(format='long')
     elif format == 'year':
         if isinstance(value, datetime):
             return value.year

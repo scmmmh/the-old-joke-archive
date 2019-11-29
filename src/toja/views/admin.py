@@ -28,6 +28,7 @@ def search(request):
                         index[1].delete()
                 for es_type in types:
                     es_type[1].init()
+                index_all.send()
             elif request.params['action'] == 'index':
                 index_all.send()
         return HTTPFound(request.route_url('admin.search'))

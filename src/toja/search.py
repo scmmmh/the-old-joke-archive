@@ -1,4 +1,4 @@
-from elasticsearch_dsl import connections, Document, Text
+from elasticsearch_dsl import connections, Document, Text, Keyword, Date
 
 from .util import convert_type
 
@@ -7,9 +7,12 @@ class Joke(Document):
     """Elasticsearch document holding one joke."""
 
     text = Text()
+    pub_title = Keyword()
+    pub_section = Keyword()
+    pub_date = Date()
 
     class Index:
-        name = 'jokes'
+        name = 'toja_jokes'
 
 
 def update_search_param(request, parameter, new_value):
