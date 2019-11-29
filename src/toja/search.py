@@ -16,6 +16,7 @@ class Joke(Document):
 
 
 def update_search_param(request, parameter, new_value):
+    """Update the request ``parameter`` with a ``new_value``, overwriting any existing value."""
     params = []
     found = False
     for key in request.params.keys():
