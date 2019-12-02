@@ -64,13 +64,16 @@
             {% for value in facets[facet.name] %}
               {% if value[1] > 0 %}
               <li>
-                <a href="#">
+                <a href="#" class="selected">
                   <span>{% if facet.type == 'date' %}{{ value[0]|fancy_date('year') }}{% else %}{{ value[0] }}{% endif %}</span>
+                  <span>{{ value[1] }}</span>
+                  {#
                   {% if value[2] %}
                     {{ icon('checkbox-marked') }}
                   {% else %}
                     {{ icon('checkbox-blank-outline') }}
                   {% endif %}
+                  #}
                 </a>
               </li>
               {% endif %}

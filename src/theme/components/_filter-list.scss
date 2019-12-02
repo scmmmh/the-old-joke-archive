@@ -6,9 +6,25 @@ ul.filter-list {
 
         a {
             display: flex;
+            font-size: var(--font-size-small);
 
-            > span {
+            &.selected {
+                background: var(--color-brand);
+                border-radius: var(--border-radius-large);
+                padding: 0 0 0 0.5rem;
+                color: var(--color-light);
+            }
+
+            > span:nth-child(1) {
                 flex: 1 1 auto;
+            }
+
+            > span:nth-child(2) {
+                flex: 0 0 auto;
+                color: var(--color-dark);
+                background: var(--color-light-gray);
+                border-radius: var(--border-radius-large);
+                padding: 0.1rem 0.5rem;
             }
 
             > svg {
