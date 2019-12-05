@@ -18,7 +18,7 @@
                 </li>
             </ul>
             <editor-menu-bar :editor="editor" v-slot="{ commands, isActive }">
-                <ul role="menu" class="menu">
+                <ul role="menu" class="menu" style="flex-wrap:wrap;">
                     <li v-for="(value, key) in annotations">
                         <a role="menuitem" :aria-current="isActive[key]()" @click="commands[key]">{{ value.label }}</a>
                     </li>

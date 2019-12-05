@@ -6,7 +6,7 @@ SOURCE_METADATA = [{'name': 'pub_title', 'type': 'text', 'label': 'Publication'}
 JOKE_SNIPPET_FIELD_TITLE = 'source.pub_title'
 JOKE_SNIPPET_FIELD_SUBTITLE = 'source.pub_section'
 JOKE_SNIPPET_FIELD_DATE = 'pub_date'
-ANNOTATIONS = [{'name': 'title', 'label': 'Titel'},
+ANNOTATIONS = [{'name': 'title', 'label': 'Title'},
                {'name': 'attribution', 'label': 'Attribution'},
                {'name': 'speaker', 'label': 'Speaker'},
                {'name': 'speech', 'label': 'Speech'},
