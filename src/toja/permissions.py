@@ -102,13 +102,13 @@ def check_permission(request, user, permission):
                                                                    len(PERMISSIONS_GROUPS[perm[1]].
                                                                        intersection(set(user.groups))) > 0)))
             elif perm[0] == DYNAMIC_ROUTE:
-                obj = request.dbsession.query(perm[2]).filter(perm[2].id == int(request.matchdict[perm[3]])).first()
+                obj = request.dbsession.query(perm[2]).filter(perm[2].id == request.matchdict[perm[3]]).first()
                 if obj is not None:
                     stack.append(obj.allow(user, perm[1]))
                 else:
                     stack.append(False)
             elif perm[0] == DYNAMIC_ID:
-                obj = request.dbsession.query(perm[2]).filter(perm[2].id == int(perm[3])).first()
+                obj = request.dbsession.query(perm[2]).filter(perm[2].id == perm[3]).first()
                 if obj is not None:
                     stack.append(obj.allow(user, perm[1]))
                 else:
