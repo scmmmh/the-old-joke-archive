@@ -218,7 +218,7 @@ def index(request):
 
 
 @view_config(route_name='user.view', renderer='toja:templates/users/view.jinja2')
-@require_permission('users.view or @view user :uid')
+@require_permission('users.admin or @view user :uid')
 def view(request):
     """Handle displaying the user's profile."""
     user = request.dbsession.query(User).filter(User.id == request.matchdict['uid']).first()
