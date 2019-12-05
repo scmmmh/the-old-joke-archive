@@ -1002,16 +1002,16 @@ tbody th, tbody td {
       width: 25%; } }
 
 ul.filter-list li:before {
-  content: ""; }
+  display: none; }
 
 ul.filter-list li a {
   display: flex;
   font-size: var(--font-size-small); }
   ul.filter-list li a.selected {
-    background: var(--color-brand);
-    border-radius: var(--border-radius-large);
-    padding: 0 0 0 0.5rem;
-    color: var(--color-light); }
+    color: var(--color-brand);
+    font-weight: bold; }
+    ul.filter-list li a.selected > span:nth-child(2) {
+      color: var(--color-brand); }
   ul.filter-list li a > span:nth-child(1) {
     flex: 1 1 auto; }
   ul.filter-list li a > span:nth-child(2) {

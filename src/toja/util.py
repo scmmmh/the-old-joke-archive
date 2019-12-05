@@ -233,8 +233,13 @@ def strftime(value, format):
     return value.strftime(format)
 
 
+def format(value, *args, **kwargs):
+    return value.format(*args, **kwargs)
+
+
 def includeme(config):
     config.get_jinja2_environment().filters['config'] = get_config_setting
     config.get_jinja2_environment().filters['zip'] = zip
     config.get_jinja2_environment().filters['fancy_date'] = fancy_date
     config.get_jinja2_environment().filters['strftime'] = strftime
+    config.get_jinja2_environment().filters['format'] = format

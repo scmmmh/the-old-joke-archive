@@ -57,34 +57,37 @@
     </div>
     <h3 class="alt-font">Filters</h3>
     {% for facet in request|setting('SEARCH_FACETS') %}
-      <section>
-        <h4 class="flex"><span>{{ facet.label }}</span> <a href="#" class="shrink" aria-label="Collapse the list of {{ facet.label|lower }}">{{ icon('minus-box') }}</a></h4>
-        <ul class="filter-list expanded">
-          {% if facet.name in facets %}
-            {% for value in facets[facet.name] %}
-              {% if value[1] > 0 %}
-              <li>
-                <a href="#" class="selected">
-                  <span>{% if facet.type == 'date' %}{{ value[0]|fancy_date('year') }}{% else %}{{ value[0] }}{% endif %}</span>
-                  <span>{{ value[1] }}</span>
-                  {#
-                  {% if value[2] %}
-                    {{ icon('checkbox-marked') }}
+      {% if facets[facet.name] %}
+        <section>
+          <h4 class="flex"><span>{{ facet.label }}</span> <a href="#" class="shrink" aria-label="Collapse the list of {{ facet.label|lower }}">{{ icon('minus-box') }}</a></h4>
+          <ul class="filter-list expanded">
+            {% if facet.name in facets %}
+              {% for value in facets[facet.name] %}
+                {% if value[1] > 0 %}
+                  {% if facet.type == 'date' %}
+                    {% set facet_value = value[0]|strftime('%Y-%m-%dT%H:%M:%SZ')|replace(':', '%%%') %}
                   {% else %}
-                    {{ icon('checkbox-blank-outline') }}
+                    {% set facet_value = value[0]|replace(':', '%%%') %}
                   {% endif %}
-                  #}
-                </a>
-              </li>
-              {% endif %}
-            {% endfor %}
-          {% endif %}
-        </ul>
-      </section>
+                <li>
+                  {% if value[2] %}
+                    <a href="{{ request|remove_search_param('filter', '{0}:{1}'|format(facet.name, facet_value)) }}" class="selected">
+                  {% else %}
+                    <a href="{{ request|add_search_param('filter', '{0}:{1}'|format(facet.name, facet_value)) }}">
+                  {% endif %}
+                    <span>{% if facet.type == 'date' %}{{ value[0]|fancy_date('year') }}{% else %}{{ value[0] }}{% endif %}</span>
+                    <span>{{ value[1] }}</span>
+                  </a>
+                </li>
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+          </ul>
+        </section>
+      {% endif %}
     {% endfor %}
     <div class="btn-group">
       <a href="{{ 'search'|route_url() }}" class="btn alt-secondary">Reset</a>
-      <input type="submit" class="btn" value="Update"/>
     </div>
   </form>
 </section>

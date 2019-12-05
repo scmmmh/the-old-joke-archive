@@ -1,7 +1,7 @@
 ul.filter-list {
     li {
         &:before {
-            content: "";
+            display: none;
         }
 
         a {
@@ -9,10 +9,12 @@ ul.filter-list {
             font-size: var(--font-size-small);
 
             &.selected {
-                background: var(--color-brand);
-                border-radius: var(--border-radius-large);
-                padding: 0 0 0 0.5rem;
-                color: var(--color-light);
+                color: var(--color-brand);
+                font-weight: bold;
+
+                > span:nth-child(2) {
+                    color: var(--color-brand);
+                }
             }
 
             > span:nth-child(1) {
