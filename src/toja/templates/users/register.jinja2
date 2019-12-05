@@ -8,6 +8,14 @@
 <form action="{{ 'user.register'|route_url() }}" method="post" class="margin-top">
   {{ field('email', 'email', 'E-Mail Address') }}
   {{ field('name', 'text', 'Name') }}
+  <div class="margin-top">
+    <p class="{{ 'error' if 'icon' in errors else ''}}">Please select the image that looks most like a {{ selected_icon[1] }}:</p>
+    <div class="flex verification">
+      {% for idx, data in verification_icons %}
+        <label><input type="radio" name="icon" value="{{ idx }}"/>{{ icon(data[0]) }}</label>
+      {% endfor %}
+    </div>
+  </div>
   <div class="flex align-center margin-top">
     <div class="shrink">
       <a href="{{ 'root'|route_url() }}">&larr; Don't sign up</a>

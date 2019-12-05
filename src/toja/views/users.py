@@ -4,6 +4,7 @@ from hashlib import sha512
 from math import ceil
 from pyramid.httpexceptions import HTTPFound, HTTPNotFound
 from pyramid.view import view_config
+from random import sample, choice
 from secrets import token_hex
 from sqlalchemy import and_
 
@@ -32,7 +33,14 @@ register_schema = {'email': {'type': 'string',
                              'validator': [valid_email]},
                    'name': {'type': 'string',
                             'required': True,
-                            'empty': False}}
+                            'empty': False},
+                   'icon': {'type': 'string',
+                            'required': True,
+                            'allowed': []}}
+VALIDATION_ICONS = [('pencil', 'pencil'), ('anvil', 'anvil'), ('tree', 'tree'), ('water', 'water'), ('cloud', 'cloud'),
+                    ('flower', 'flower'), ('elephant', 'elephant'), ('airplane', 'plane'),
+                    ('airballoon', 'hot air balloon'), ('bus', 'bus'), ('fingerprint', 'fingerprint'),
+                    ('phone', 'phone'), ('star', 'star'), ('watch', 'watch'), ('food-apple', 'apple')]
 
 
 @view_config(route_name='user.register', renderer='toja:templates/users/register.jinja2')
@@ -47,6 +55,8 @@ def register(request):
 
         schema = deepcopy(register_schema)
         schema['email']['validator'].append(nonexistant_email)
+        if 'verification_id' in request.session:
+            schema['icon']['allowed'].append(request.session['verification_id'])
         validator = Validator(schema)
         if validator.validate(request.params):
             user = User(email=request.params['email'].lower(),
@@ -80,9 +90,19 @@ The Old Joke Archive
                                                                  token=user.attributes['validation_token'])})
             return HTTPFound(location=request.route_url('root'))
         else:
+            verification_icons = list(enumerate(sample(VALIDATION_ICONS, 7)))
+            selected_icon = choice(verification_icons[1:])
+            request.session['verification_id'] = str(selected_icon[0])
             return {'errors': validator.errors,
-                    'values': request.params}
-    return {'errors': {}}
+                    'values': request.params,
+                    'verification_icons': verification_icons,
+                    'selected_icon': selected_icon[1]}
+    verification_icons = list(enumerate(sample(VALIDATION_ICONS, 7)))
+    selected_icon = choice(verification_icons[1:])
+    request.session['verification_id'] = selected_icon[0]
+    return {'errors': {},
+            'verification_icons': verification_icons,
+            'selected_icon': selected_icon[1]}
 
 
 confirmation_schema = {'password': {'type': 'string', 'empty': False},
