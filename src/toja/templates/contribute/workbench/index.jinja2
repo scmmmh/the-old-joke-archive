@@ -12,7 +12,7 @@
     {{ search_result_status(request, pagination, 'sources') }}
     <ol class="search-results">
       {% for source in sources %}
-        <li>{{ source_snippet(source) }}</li>
+        <li>{{ source_snippet(source, target_route_name='contribute.workbench.edit') }}</li>
       {% endfor %}
     </ol>
     {{ search_result_status(request, pagination, 'sources') }}

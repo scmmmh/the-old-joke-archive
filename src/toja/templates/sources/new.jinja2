@@ -3,7 +3,7 @@
 {% block title %}Contribute new Sources to the Old Joke Archive{% endblock title %}
 
 {% block main %}
-{% from 'toja:templates/macros/forms.jinja2' import field with context %}
+{% from 'toja:templates/macros/forms.jinja2' import field, select with context %}
 <div class="grid">
   <form action="{{ 'contribute.sources'|route_url() }}" method="post" enctype="multipart/form-data" class="cell-1-4">
     <h1 class="alt-font margin-bottom">Contribute new Sources</h1>
@@ -12,6 +12,8 @@
     {% for metadata_field in request|setting('SOURCE_METADATA') %}
       {% if metadata_field.type == 'date' %}
         {{ field(metadata_field.name, 'text', metadata_field.label) }}
+      {% elif metadata_field.type == 'select' %}
+        {{ select(metadata_field.name, metadata_field['values'], '', metadata_field.label) }}
       {% else %}
         {{ field(metadata_field.name, metadata_field.type, metadata_field.label) }}
       {% endif %}

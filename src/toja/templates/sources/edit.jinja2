@@ -8,8 +8,10 @@
   <form action="{{ 'source.edit'|route_url(sid=source.id) }}" method="post" class="cell-1-4">
     <h1 class="alt-font margin-bottom">Edit a Source</h1>
     {% for metadata_field in request|setting('SOURCE_METADATA') %}
-      {% if datatype == 'date' %}
+      {% if metadata_field.type == 'date' %}
         {{ field(metadata_field.name, 'text', label, attributes={'value': source.attributes[metadata_field.name]}) }}
+      {% elif metadata_field.type == 'select' %}
+        {{ select(metadata_field.name, metadata_field['values'], source.attributes[metadata_field.name], metadata_field.label) }}
       {% else %}
         {{ field(metadata_field.name, metadata_field.type, metadata_field.label, attributes={'value': source.attributes[metadata_field.name]}) }}
       {% endif %}

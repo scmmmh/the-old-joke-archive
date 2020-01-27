@@ -14,7 +14,7 @@
 </div>
 {% endmacro %}
 
-{% macro source_snippet(source) %}
+{% macro source_snippet(source, target_route_name='source.view') %}
 {% from 'toja:templates/macros/dates.jinja2' import year, day_month %}
 {% from 'toja:templates/macros/icons.jinja2' import icon %}
 <section class="source-snippet">
@@ -26,12 +26,12 @@
   <div>
     <div class="metadata">
       <div>
-        <h2><a href="{{ 'source.view'|route_url(sid=source.id) }}">{{ source.attributes.publication }}</a></h2>
-        <p>{{ source.attributes.title }}{% if source.attributes.sub_title %}: {{ source.attributes.sub_title }}{% endif %}</p>
+        <h2><a href="{{ target_route_name|route_url(sid=source.id) }}">{{ source.attribute(request|setting('SOURCE_SNIPPET_FIELD_TITLE')) }}</a></h2>
+        <p>{{ source.attribute(request|setting('SOURCE_SNIPPET_FIELD_SUBTITLE')) }}</p>
       </div>
       <time>
-        <span>{{ year(source.attributes.date) }}</span>
-        <span>{{ day_month(source.attributes.date) }}</span>
+      <span>{{ source.attribute(request|setting('SOURCE_SNIPPET_FIELD_DATE'))|fancy_date(format='year') }}</span>
+      <span>{{ source.attribute(request|setting('SOURCE_SNIPPET_FIELD_DATE'))|fancy_date(format='month-day') }}</span>
       </time>
     </div>
     {{ source_edit_menu(source) }}
