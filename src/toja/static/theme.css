@@ -1523,72 +1523,70 @@ div.joke-rating ul {
         text-align: center;
         color: var(--color-text-default); } }
 
-#app.workbench > div {
+#app.workbench {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   height: 100%;
   max-width: var(--max-width);
   margin: 0 auto; }
-  #app.workbench > div > div {
+  #app.workbench > div {
     display: flex;
     flex-direction: column;
     overflow: hidden;
     padding-left: var(--spacing);
     padding-right: var(--spacing); }
-    #app.workbench > div > div:not(:last-child) {
+    #app.workbench > div:not(:last-child) {
       border-right: 1px solid var(--color-light-gray); }
-    #app.workbench > div > div > nav {
+    #app.workbench > div > nav {
       flex: 0 0 auto; }
-    #app.workbench > div > div > div {
+    #app.workbench > div > div {
       flex: 1 1 auto;
       overflow: auto; }
-
-#app.workbench .joke-list div > ul {
-  margin-top: 0;
-  margin-bottom: 0; }
-  #app.workbench .joke-list div > ul li {
-    margin-left: 0;
-    padding-bottom: var(--spacing);
-    margin-bottom: var(--spacing);
-    border-bottom: 1px solid var(--color-light-gray); }
-    #app.workbench .joke-list div > ul li:before {
-      content: "";
+  #app.workbench .joke-list div > ul {
+    margin-top: 0;
+    margin-bottom: 0; }
+    #app.workbench .joke-list div > ul li {
       margin-left: 0;
-      margin-right: 0; }
-    #app.workbench .joke-list div > ul li a {
-      display: block;
-      border: 1px solid var(--color-light); }
-      #app.workbench .joke-list div > ul li a.selected {
-        border: 1px solid var(--color-brand); }
-    #app.workbench .joke-list div > ul li img {
-      max-width: 100%; }
-
-#app.workbench .joke-transcriber {
-  position: relative;
-  overflow: hidden; }
-  #app.workbench .joke-transcriber .ProseMirror {
-    height: 100%;
-    box-sizing: border-box;
-    overflow: auto;
-    margin: 0; }
-    #app.workbench .joke-transcriber .ProseMirror [class*=mark-] {
-      border: 1px solid var(--color-text-link);
-      padding: 0.05rem 0.1rem;
-      border-radius: 3px; }
-  #app.workbench .joke-transcriber div.overlay {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-    background: #ffffffaa; }
-    #app.workbench .joke-transcriber div.overlay p {
+      padding-bottom: var(--spacing);
+      margin-bottom: var(--spacing);
+      border-bottom: 1px solid var(--color-light-gray); }
+      #app.workbench .joke-list div > ul li:before {
+        content: "";
+        margin-left: 0;
+        margin-right: 0; }
+      #app.workbench .joke-list div > ul li a {
+        display: block;
+        border: 1px solid var(--color-light); }
+        #app.workbench .joke-list div > ul li a.selected {
+          border: 1px solid var(--color-brand); }
+      #app.workbench .joke-list div > ul li img {
+        max-width: 100%; }
+  #app.workbench .joke-transcriber {
+    position: relative;
+    overflow: hidden; }
+    #app.workbench .joke-transcriber .ProseMirror {
+      height: 100%;
+      box-sizing: border-box;
+      overflow: auto;
+      margin: 0; }
+      #app.workbench .joke-transcriber .ProseMirror [class*=mark-] {
+        border: 1px solid var(--color-text-link);
+        padding: 0.05rem 0.1rem;
+        border-radius: 3px; }
+    #app.workbench .joke-transcriber div.overlay {
       position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 80%;
-      transform: translate(-50%, -50%); }
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      background: #ffffffaa; }
+      #app.workbench .joke-transcriber div.overlay p {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 80%;
+        transform: translate(-50%, -50%); }
 
 .verification {
   justify-content: center; }
