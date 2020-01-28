@@ -34,15 +34,36 @@
             </ul>
             <editor-menu-bar v-if="mode === 'transcribe'" :editor="editor" v-slot="{ commands, isActive }">
                 <ul role="menu" class="menu" style="flex-wrap:wrap;">
-                    <li v-for="value in annotations">
-                        <a role="menuitem" :aria-checked="isActive[value.name]()" @click="commands[value.name]">{{ value.label }}</a>
+                    <li role="presentation">
+                        <a role="menuitem" :aria-checked="isActive.annotation() ? 'true' : 'false'" @click="commands.annotation">Annotation</a>
                     </li>
                 </ul>
             </editor-menu-bar>
         </nav>
         <div v-if="mode === 'transcribe'">
             <editor-content :editor="editor"></editor-content>
-            <div>Attributes</div>
+            <editor-menu-bar :editor="editor" v-slot="{ commands, isActive }">
+                <div v-if="isActive.annotation()">
+                    <label>Annotation Type
+                        <select @change="setAnnotationAttributeValue('category', $event.target.value)">
+                            <option value="">--- Please Select ---</option>
+                            <template v-for="annotation in annotations">
+                                <option v-if="annotation.separate" disabled="disabled" style="font-size: 1pt; background-color: #000000;"></option>
+                                <option :value="annotation.name" v-html="annotation.label" :selected="hasAnnotationAttributeValue('category', annotation.name) ? 'selected' : null"></option>
+                            </template>
+                        </select>
+                    </label>
+                    <template v-for="annotation in annotations">
+                        <template v-if="hasAnnotationAttributeValue('category', annotation.name)" v-for="attr in annotation.attrs">
+                            <label>{{ attr.label }}
+                                <select v-if="attr.type === 'select'" @change="setAnnotationAttributeValue('settings', {name: attr.name, value: $event.target.value})">
+                                    <option v-for="value in attr.values" :value="value.name" v-html="value.label" :selected="getAnnotationAttributeValue('settings')[attr.name] === value.name ? 'selected' : null"></option>
+                                </select>
+                            </label>
+                        </template>
+                    </template>
+                </div>
+            </editor-menu-bar>
         </div>
         <div v-else-if="mode === 'attributes'">
             <div v-for="entry in metadata" class="margin-bottom">
@@ -67,7 +88,9 @@
 import { Component, Vue, Watch } from 'vue-property-decorator';
 // @ts-ignore
 import { Editor, EditorContent, EditorMenuBar } from 'tiptap';
-import ConfigurableMark from '@/markup/ConfigurableMark';
+// @ts-ignore
+import { removeMark, updateMark } from 'tiptap-commands';
+import AnnotationMark from '@/markup/AnnotationMark';
 
 import { Joke, Transcription } from '@/interfaces';
 
@@ -79,7 +102,7 @@ import { Joke, Transcription } from '@/interfaces';
 })
 export default class JokeTranscriber extends Vue {
     public mode = 'transcribe';
-    public editor: Editor;
+    public editor: Editor | null = null;
 
     // ****************
     // Lifecycle events
@@ -87,9 +110,9 @@ export default class JokeTranscriber extends Vue {
 
     public mounted() {
         this.editor = new Editor({
-            extensions: this.$store.state.annotations.map((value: any) => {
-                return new ConfigurableMark(value.name);
-            }),
+            extensions: [
+                new AnnotationMark(),
+            ],
         });
     }
 
@@ -105,7 +128,7 @@ export default class JokeTranscriber extends Vue {
 
     public saveChanges() {
         this.$store.dispatch('updateTranscription', {
-            text: this.$data.editor.getJSON(),
+            text: this.editor.getJSON(),
         });
     }
 
@@ -133,6 +156,26 @@ export default class JokeTranscriber extends Vue {
         return this.$store.state.transcription === null;
     }
 
+    /**
+     * Computed property of all selected nodes.
+     */
+    private get selectedNodes() {
+        if (this.editor) {
+            const { from, to } = this.editor.state.selection;
+            const selectedNodes = [] as any;
+            this.editor.state.doc.nodesBetween(from, to, (node: any) => {
+                selectedNodes.push(node);
+            });
+            return selectedNodes;
+        } else {
+            return [];
+        }
+    }
+
+    // ************
+    // Data watches
+    // ************
+
     @Watch('$store.state.selected')
     public watchSelectedJoke(newValue: Joke, oldValue: Joke) {
         this.$store.dispatch('loadTranscription');
@@ -146,5 +189,65 @@ export default class JokeTranscriber extends Vue {
             this.editor.setContent('');
         }
     }
+
+    // *******************
+    // Annotation handling
+    // *******************
+
+    /**
+     * Gets a mark attribute value.
+     */
+    public getAnnotationAttributeValue(attrName: string) {
+        for (const node of this.selectedNodes) {
+            if (node.marks) {
+                for (const mark of node.marks) {
+                    if (mark.type.name === 'annotation') {
+                        return mark.attrs[attrName];
+                    }
+                }
+            }
+        }
+        return '';
+    }
+
+    /**
+     * Checks whether a mark has a given attribute value.
+     */
+    public hasAnnotationAttributeValue(attrName: string, value: string) {
+        return this.getAnnotationAttributeValue(attrName) === value;
+    }
+
+    /**
+     * Sets the mark's attribute value.
+     */
+    public setAnnotationAttributeValue(attrName: string, value: any) {
+        if (value) {
+            const { from, to } = this.editor.state.selection;
+            let attributes = {} as any;
+            this.editor.state.doc.nodesBetween(from, to, (node: any) => {
+                if (node.marks) {
+                    node.marks.forEach((mark: any) => {
+                        if (mark.type.name === 'annotation') {
+                            attributes = {...attributes, ...mark.attrs};
+                        }
+                    });
+                }
+            });
+            if (attrName === 'settings') {
+                if (!attributes.settings) {
+                    attributes.settings = {};
+                }
+                attributes.settings[value.name] = value.value;
+            } else if (attrName === 'category') {
+                attributes[attrName] = value;
+            }
+            updateMark(this.editor.schema.marks.annotation, attributes)(this.editor.state,
+                this.editor.dispatchTransaction.bind(this.editor));
+        } else {
+            removeMark(this.editor.schema.marks.annotation)(this.editor.state,
+                this.editor.dispatchTransaction.bind(this.editor));
+        }
+    }
+
 }
 </script>
