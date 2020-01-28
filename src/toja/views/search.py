@@ -1,6 +1,7 @@
 import math
 
 from datetime import datetime
+from elasticsearch import ConnectionError
 from pyramid.view import view_config
 
 from ..config import SEARCH_FACETS
@@ -49,19 +50,22 @@ def index(request):
     query = query[page * 10:(page + 1) * 10]
 
     # Run search
-    results = query.execute()
-    joke_ids = [joke.meta.id for joke in results]
-    jokes = request.dbsession.query(Image).filter(Image.id.in_(joke_ids))
-    page_start = max(page - 2, 0)
-    page_end = min(page_start + 5, math.ceil(results.hits.total.value / 10))
-    page_start = max(page_end - 5, 0)
-    return {'q': q,
-            'pagination': {'start': page * 10 + 1,
-                           'end': min(((page + 1) * 10), results.hits.total.value),
-                           'total': results.hits.total.value,
-                           'page': page,
-                           'page_start': page_start,
-                           'page_end': page_end},
-            'jokes': jokes,
-            'facets': results.facets,
-            'title': title}
+    try:
+        results = query.execute()
+        joke_ids = [joke.meta.id for joke in results]
+        jokes = request.dbsession.query(Image).filter(Image.id.in_(joke_ids))
+        page_start = max(page - 2, 0)
+        page_end = min(page_start + 5, math.ceil(results.hits.total.value / 10))
+        page_start = max(page_end - 5, 0)
+        return {'q': q,
+                'pagination': {'start': page * 10 + 1,
+                               'end': min(((page + 1) * 10), results.hits.total.value),
+                               'total': results.hits.total.value,
+                               'page': page,
+                               'page_start': page_start,
+                               'page_end': page_end},
+                'jokes': jokes,
+                'facets': results.facets,
+                'title': title}
+    except ConnectionError:
+        return {'error': 'Connection Refused'}
