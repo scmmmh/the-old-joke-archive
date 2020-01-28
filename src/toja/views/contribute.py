@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from math import ceil
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.view import view_config
@@ -6,7 +5,7 @@ from sqlalchemy import and_
 
 from ..models import Image
 from ..session import require_logged_in
-from ..config import ANNOTATIONS
+from ..config import ANNOTATIONS, JOKE_METADATA
 
 
 @view_config(route_name='contribute', renderer='toja:templates/contribute/index.jinja2')
@@ -42,11 +41,10 @@ def workbench(request):
 def workbench_edit(request):
     """Handle the transcription workbench page for a single source."""
     if request.current_user.trust == 'full':
-        annotations = [(annotation['name'], annotation) for annotation in ANNOTATIONS]
-
         return {'config': {'baseURL': request.route_url('api'),
                            'sourceId': int(request.matchdict['sid']),
                            'userId': request.current_user.id,
-                           'annotations': OrderedDict(annotations)}}
+                           'annotations': ANNOTATIONS,
+                           'metadata': JOKE_METADATA}}
     else:
         raise HTTPForbidden()

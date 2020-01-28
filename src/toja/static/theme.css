@@ -545,6 +545,9 @@ button, a.btn, .btn {
 .font-size-small {
   font-size: var(--font-size-small); }
 
+.font-size-default {
+  font-size: var(--font-size-default_); }
+
 .font-size-medium {
   font-size: var(--font-size-medium); }
 
@@ -791,11 +794,11 @@ dd {
         vertical-align: middle; }
       .menu li [role="menuitem"][aria-hidden="true"] {
         display: none; }
-      .menu li [role="menuitem"][aria-current="true"] {
+      .menu li [role="menuitem"][aria-current="true"], .menu li [role="menuitem"][aria-checked="true"] {
         color: var(--color-light);
         background: var(--color-brand);
         border-radius: var(--border-radius-small); }
-        .menu li [role="menuitem"][aria-current="true"] svg path, .menu li [role="menuitem"][aria-current="true"] svg g {
+        .menu li [role="menuitem"][aria-current="true"] svg path, .menu li [role="menuitem"][aria-current="true"] svg g, .menu li [role="menuitem"][aria-checked="true"] svg path, .menu li [role="menuitem"][aria-checked="true"] svg g {
           fill: var(--color-light); }
       .menu li [role="menuitem"][disabled="disabled"] {
         cursor: not-allowed; }

@@ -16,17 +16,47 @@
                         </svg>
                     </a>
                 </li>
+                <li role="separator"></li>
+                <li role="presentation">
+                    <a role="menuitem" :aria-checked="mode === 'transcribe' ? 'true': 'false'" @click="setMode('transcribe')">
+                        <svg viewBox="0 0 24 24" class="icon mdi">
+                            <path d="M8,12H16V14H8V12M10,20H6V4H13V9H18V12.1L20,10.1V8L14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H10V20M8,18H12.1L13,17.1V16H8V18M20.2,13C20.3,13 20.5,13.1 20.6,13.2L21.9,14.5C22.1,14.7 22.1,15.1 21.9,15.3L20.9,16.3L18.8,14.2L19.8,13.2C19.9,13.1 20,13 20.2,13M20.2,16.9L14.1,23H12V20.9L18.1,14.8L20.2,16.9Z" />
+                        </svg>
+                    </a>
+                </li>
+                <li role="presentation">
+                    <a role="menuitem" :aria-checked="mode === 'attributes' ? 'true': 'false'" @click="setMode('attributes')">
+                        <svg viewBox="0 0 24 24" class="icon mdi">
+                            <path d="M21.7,13.35L20.7,14.35L18.65,12.3L19.65,11.3C19.86,11.08 20.21,11.08 20.42,11.3L21.7,12.58C21.92,12.79 21.92,13.14 21.7,13.35M12,18.94L18.07,12.88L20.12,14.93L14.06,21H12V18.94M4,2H18A2,2 0 0,1 20,4V8.17L16.17,12H12V16.17L10.17,18H4A2,2 0 0,1 2,16V4A2,2 0 0,1 4,2M4,6V10H10V6H4M12,6V10H18V6H12M4,12V16H10V12H4Z" />
+                        </svg>
+                    </a>
+                </li>
             </ul>
-            <editor-menu-bar :editor="editor" v-slot="{ commands, isActive }">
+            <editor-menu-bar v-if="mode === 'transcribe'" :editor="editor" v-slot="{ commands, isActive }">
                 <ul role="menu" class="menu" style="flex-wrap:wrap;">
-                    <li v-for="(value, key) in annotations">
-                        <a role="menuitem" :aria-current="isActive[key]()" @click="commands[key]">{{ value.label }}</a>
+                    <li v-for="value in annotations">
+                        <a role="menuitem" :aria-checked="isActive[value.name]()" @click="commands[value.name]">{{ value.label }}</a>
                     </li>
                 </ul>
             </editor-menu-bar>
         </nav>
-        <editor-content :editor="editor"></editor-content>
-        <div>Attributes</div>
+        <div v-if="mode === 'transcribe'">
+            <editor-content :editor="editor"></editor-content>
+            <div>Attributes</div>
+        </div>
+        <div v-else-if="mode === 'attributes'">
+            <div v-for="entry in metadata" class="margin-bottom">
+                <h2 class="font-size-default">{{ entry['label'] }}</h2>
+                <div v-if="entry['type'] === 'multichoice'">
+                    <label v-for="value in entry['values']">
+                        <input type="checkbox" :value="value.value"> <span v-html="value.label"></span>
+                    </label>
+                </div>
+                <select v-else-if="entry['type'] === 'select'">
+                    <option v-for="value in entry['values']" :value="value.name" v-html="value.label"></option>
+                </select>
+            </div>
+        </div>
         <div class="overlay" v-if="noTranscription">
             <p>Please select a joke from the list to transcribe and annotate it.</p>
         </div>
@@ -48,23 +78,25 @@ import { Joke, Transcription } from '@/interfaces';
     },
 })
 export default class JokeTranscriber extends Vue {
-
-    public data() {
-        return {
-            editor: new Editor({
-                extensions: Object.keys(this.$store.state.annotations).map((key: string) => {
-                    return new ConfigurableMark(key);
-                }),
-            }),
-        };
-    }
+    public mode = 'transcribe';
+    public editor: Editor;
 
     // ****************
     // Lifecycle events
     // ****************
 
+    public mounted() {
+        this.editor = new Editor({
+            extensions: this.$store.state.annotations.map((value: any) => {
+                return new ConfigurableMark(value.name);
+            }),
+        });
+    }
+
     public beforeDestroy() {
-        this.$data.editor.destroy();
+        if (this.editor) {
+            this.editor.destroy();
+        }
     }
 
     // **************
@@ -78,7 +110,11 @@ export default class JokeTranscriber extends Vue {
     }
 
     public discardChanges() {
-        this.$data.editor.setContent(this.$store.state.transcription.attributes.text);
+        this.editor.setContent(this.$store.state.transcription.attributes.text);
+    }
+
+    public setMode(mode: string) {
+        this.mode = mode;
     }
 
     // ************
@@ -87,6 +123,10 @@ export default class JokeTranscriber extends Vue {
 
     public get annotations() {
         return this.$store.state.annotations;
+    }
+
+    public get metadata() {
+        return this.$store.state.metadata;
     }
 
     public get noTranscription() {
@@ -99,11 +139,11 @@ export default class JokeTranscriber extends Vue {
     }
 
     @Watch('$store.state.transcription')
-    public watchTranscription(newValue: Transcription, oldValue: Transcription) {
+    public watchTranscription(newValue: Transcription) {
         if (newValue) {
-            this.$data.editor.setContent(newValue.attributes.text);
+            this.editor.setContent(newValue.attributes.text);
         } else {
-            this.$data.editor.setContent('');
+            this.editor.setContent('');
         }
     }
 }

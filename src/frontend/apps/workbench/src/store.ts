@@ -12,6 +12,7 @@ function makeInitialState(config: Config): State {
         sourceId: config.sourceId,
         userId: config.userId,
         annotations: config.annotations,
+        metadata: config.metadata,
         source: {},
         jokes: [],
         selected: null,

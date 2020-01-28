@@ -20,11 +20,33 @@ JOKE_SNIPPET_FIELD_SUBTITLE = 'source.pub_section'
 JOKE_SNIPPET_FIELD_DATE = 'pub_date'
 ANNOTATIONS = [{'name': 'title', 'label': 'Title'},
                {'name': 'attribution', 'label': 'Attribution'},
-               {'name': 'speaker', 'label': 'Speaker'},
+               {'name': 'person', 'label': 'Person'},
+               {'name': 'speaker', 'label': 'Speaker'},  # TODO: Remove
                {'name': 'speech', 'label': 'Speech'},
                {'name': 'aside', 'label': 'Aside'},
                {'name': 'question', 'label': 'Question'},
-               {'name': 'answer', 'label': 'Answer'}]
+               {'name': 'answer', 'label': 'Answer'},
+               {'name': 'location', 'label': 'Location'},
+               {'name': 'object', 'label': 'Object'},
+               ]
+JOKE_TYPES = [{'name': 'pun', 'label': 'Pun'},
+              {'name': 'dialogue', 'label': 'Dialogue'},
+              {'name': 'story', 'label': 'Story'},
+              {'name': 'wit-wisdom', 'label': 'Wit & Wisdom'},
+              {'name': 'conundrum', 'label': 'Conundrum'},
+              {'name': 'verse', 'label': 'Verse'},
+              {'name': 'definition', 'label': 'Definition'},
+              {'name': 'factoid', 'label': 'Factoid'},
+              ]
+JOKE_METADATA = [{'name': 'type',
+                  'label': 'Type of Joke',
+                  'type': 'multichoice',
+                  'values': JOKE_TYPES},
+                 {'name': 'language',
+                  'label': 'Language',
+                  'type': 'select',
+                  'values': [{'name': 'en', 'label': 'English'}]},
+                 ]
 SEARCH_FACETS = [{'name': 'pub_title', 'type': 'text', 'label': 'Publication'},
                  {'name': 'pub_section', 'type': 'text', 'label': 'Section'},
                  {'name': 'pub_date', 'type': 'date', 'label': 'Date'}]
@@ -37,7 +59,9 @@ SETTINGS = {'SOURCE_METADATA': SOURCE_METADATA,
             'JOKE_SNIPPET_FIELD_SUBTITLE': JOKE_SNIPPET_FIELD_SUBTITLE,
             'JOKE_SNIPPET_FIELD_DATE': JOKE_SNIPPET_FIELD_DATE,
             'ANNOTATIONS': ANNOTATIONS,
-            'SEARCH_FACETS': SEARCH_FACETS}
+            'SEARCH_FACETS': SEARCH_FACETS,
+            'JOKE_TYPES': JOKE_TYPES,
+            }
 
 
 def get_setting(request, setting):

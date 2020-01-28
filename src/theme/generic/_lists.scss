@@ -133,7 +133,7 @@ dd {
                 display: none;
             }
 
-            &[aria-current="true"] {
+            &[aria-current="true"], &[aria-checked="true"] {
                 color: var(--color-light);
                 background: var(--color-brand);
                 border-radius: var(--border-radius-small);

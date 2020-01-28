@@ -3,6 +3,7 @@ export interface State {
     sourceId: number | null;
     userId: number | null;
     annotations: any | null;
+    metadata: any | null;
     source: object;
     jokes: Joke[];
     selected: Joke | null;
@@ -14,6 +15,7 @@ export interface Config {
     sourceId: number | null;
     userId: number | null;
     annotations: any | null;
+    metadata: any | null;
 }
 
 export interface Joke {
