@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy_json import NestedMutableJson
 
 from .meta import Base
+from ..util import extract_text
 
 
 class Transcription(Base):
@@ -27,14 +28,7 @@ class Transcription(Base):
 
     def pure_text(self):
         """Returns just the text without any annotations."""
-        def node_text(node):
-            if node['type'] == 'text':
-                return node['text']
-            elif node['type'] == 'doc':
-                return '\n'.join([node_text(child) for child in node['content']])
-            else:
-                return ''.join([node_text(child) for child in node['content']])
-        return node_text(self.text)
+        return extract_text(self.text)
 
     def to_jsonapi(self):
         """Returns a JSONAPI representation of this :class:`~toja.models.transcription.Transcription`."""

@@ -72,11 +72,20 @@ JOKE_METADATA = [{'name': 'type',
                  {'name': 'language',
                   'label': 'Language',
                   'type': 'select',
-                  'values': [{'name': 'en', 'label': 'English'}]},
+                  'values': [{'name': '', 'label': 'Unknown'},
+                             {'name': 'en', 'label': 'English'},
+                             {'name': 'de', 'label': 'German'}]},
+                 {'name': 'title',
+                  'label': 'Title',
+                  'type': 'extract-single',
+                  'source': {'type': 'title',
+                             'attr': 'text'}},
                  ]
-SEARCH_FACETS = [{'name': 'pub_title', 'type': 'text', 'label': 'Publication'},
+SEARCH_FACETS = [{'name': 'type', 'type': 'text', 'label': 'Joke Type'},
+                 {'name': 'pub_title', 'type': 'text', 'label': 'Publication'},
                  {'name': 'pub_section', 'type': 'text', 'label': 'Section'},
-                 {'name': 'pub_date', 'type': 'date', 'label': 'Date'}]
+                 {'name': 'pub_date', 'type': 'date', 'label': 'Date'},
+                 {'name': 'language', 'type': 'text', 'label': 'Language'}]
 
 SETTINGS = {'SOURCE_METADATA': SOURCE_METADATA,
             'SOURCE_SNIPPET_FIELD_TITLE': SOURCE_SNIPPET_FIELD_TITLE,

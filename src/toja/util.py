@@ -234,7 +234,31 @@ def strftime(value, format):
 
 
 def format(value, *args, **kwargs):
+    """String format the given value."""
     return value.format(*args, **kwargs)
+
+
+def extract_text(node):
+    """Extract the text from a single text node and its descendants."""
+    if node['type'] == 'text':
+        return node['text']
+    elif node['type'] == 'doc':
+        return '\n'.join([extract_text(child) for child in node['content']])
+    else:
+        return ''.join([extract_text(child) for child in node['content']])
+
+
+def extract_annotations(node, category):
+    """Extract all annotations that are marked up with the given mark category."""
+    result = []
+    if 'marks' in node:
+        for mark in node['marks']:
+            if mark['type'] == 'annotation' and mark['attrs']['category'] == category:
+                result.append(node)
+    if 'content' in node:
+        for child in node['content']:
+            result.extend(extract_annotations(child, category))
+    return result
 
 
 def includeme(config):

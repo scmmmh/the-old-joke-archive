@@ -12,6 +12,8 @@ class Joke(Document):
     pub_title = Keyword()
     pub_section = Keyword()
     pub_date = Date()
+    type = Keyword(multi=True)
+    language = Keyword()
 
     class Index:
         name = 'toja_jokes'
@@ -35,9 +37,11 @@ class JokeSearch(FacetedSearch):
     doc_types = (Joke, )
     fields = ['text']
     facets = {
+        'type': TermsFacet(field='type'),
         'pub_title': TermsFacet(field='pub_title'),
         'pub_section': TermsFacet(field='pub_section'),
-        'pub_date': YearDateHistogramFacet(field='pub_date', interval='month')
+        'pub_date': YearDateHistogramFacet(field='pub_date', interval='month'),
+        'language': TermsFacet(field='language')
     }
 
 

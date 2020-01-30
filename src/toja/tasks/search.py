@@ -5,7 +5,7 @@ from sqlalchemy import and_
 from .middleware import DBSessionMiddleware
 from ..models import Transcription
 from ..search import Joke
-from ..config import SOURCE_METADATA
+from ..config import SOURCE_METADATA, JOKE_METADATA
 
 
 @dramatiq.actor()
@@ -39,4 +39,20 @@ def index_joke(tid):
                     if len(value.split('-')) < 3:
                         value = '{0}{1}'.format(value, '-01' * (3 - len(value.split('-'))))
                 joke[field['name']] = value
+        for field in JOKE_METADATA:
+            if field['name'] in transcription.attributes:
+                if 'values' in field:
+                    value = transcription.attributes[field['name']]
+                    if isinstance(value, list):
+                        joke[field['name']] = []
+                        for sub_value in value:
+                            for config_value in field['values']:
+                                if config_value['name'] == sub_value:
+                                    joke[field['name']].append(config_value['label'])
+                    else:
+                        for config_value in field['values']:
+                            if config_value['name'] == value:
+                                joke[field['name']] = config_value['label']
+                else:
+                    joke[field['name']] = transcription.attributes[field['name']]
         joke.save()

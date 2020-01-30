@@ -67,14 +67,14 @@
         </div>
         <div v-else-if="mode === 'attributes'">
             <div v-for="entry in metadata" class="margin-bottom">
-                <h2 class="font-size-default">{{ entry['label'] }}</h2>
-                <div v-if="entry['type'] === 'multichoice'">
-                    <label v-for="value in entry['values']">
-                        <input type="checkbox" :value="value.value"> <span v-html="value.label"></span>
+                <h2 class="font-size-default">{{ entry.label }}</h2>
+                <div v-if="entry.type === 'multichoice'">
+                    <label v-for="value in entry.values">
+                        <input type="checkbox" :value="value.name" :checked="hasAttributeValue(entry.name, value.name, true) ? 'checked' : null" @change="$event.target.checked ? addAttributeValue(entry.name, value.name) : removeAttributeValue(entry.name, value.name)"> <span v-html="value.label"></span>
                     </label>
                 </div>
-                <select v-else-if="entry['type'] === 'select'">
-                    <option v-for="value in entry['values']" :value="value.name" v-html="value.label"></option>
+                <select v-else-if="entry.type === 'select'" @change="setAttributeValue(entry.name, $event.target.value)">
+                    <option v-for="value in entry.values" :value="value.name" :selected="hasAttributeValue(entry.name, value.name) ? 'selected' : null" v-html="value.label"></option>
                 </select>
             </div>
         </div>
@@ -91,6 +91,8 @@ import { Editor, EditorContent, EditorMenuBar } from 'tiptap';
 // @ts-ignore
 import { removeMark, updateMark } from 'tiptap-commands';
 import AnnotationMark from '@/markup/AnnotationMark';
+// @ts-ignore
+import deepcopy from 'deepcopy';
 
 import { Joke, Transcription } from '@/interfaces';
 
@@ -103,6 +105,7 @@ import { Joke, Transcription } from '@/interfaces';
 export default class JokeTranscriber extends Vue {
     public mode = 'transcribe';
     public editor: Editor | null = null;
+    public attributes: any = {};
 
     // ****************
     // Lifecycle events
@@ -127,9 +130,8 @@ export default class JokeTranscriber extends Vue {
     // **************
 
     public saveChanges() {
-        this.$store.dispatch('updateTranscription', {
-            text: this.editor.getJSON(),
-        });
+        this.attributes = { ... this.attributes, ... { text: this.editor.getJSON() }};
+        this.$store.dispatch('updateTranscription', this.attributes);
     }
 
     public discardChanges() {
@@ -138,6 +140,33 @@ export default class JokeTranscriber extends Vue {
 
     public setMode(mode: string) {
         this.mode = mode;
+    }
+
+    public addAttributeValue(name: string, value: string) {
+        let values = this.$store.state.transcription.attributes[name];
+        if (!values) {
+            values = [];
+        }
+        if (values.indexOf(value) < 0) {
+            values.push(value);
+        }
+        this.attributes = { ... this.attributes, ... { [name]: values} };
+    }
+
+    public removeAttributeValue(name: string, value: string) {
+        const values = this.$store.state.transcription.attributes[name];
+        if (values) {
+            if (values.indexOf(value) >= 0) {
+                values.splice(values.indexOf(value), 1);
+            }
+            this.attributes = { ... this.attributes, ... { [name]: values} };
+        } else {
+            this.attributes = { ... this.attributes, ... { [name]: []} };
+        }
+    }
+
+    public setAttributeValue(name: string, value: string) {
+        this.attributes = { ... this.attributes, ... { [name]: value} };
     }
 
     // ************
@@ -185,8 +214,10 @@ export default class JokeTranscriber extends Vue {
     public watchTranscription(newValue: Transcription) {
         if (newValue) {
             this.editor.setContent(newValue.attributes.text);
+            this.attributes = deepcopy(newValue.attributes);
         } else {
             this.editor.setContent('');
+            this.attributes = {};
         }
     }
 
@@ -249,5 +280,21 @@ export default class JokeTranscriber extends Vue {
         }
     }
 
+    // *******************
+    // Annotation handling
+    // *******************
+
+    public hasAttributeValue(name: string, value: string, multiple?: boolean) {
+        const values = this.$store.state.transcription.attributes[name];
+        if (multiple) {
+            if (values) {
+                return values.indexOf(value) >= 0;
+            } else {
+                return false;
+            }
+        } else {
+            return values === value;
+        }
+    }
 }
 </script>
