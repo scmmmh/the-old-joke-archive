@@ -4,27 +4,28 @@
 {% from 'toja:templates/macros/jokes.jinja2' import joke_ratings %}
 {% from 'toja:templates/macros/ui.jinja2' import visual_separator %}
 {% from 'toja:templates/macros/search.jinja2' import search_form, categories_block %}
-<section class="joke-banner padding-top padding-bottom">
-  <div>
-    <img src="{{ 'toja:static/img/illustrations/img-1.png'|static_url() }}" alt="Person telling a joke"/>
-  </div>
-  <div>
-    <img src="{{ 'toja:static/img/illustrations/img-2.png'|static_url() }}" alt="Person telling a joke"/>
-  </div>
-  <div>
-    <blockquote>
-      <p>What&#8217;s the difference between a tube and a foolish Dutchman?</p>
-      <p>One is a hollow cylinder and the other a silly Hollander.</p>
-    </blockquote>
-    {{ joke_ratings({'laugh': 10201, 'boo': 328, 'groan': 243}) }}
-  </div>
-</section>
+{% from 'toja:templates/macros/transcriptions.jinja2' import format_transcription %}
+{% if joke %}
+  <section class="joke-banner padding-top padding-bottom">
+    <div>
+      <img src="{{ 'toja:static/img/illustrations/img-1.png'|static_url() }}" alt="Person telling a joke"/>
+    </div>
+    <div>
+      <img src="{{ 'toja:static/img/illustrations/img-2.png'|static_url() }}" alt="Person telling a joke"/>
+    </div>
+    <div>
+      {{ format_transcription(joke.attributes.text) }}
+      {{ joke_ratings({'laugh': 10201, 'boo': 328, 'groan': 243}) }}
+    </div>
+  </section>
+{% endif %}
 <section class="grid">
   <h1 class="cell-2-6 alt-font align-center">Find Something Funny</h1>
   <div class="cell-2-6">{{ search_form() }}</div>
-  <div class="cell-2-6">{{ categories_block() }}</div>
-  <div class="cell-1-7">{{ visual_separator() }}</div>
+  <!--<div class="cell-2-6">{{ categories_block() }}</div>
+  <div class="cell-1-7">{{ visual_separator() }}</div>-->
 </section>
+<!--
 <section class="grid">
   <section class="cell-1-3">
     <h2 class="alt-font">Most Boo'd</h2>
@@ -47,6 +48,8 @@
   </section>
   <div class="cell-1-7">{{ visual_separator() }}</div>
 </section>
+-->
+<!--
 <section class="timeline">
   <h2 class="alt-font align-center">Joke timeline</h2>
   <ol class="alt-timeline">
@@ -93,6 +96,7 @@
   </ol>
   <div class="cell-1-7">{{ visual_separator() }}</div>
 </section>
+-->
 <section class="grid margin-top">
   <h2 class="alt-font grid-1-7">The Old Joke Archive</h2>
   <div class="cell-1-4">
@@ -106,10 +110,10 @@
   </div>
   <div class="cell-4-7 flex">
     <div class="align-center">
-      <p class="alt-font"><span class="numeral block font-size-display">201,165</span> <span class="font-size-large">Jokes archived</span></p>
+      <p class="alt-font"><span class="numeral block font-size-display">{{ total_joke_count }}</span> <span class="font-size-large">Jokes archived</span></p>
     </div>
     <div class="align-center">
-      <p class="alt-font"><span class="numeral block font-size-display">20,115</span> <span class="font-size-large">Jokes transcribed</span></p>
+      <p class="alt-font"><span class="numeral block font-size-display">{{ transcribed_joke_count }}</span> <span class="font-size-large">Jokes transcribed</span></p>
     </div>
   </div>
 </section>

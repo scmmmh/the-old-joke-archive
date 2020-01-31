@@ -1,9 +1,9 @@
 {# Human-readable number formatting #}
 {% macro human_number(value) %}
   {% if value >= 1000000 %}
-  {{ '%.1fM'|format(value / 1000000) }}
+  {{ '{0:.1f}M'|format(value / 1000000) }}
   {% elif value >= 1000 %}
-    {{ '%.1fK'|format(value / 1000) }}
+    {{ '{0:.1f}K'|format(value / 1000) }}
   {% else %}
     {{ value }}
   {% endif %}

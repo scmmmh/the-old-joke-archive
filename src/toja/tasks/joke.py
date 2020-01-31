@@ -22,6 +22,7 @@ def process_joke(jid):
         if len([t for t in joke.transcriptions if t.status == 'final']) == 1:
             transcription = [t for t in joke.transcriptions if t.status == 'final'][0]
             joke.attributes['text'] = transcription.text
+            joke.status = 'final'
             for field in JOKE_METADATA:
                 if field['type'] in ['multichoice', 'select'] and field['name'] in transcription.attributes:
                     if field['name'] in transcription.attributes:

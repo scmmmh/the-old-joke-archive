@@ -1,7 +1,7 @@
 {% macro search_form() %}
 {% from 'toja:templates/macros/icons.jinja2' import icon %}
 <form class="search" role="search" action="{{ 'search'|route_url() }}">
-  <input type="search" title="Search" aria-label="Search for jokes by keyword">
+  <input type="search" title="Search" name="q" aria-label="Search for jokes by keyword">
   <button aria-label="Start the search">{{ icon('magnify') }}</button>
 </form>
 {% endmacro %}
