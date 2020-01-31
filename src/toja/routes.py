@@ -66,6 +66,9 @@ def includeme(config):
 
     config.add_route('search', '/search')
 
+    config.add_route('explore.recommend.mlt', '/explore/mlt/:jid')
+    config.add_route('explore.recommend.random', '/explore/random')
+
     config.add_route('contribute', '/contribute')
     config.add_route('contribute.sources', '/contribute/sources')
     config.add_route('contribute.workbench', '/contribute/workbench')

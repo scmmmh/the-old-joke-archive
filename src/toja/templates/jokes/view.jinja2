@@ -194,12 +194,6 @@
     -->
   </div>
   <div class="cell-1-7">{{ visual_separator() }}</div>
-  <h2 class="cell-1-7 align-center alt-font">Laugh at this!</h2>
-  <div class="cell-1-4">
-    {{ joke_snippet(joke) }}
-  </div>
-  <div class="cell-4-7">
-    {{ joke_snippet(joke) }}
-  </div>
+  <div class="cell-1-7" data-ajax-fill="{{ 'explore.recommend.mlt'|route_url(jid=joke.id) }}"></div>
 </section>
 {% endblock main %}

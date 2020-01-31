@@ -27,12 +27,6 @@
   </div>
 </section>
 <section class="grid">
-  <h2 class="cell-1-7 align-center alt-font">Laugh at this!</h2>
-  <div class="cell-1-4">
-    {# {{ joke_snippet() }} #}
-  </div>
-  <div class="cell-4-7">
-    {# {{ joke_snippet() }} #}
-  </div>
+  <div class="cell-1-7" data-ajax-fill="{{ 'explore.recommend.random'|route_url() }}"></div>
 </section>
 {% endblock %}
