@@ -3,28 +3,37 @@
  */
 (function() {
     function setup_form(form) {
-        let action = form.querySelector('input[name="action"]');
-        if (action) {
-            let buttons = form.querySelectorAll('button[data-action]');
-            for(let idx = 0; idx < buttons.length; idx++) {
-                let button = buttons[idx];
-                button.addEventListener('click', (ev) => {
-                    if(button.getAttribute('data-confirm-prompt')) {
-                        if(confirm(button.getAttribute('data-confirm-prompt'))) {
-                            action.setAttribute('value', button.getAttribute('data-action'));
+        if (!form.getAttribute('data-action-action-buttons')) {
+            let action = form.querySelector('input[name="action"]');
+            if (action) {
+                let buttons = form.querySelectorAll('button[data-action]');
+                for(let idx = 0; idx < buttons.length; idx++) {
+                    let button = buttons[idx];
+                    button.addEventListener('click', (ev) => {
+                        if(button.getAttribute('data-confirm-prompt')) {
+                            if(confirm(button.getAttribute('data-confirm-prompt'))) {
+                                action.setAttribute('value', button.getAttribute('data-action'));
+                            } else {
+                                ev.preventDefault();
+                            }
                         } else {
-                            ev.preventDefault();
+                            action.setAttribute('value', button.getAttribute('data-action'));
                         }
-                    } else {
-                        action.setAttribute('value', button.getAttribute('data-action'));
-                    }
-                });
+                    });
+                }
             }
+            form.setAttribute('data-action-action-buttons', 'true');
         }
     }
 
-    let forms = document.querySelectorAll('form[data-action="action-buttons"]');
-    for(let idx = 0; idx < forms.length; idx++) {
-        setup_form(forms[idx]);
-    }
+    window.TOJA_PLUGINS = window.TOJA_PLUGINS || {};
+    let plugins = window.TOJA_PLUGINS;
+    plugins.formActionButtons = function() {
+        let forms = document.querySelectorAll('form[data-action="action-buttons"]');
+        for(let idx = 0; idx < forms.length; idx++) {
+            setup_form(forms[idx]);
+        }
+    };
+
+    plugins.formActionButtons();
 })();
