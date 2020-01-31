@@ -55,10 +55,13 @@ JOKE_METADATA = [{'name': 'type',
                              'attr': 'text'}},
                  ]
 SEARCH_FACETS = [{'name': 'type', 'type': 'text', 'label': 'Joke Type'},
+                 {'name': 'language', 'type': 'text', 'label': 'Language'},
+                 {'name': 'pub_type', 'type': 'text', 'label': 'Publication Type'},
                  {'name': 'pub_title', 'type': 'text', 'label': 'Publication'},
-                 {'name': 'pub_section', 'type': 'text', 'label': 'Section'},
-                 {'name': 'pub_date', 'type': 'date', 'label': 'Date'},
-                 {'name': 'language', 'type': 'text', 'label': 'Language'}]
+                 {'name': 'pub_section', 'type': 'text', 'label': 'Publication Section'},
+                 {'name': 'pub_date', 'type': 'date', 'label': 'Publication Date'},
+                 ]
+SEARCH_FACET_FIELD_NAMES = [facet['name'] for facet in SEARCH_FACETS]
 
 SETTINGS = {'SOURCE_METADATA': SOURCE_METADATA,
             'SOURCE_SNIPPET_FIELD_TITLE': SOURCE_SNIPPET_FIELD_TITLE,
@@ -66,7 +69,9 @@ SETTINGS = {'SOURCE_METADATA': SOURCE_METADATA,
             'SOURCE_SNIPPET_FIELD_DATE': SOURCE_SNIPPET_FIELD_DATE,
             'ANNOTATIONS': ANNOTATIONS,
             'SEARCH_FACETS': SEARCH_FACETS,
+            'SEARCH_FACET_FIELD_NAMES': SEARCH_FACET_FIELD_NAMES,
             'JOKE_TYPES': JOKE_TYPES,
+            'JOKE_METADATA': JOKE_METADATA,
             }
 
 

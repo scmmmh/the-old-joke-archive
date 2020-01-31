@@ -1,6 +1,6 @@
 {% extends 'toja:templates/layout/default.jinja2' %}
 
-{% block title %}{{ joke.attributes.title }}{% endblock title %}
+{% block title %}{% if joke.attributes.title %}{{ joke.attributes.title }}{% else %}Untitled Joke{% endif %}{% endblock title %}
 {% block main %}
 {% from 'toja:templates/macros/jokes.jinja2' import joke_ratings, joke_snippet with context %}
 {% from 'toja:templates/macros/ui.jinja2' import visual_separator %}
@@ -8,7 +8,7 @@
 <section class="grid">
   <div class="cell-1-4">
     <div class="flex" style="align-items:center;">
-      <h1 class="alt-font">{{ joke.attributes.title }}</h1>
+      <h1 class="alt-font">{% if joke.attributes.title %}{{ joke.attributes.title }}{% else %}Untitled Joke{% endif %}</h1>
       <div class="shrink hide-small">
         {% if joke.attributes.ratings %}
           {{ joke_ratings(joke.attributes.ratings) }}
@@ -63,16 +63,77 @@
     <h2>Metadata</h2>
     <table class="layout-1-2">
       <tbody>
+        {% for field in request|setting('JOKE_METADATA') %}
+          {% if field.name in joke.attributes and joke.attributes[field.name] %}
+            <tr>
+              <th scope="row">{{ field.label }}</th>
+              <td>
+                {% if field.type == 'date' %}
+                  {% if field.name in request|setting('SEARCH_FACET_FIELD_NAMES') %}
+                    <a href="">{{ joke.attributes[field.name]|fancy_date('long') }}</a>
+                  {% else %}
+                    {{ joke.attributes[field.name]|fancy_date('long') }}
+                  {% endif %}
+                {% elif field.type == 'multichoice' %}
+                  <ul class="inline">
+                    {% for value in joke.attributes[field.name] %}
+                      <li>
+                        {% if field.name in request|setting('SEARCH_FACET_FIELD_NAMES') %}
+                          <a href="{{ 'search'|route_url(_query=[('filter', '{0}:{1}'|format(field.name, value))])}}">{{ request|_(value) }}</a>
+                        {% else %}
+                          {{ request|_(value) }}
+                        {% endif %}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  {% if field.name in request|setting('SEARCH_FACET_FIELD_NAMES') %}
+                    <a href="{{ 'search'|route_url(_query=[('filter', '{0}:{1}'|format(field.name, joke.attributes[field.name]))])}}">{{ request|_(joke.attributes[field.name]) }}</a>
+                  {% else %}
+                    {{ request|_(joke.attributes[field.name]) }}
+                  {% endif %}
+                {% endif %}
+              </td>
+            </tr>
+          {% endif %}
+        {% endfor %}
         {% for field in request|setting('SOURCE_METADATA') %}
           {% if field.name in joke.parent.attributes and joke.parent.attributes[field.name] %}
             <tr>
               <th scope="row">{{ field.label }}</th>
-              <td><a href="">{% if field.type == 'date' %}{{ joke.parent.attributes[field.name]|fancy_date('long') }}{% else %}{{ joke.parent.attributes[field.name] }}{% endif %}</td></td>
+              <td>
+                {% if field.type == 'date' %}
+                  {% if field.name in request|setting('SEARCH_FACET_FIELD_NAMES') %}
+                    <a href="">{{ joke.parent.attributes[field.name]|fancy_date('long') }}</a>
+                  {% else %}
+                    {{ joke.parent.attributes[field.name]|fancy_date('long') }}
+                  {% endif %}
+                {% elif field.type == 'multichoice' %}
+                  <ul class="inline">
+                    {% for value in joke.parent.attributes[field.name] %}
+                      <li>
+                        {% if field.name in request|setting('SEARCH_FACET_FIELD_NAMES') %}
+                          <a href="{{ 'search'|route_url(_query=[('filter', '{0}:{1}'|format(field.name, value))])}}">{{ request|_(value) }}</a>
+                        {% else %}
+                          {{ request|_(value) }}
+                        {% endif %}
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% else %}
+                  {% if field.name in request|setting('SEARCH_FACET_FIELD_NAMES') %}
+                    <a href="{{ 'search'|route_url(_query=[('filter', '{0}:{1}'|format(field.name, joke.parent.attributes[field.name]))])}}">{{ request|_(joke.parent.attributes[field.name]) }}</a>
+                  {% else %}
+                    {{ request|_(joke.parent.attributes[field.name]) }}
+                  {% endif %}
+                {% endif %}
+              </td>
             </tr>
           {% endif %}
         {% endfor %}
       </tbody>
     </table>
+    <!--
     <h2>Characters</h2>
     <table class="layout-1-2">
       <tbody>
@@ -130,6 +191,7 @@
         </tr>
       </tbody>
     </table>
+    -->
   </div>
   <div class="cell-1-7">{{ visual_separator() }}</div>
   <h2 class="cell-1-7 align-center alt-font">Laugh at this!</h2>

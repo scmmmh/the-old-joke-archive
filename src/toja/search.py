@@ -9,11 +9,12 @@ class Joke(Document):
     """Elasticsearch document holding one joke."""
 
     text = Text()
+    type = Keyword(multi=True)
+    language = Keyword()
+    pub_type = Keyword()
     pub_title = Keyword()
     pub_section = Keyword()
     pub_date = Date()
-    type = Keyword(multi=True)
-    language = Keyword()
 
     class Index:
         name = 'toja_jokes'
@@ -38,10 +39,11 @@ class JokeSearch(FacetedSearch):
     fields = ['text']
     facets = {
         'type': TermsFacet(field='type'),
+        'language': TermsFacet(field='language'),
         'pub_title': TermsFacet(field='pub_title'),
+        'pub_type': TermsFacet(field='pub_type'),
         'pub_section': TermsFacet(field='pub_section'),
         'pub_date': YearDateHistogramFacet(field='pub_date', interval='month'),
-        'language': TermsFacet(field='language')
     }
 
 
