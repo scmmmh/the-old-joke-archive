@@ -80,7 +80,7 @@
                     {% else %}
                       <a href="{{ request|add_search_param('filter', '{0}:{1}'|format(facet.name, facet_value)) }}">
                     {% endif %}
-                      <span>{% if facet.type == 'date' %}{{ value[0]|fancy_date('year') }}{% else %}{{ value[0] }}{% endif %}</span>
+                      <span>{% if facet.type == 'date' %}{{ value[0]|fancy_date('year') }}{% else %}{{ request|_(value[0]) }}{% endif %}</span>
                       <span>{{ value[1] }}</span>
                     </a>
                   </li>

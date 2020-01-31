@@ -57,7 +57,7 @@
                         <template v-if="hasAnnotationAttributeValue('category', annotation.name)" v-for="attr in annotation.attrs">
                             <label>{{ attr.label }}
                                 <select v-if="attr.type === 'select'" @change="setAnnotationAttributeValue('settings', {name: attr.name, value: $event.target.value})">
-                                    <option v-for="value in attr.values" :value="value.name" v-html="value.label" :selected="getAnnotationAttributeValue('settings')[attr.name] === value.name ? 'selected' : null"></option>
+                                    <option v-for="value in attr.values" :value="value[0]" v-html="value[1]" :selected="getAnnotationAttributeValue('settings')[attr.name] === value[0] ? 'selected' : null"></option>
                                 </select>
                             </label>
                         </template>
@@ -70,11 +70,11 @@
                 <h2 class="font-size-default">{{ entry.label }}</h2>
                 <div v-if="entry.type === 'multichoice'">
                     <label v-for="value in entry.values">
-                        <input type="checkbox" :value="value.name" :checked="hasAttributeValue(entry.name, value.name, true) ? 'checked' : null" @change="$event.target.checked ? addAttributeValue(entry.name, value.name) : removeAttributeValue(entry.name, value.name)"> <span v-html="value.label"></span>
+                        <input type="checkbox" :value="value[0]" :checked="hasAttributeValue(entry.name, value[0], true) ? 'checked' : null" @change="$event.target.checked ? addAttributeValue(entry.name, value.name) : removeAttributeValue(entry.name, value.name)"> <span v-html="value[1]"></span>
                     </label>
                 </div>
                 <select v-else-if="entry.type === 'select'" @change="setAttributeValue(entry.name, $event.target.value)">
-                    <option v-for="value in entry.values" :value="value.name" :selected="hasAttributeValue(entry.name, value.name) ? 'selected' : null" v-html="value.label"></option>
+                    <option v-for="value in entry.values" :value="value[0]" :selected="hasAttributeValue(entry.name, value[0]) ? 'selected' : null" v-html="value[1]"></option>
                 </select>
             </div>
         </div>

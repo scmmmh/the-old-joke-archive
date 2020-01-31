@@ -11,7 +11,7 @@
       {% if metadata_field.type == 'date' %}
         {{ field(metadata_field.name, 'text', label, attributes={'value': source.attributes[metadata_field.name]}) }}
       {% elif metadata_field.type == 'select' %}
-        {{ select(metadata_field.name, metadata_field['values'], source.attributes[metadata_field.name], metadata_field.label) }}
+        {{ select(metadata_field.name, metadata_field['values']|zip(request|_(metadata_field['values'])), source.attributes[metadata_field.name], metadata_field.label) }}
       {% else %}
         {{ field(metadata_field.name, metadata_field.type, metadata_field.label, attributes={'value': source.attributes[metadata_field.name]}) }}
       {% endif %}

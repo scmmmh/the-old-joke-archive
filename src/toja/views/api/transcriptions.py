@@ -39,11 +39,11 @@ for metadata in JOKE_METADATA:
     if metadata['type'] == 'multichoice':
         post_transcription_validator['data']['schema']['attributes']['schema'][metadata['name']] = \
             {'type': 'list',
-             'allowed': [value['name'] for value in metadata['values']]}
+             'allowed': [value for value in metadata['values']]}
     elif metadata['type'] == 'select':
         post_transcription_validator['data']['schema']['attributes']['schema'][metadata['name']] = \
             {'type': 'string',
-             'allowed': [value['name'] for value in metadata['values']]}
+             'allowed': [value for value in metadata['values']]}
 
 
 @view_config(route_name='api.transcriptions.post', renderer='json')
@@ -96,11 +96,11 @@ for metadata in JOKE_METADATA:
     if metadata['type'] == 'multichoice':
         patch_transcription_validator['data']['schema']['attributes']['schema'][metadata['name']] = \
             {'type': 'list',
-             'allowed': [value['name'] for value in metadata['values']]}
+             'allowed': [value for value in metadata['values']]}
     elif metadata['type'] == 'select':
         patch_transcription_validator['data']['schema']['attributes']['schema'][metadata['name']] = \
             {'type': 'string',
-             'allowed': [value['name'] for value in metadata['values']]}
+             'allowed': [value for value in metadata['values']]}
 
 
 @view_config(route_name='api.transcription.patch', renderer='json')

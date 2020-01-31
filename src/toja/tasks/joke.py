@@ -24,19 +24,7 @@ def process_joke(jid):
             joke.attributes['text'] = transcription.text
             for field in JOKE_METADATA:
                 if field['type'] in ['multichoice', 'select'] and field['name'] in transcription.attributes:
-                    if 'values' in field:
-                        value = transcription.attributes[field['name']]
-                        if isinstance(value, list):
-                            joke.attributes[field['name']] = []
-                            for sub_value in value:
-                                for config_value in field['values']:
-                                    if config_value['name'] == sub_value:
-                                        joke.attributes[field['name']].append(config_value['label'])
-                        else:
-                            for config_value in field['values']:
-                                if config_value['name'] == value:
-                                    joke.attributes[field['name']] = config_value['label']
-                    else:
+                    if field['name'] in transcription.attributes:
                         joke.attributes[field['name']] = transcription.attributes[field['name']]
                 elif field['type'] == 'extract-single':
                     annotations = extract_annotations(transcription.text, field['source']['type'])

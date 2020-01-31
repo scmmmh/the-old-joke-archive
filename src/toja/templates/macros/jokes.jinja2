@@ -54,7 +54,7 @@
       <ul class="inline">
         {% if 'type' in joke.attributes %}
           {% for type in joke.attributes['type'] %}
-            <li><a href="{{ 'search'|route_url(_query={'filter': 'type:{0}'|format(type)}) }}">{{ type }}</a></li>
+            <li><a href="{{ 'search'|route_url(_query={'filter': 'type:{0}'|format(type)}) }}">{{ request|_(type) }}</a></li>
           {% endfor %}
         {% endif %}
       </ul>

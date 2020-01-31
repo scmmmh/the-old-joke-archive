@@ -1,3 +1,4 @@
+from copy import deepcopy
 from math import ceil
 from pyramid.httpexceptions import HTTPForbidden
 from pyramid.view import view_config
@@ -6,6 +7,7 @@ from sqlalchemy import and_
 from ..models import Image
 from ..session import require_logged_in
 from ..config import ANNOTATIONS, JOKE_METADATA
+from ..translation import _
 
 
 @view_config(route_name='contribute', renderer='toja:templates/contribute/index.jinja2')
@@ -40,11 +42,26 @@ def workbench(request):
 @require_logged_in()
 def workbench_edit(request):
     """Handle the transcription workbench page for a single source."""
+    annotations = []
+    for annotation in ANNOTATIONS:
+        annotation = deepcopy(annotation)
+        if 'attrs' in annotation:
+            for attr in annotation['attrs']:
+                if 'values' in attr:
+                    attr['values'] = [(value, _(request, value)) for value in attr['values']]
+        annotations.append(annotation)
+    metadata = []
+    for entry in JOKE_METADATA:
+        if entry['type'] in ['multichoice', 'select']:
+            metadata.append({'name': entry['name'],
+                             'label': entry['label'],
+                             'type': entry['type'],
+                             'values': [(value, _(request, value)) for value in entry['values']]})
     if request.current_user.trust == 'full':
         return {'config': {'baseURL': request.route_url('api'),
                            'sourceId': int(request.matchdict['sid']),
                            'userId': request.current_user.id,
-                           'annotations': ANNOTATIONS,
-                           'metadata': JOKE_METADATA}}
+                           'annotations': annotations,
+                           'metadata': metadata}}
     else:
         raise HTTPForbidden()

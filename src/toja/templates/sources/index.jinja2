@@ -43,9 +43,9 @@
           <tr>
             {% for field in request|setting('SOURCE_METADATA') %}
               {% if loop.index == 1 %}
-                <td><a href="{{ 'source.view'|route_url(sid=source.id) }}">{{ source.attributes[field.name] }}</a></td>
+                <td><a href="{{ 'source.view'|route_url(sid=source.id) }}">{{ request|_(source.attributes[field.name]) }}</a></td>
               {% else %}
-                <td>{{ source.attributes[field.name] }}</td>
+                <td>{{ request|_(source.attributes[field.name]) }}</td>
               {% endif %}
             {% endfor %}
             <td>{{ source.status|title }}</td>

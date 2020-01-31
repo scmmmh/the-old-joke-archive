@@ -13,10 +13,12 @@
     <table>
       <tbody>
         {% for metadata_field in request|setting('SOURCE_METADATA') %}
-          <tr>
-            <th scope="row">{{ metadata_field.label }}</th>
-            <td>{% if metadata_field.type == 'date' %}{{ source.attributes[metadata_field.name]|fancy_date('long') }}{% else %}{{ source.attributes[metadata_field.name] }}{% endif %}</td>
-          </tr>
+          {% if source.attributes[metadata_field.name] %}
+            <tr>
+              <th scope="row">{{ metadata_field.label }}</th>
+              <td>{% if metadata_field.type == 'date' %}{{ source.attributes[metadata_field.name]|fancy_date('long') }}{% else %}{{ request|_(source.attributes[metadata_field.name]) }}{% endif %}</td>
+            </tr>
+          {% endif %}
         {% endfor %}
       </tbody>
     </table>
