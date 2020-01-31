@@ -76,6 +76,7 @@ def includeme(config):
 
     config.add_route('joke.view', '/jokes/:jid')
     config.add_route('joke.image', '/jokes/:jid/image')
+    config.add_route('joke.rate', '/jokes/:jid/rate', request_method='POST')
 
     config.add_route('source.index', '/sources')
     config.add_route('source.view', '/sources/:sid')
