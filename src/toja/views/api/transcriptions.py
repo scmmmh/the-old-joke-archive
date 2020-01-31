@@ -7,8 +7,8 @@ from sqlalchemy import and_
 from toja.config import JOKE_METADATA
 from toja.models import Image, Transcription
 from toja.session import require_logged_in
-from toja.tasks import index_joke
-from toja.util import Validator, extract_annotations, extract_text
+from toja.tasks import process_joke
+from toja.util import Validator
 
 
 @view_config(route_name='api.transcriptions.get', renderer='json')
@@ -68,16 +68,11 @@ def transcriptions_post(request):
                                           status='final',
                                           attributes={})
             for metadata in JOKE_METADATA:
-                if metadata['type'] == 'extract-single':
-                    transcription.attributes[metadata['name']] = \
-                        ', '.join([extract_text(node) for node in
-                                   extract_annotations(transcription.text, metadata['source']['type'])])
-                else:
-                    if metadata['name'] in params['data']['attributes']:
-                        transcription.attributes[metadata['name']] = params['data']['attributes'][metadata['name']]
+                if metadata['type'] in ['multichoice', 'select'] and metadata['name'] in params['data']['attributes']:
+                    transcription.attributes[metadata['name']] = params['data']['attributes'][metadata['name']]
             request.dbsession.add(transcription)
             request.dbsession.flush()
-            index_joke.send(tid=transcription.id)
+            process_joke.send_with_options(kwargs={'jid': source.id}, delay=1000)
             return {'data': transcription.to_jsonapi()}
         else:
             raise HTTPNotFound()
@@ -125,15 +120,10 @@ def transcription_patch(request):
         if transcription:
             transcription.text = json.loads(json.dumps(params['data']['attributes']['text']).replace('--', '—'))
             for metadata in JOKE_METADATA:
-                if metadata['type'] == 'extract-single':
-                    transcription.attributes[metadata['name']] = \
-                        ', '.join([extract_text(node) for node in
-                                   extract_annotations(transcription.text, metadata['source']['type'])])
-                else:
-                    if metadata['name'] in params['data']['attributes']:
-                        transcription.attributes[metadata['name']] = params['data']['attributes'][metadata['name']]
+                if metadata['type'] in ['multichoice', 'select'] and metadata['name'] in params['data']['attributes']:
+                    transcription.attributes[metadata['name']] = params['data']['attributes'][metadata['name']]
             request.dbsession.add(transcription)
-            index_joke.send(tid=transcription.id)
+            process_joke.send_with_options(kwargs={'jid': transcription.source.id}, delay=1000)
             return {'data': transcription.to_jsonapi()}
         else:
             raise HTTPNotFound()

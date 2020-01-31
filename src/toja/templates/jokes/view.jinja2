@@ -18,10 +18,16 @@
       </div>
     </div>
     <blockquote>
-      {{ format_transcription(joke.transcription.text) }}
+      {% if joke.attributes.text %}
+        {{ format_transcription(joke.attributes.text) }}
+      {% endif %}
     </blockquote>
     <div class="show-small">
-      {{ joke_ratings({'laugh': 10201, 'boo': 328, 'groan': 243}) }}
+      {% if joke.attributes.ratings %}
+        {{ joke_ratings(joke.attributes.ratings) }}
+      {% else %}
+        {{ joke_ratings({'laugh': 0, 'boo': 0, 'groan': 0})}}
+      {% endif %}
     </div>
     <div class="align-center margin-bottom">
       <img src="{{ 'joke.image'|route_url(jid=joke.id) }}"/>

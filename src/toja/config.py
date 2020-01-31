@@ -15,9 +15,6 @@ SOURCE_METADATA = [{'name': 'pub_type',
 SOURCE_SNIPPET_FIELD_TITLE = 'pub_title'
 SOURCE_SNIPPET_FIELD_SUBTITLE = 'pub_section'
 SOURCE_SNIPPET_FIELD_DATE = 'pub_date'
-JOKE_SNIPPET_FIELD_TITLE = 'source.pub_title'
-JOKE_SNIPPET_FIELD_SUBTITLE = 'source.pub_section'
-JOKE_SNIPPET_FIELD_DATE = 'pub_date'
 ANNOTATIONS = [{'name': 'title', 'label': 'Title'},
                {'name': 'attribution', 'label': 'Attribution'},
                {'name': 'aside', 'label': 'Aside'},
@@ -91,9 +88,6 @@ SETTINGS = {'SOURCE_METADATA': SOURCE_METADATA,
             'SOURCE_SNIPPET_FIELD_TITLE': SOURCE_SNIPPET_FIELD_TITLE,
             'SOURCE_SNIPPET_FIELD_SUBTITLE': SOURCE_SNIPPET_FIELD_SUBTITLE,
             'SOURCE_SNIPPET_FIELD_DATE': SOURCE_SNIPPET_FIELD_DATE,
-            'JOKE_SNIPPET_FIELD_TITLE': JOKE_SNIPPET_FIELD_TITLE,
-            'JOKE_SNIPPET_FIELD_SUBTITLE': JOKE_SNIPPET_FIELD_SUBTITLE,
-            'JOKE_SNIPPET_FIELD_DATE': JOKE_SNIPPET_FIELD_DATE,
             'ANNOTATIONS': ANNOTATIONS,
             'SEARCH_FACETS': SEARCH_FACETS,
             'JOKE_TYPES': JOKE_TYPES,

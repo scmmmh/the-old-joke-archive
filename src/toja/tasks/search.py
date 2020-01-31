@@ -3,9 +3,10 @@ import dramatiq
 from sqlalchemy import and_
 
 from .middleware import DBSessionMiddleware
-from ..models import Transcription
-from ..search import Joke
 from ..config import SOURCE_METADATA, JOKE_METADATA
+from ..models import Image
+from ..search import Joke
+from ..util import extract_text
 
 
 @dramatiq.actor()
@@ -15,44 +16,37 @@ def index_all():
     This is a dramatiq Actor, so can be run in the background.
     """
     dbsession = DBSessionMiddleware.dbsession()
-    for transcription in dbsession.query(Transcription).filter(Transcription.status == 'final'):
-        index_joke.send(transcription.id)
+    for joke in dbsession.query(Image).filter(Image.type == 'joke'):
+        index_joke(joke.id)
 
 
 @dramatiq.actor()
-def index_joke(tid):
-    """Index a single joke identified through the final :class:`~toja.models.transcription.Transcription` with the id
-    `tid`.
+def index_joke(jid):
+    """Index a single joke :class:`~toja.models.image.Image` with the id `jid`.
 
     This is a dramatiq Actor, so can be run in the background.
     """
     dbsession = DBSessionMiddleware.dbsession()
-    transcription = dbsession.query(Transcription).filter(and_(Transcription.id == tid,
-                                                               Transcription.status == 'final')).first()
-    if transcription:
-        joke = Joke(text=transcription.pure_text(),
-                    meta={'id': transcription.source.id})
+    db_joke = dbsession.query(Image).filter((and_(Image.id == jid,
+                                                  Image.type == 'joke',
+                                                  Image.status == 'confirmed'))).first()
+    if db_joke and 'text' in db_joke.attributes:
+        joke = Joke(text=extract_text(db_joke.attributes['text']),
+                    meta={'id': db_joke.id})
         for field in SOURCE_METADATA:
-            value = transcription.source.attribute('source.{0}'.format(field['name']))
+            value = db_joke.attribute('source.{0}'.format(field['name']))
             if value:
                 if field['type'] == 'date':
                     if len(value.split('-')) < 3:
                         value = '{0}{1}'.format(value, '-01' * (3 - len(value.split('-'))))
                 joke[field['name']] = value
         for field in JOKE_METADATA:
-            if field['name'] in transcription.attributes:
-                if 'values' in field:
-                    value = transcription.attributes[field['name']]
-                    if isinstance(value, list):
-                        joke[field['name']] = []
-                        for sub_value in value:
-                            for config_value in field['values']:
-                                if config_value['name'] == sub_value:
-                                    joke[field['name']].append(config_value['label'])
-                    else:
-                        for config_value in field['values']:
-                            if config_value['name'] == value:
-                                joke[field['name']] = config_value['label']
-                else:
-                    joke[field['name']] = transcription.attributes[field['name']]
+            if field['name'] in db_joke.attributes:
+                joke[field['name']] = db_joke.attributes[field['name']]
         joke.save()
+    else:
+        try:
+            db_joke = Joke.get(id=jid)
+            db_joke.delete()
+        except Exception:
+            pass

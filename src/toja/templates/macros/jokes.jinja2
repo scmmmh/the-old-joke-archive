@@ -41,21 +41,27 @@
   <div>
     <div class="metadata">
       <div>
-        <h2><a href="{{ 'joke.view'|route_url(jid=joke.id) }}">{{ joke.attribute(request|setting('JOKE_SNIPPET_FIELD_TITLE')) }}</a></h2>
-        <p>{{ joke.attribute(request|setting('JOKE_SNIPPET_FIELD_SUBTITLE')) }}</p>
+        <h2><a href="{{ 'joke.view'|route_url(jid=joke.id) }}">{% if 'title' in joke.attributes and joke.attributes['title']%}{{ joke.attributes['title'] }}{% else %}Untitled Joke{% endif %}</a></h2>
+        <p>Found in: <a href="{{ 'search'|route_url(_query={'filter': 'pub_title:{0}'|format(joke.attribute('source.pub_title'))}) }}">{{ joke.attribute('source.pub_title') }}</a>{% if joke.attribute('source.pub_section') %}, <a href="{{ 'search'|route_url(_query=[('filter', 'pub_title:{0}'|format(joke.attribute('source.pub_title'))), ('filter', 'pub_section:{0}'|format(joke.attribute('source.pub_section')))]) }}">{{ joke.attribute('source.pub_section') }}</a>{% endif %}</p>
       </div>
       <time>
-        <span>{{ joke.attribute(request|setting('JOKE_SNIPPET_FIELD_DATE'))|fancy_date(format='year') }}</span>
-        <span>{{ joke.attribute(request|setting('JOKE_SNIPPET_FIELD_DATE'))|fancy_date(format='month-day') }}</span>
+        <span>{{ joke.attribute('source.pub_date')|fancy_date(format='year') }}</span>
+        <span>{{ joke.attribute('source.pub_date')|fancy_date(format='month-day') }}</span>
       </time>
     </div>
-    <div class="snippet" style="width:100%;">{{ format_transcription(joke.transcription.text) }}</div>
+    <div class="snippet" style="width:100%;">{% if 'text' in joke.attributes %}{{ format_transcription(joke.attributes['text']) }}{% endif %}</div>
     <div class="classification">
       <ul class="inline">
-        <li><a href="#">Categories</a></li>
+        {% if 'type' in joke.attributes %}
+          {% for type in joke.attributes['type'] %}
+            <li><a href="{{ 'search'|route_url(_query={'filter': 'type:{0}'|format(type)}) }}">{{ type }}</a></li>
+          {% endfor %}
+        {% endif %}
       </ul>
       <ul class="inline">
-        <li><a href="#">Tags</a></li>
+        {% if 'tags' in joke.attributes %}
+          <li><a href="#">Tags</a></li>
+        {% endif %}
     </div>
   </div>
 </section>

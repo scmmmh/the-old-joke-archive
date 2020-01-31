@@ -28,10 +28,6 @@ class Image(Base):
                             cascade="all,delete,delete-orphan")
     transcriptions = relationship('Transcription',
                                   order_by='desc(Transcription.created)')
-    transcription = relationship('Transcription',
-                                 primaryjoin="and_(Image.id == Transcription.source_id, "
-                                             "Transcription.status == 'final')",
-                                 uselist=False)
     # reviews = relationship('Review', secondary='images_reviews')
 
     def attribute(self, path):
