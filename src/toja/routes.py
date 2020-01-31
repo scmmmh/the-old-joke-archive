@@ -85,6 +85,7 @@ def includeme(config):
 
     config.add_route('admin.index', '/admin')
     config.add_route('admin.search', '/admin/search')
+    config.add_route('admin.jokes', '/admin/jokes')
 
     config.add_route('api', '/api')
     config.add_route('api.sources.get', '/api/sources', request_method='GET')

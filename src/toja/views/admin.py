@@ -4,7 +4,7 @@ from pyramid.view import view_config
 
 from ..permissions import require_permission
 from ..search import Joke
-from ..tasks import index_all
+from ..tasks import index_all, process_all_jokes
 
 
 @view_config(route_name='admin.index', renderer='toja:templates/admin/index.jinja2')
@@ -34,3 +34,15 @@ def search(request):
         return HTTPFound(request.route_url('admin.search'))
     indices = [(index[0], index[1], index[1].stats() if index[1].exists() else None) for index in indices]
     return {'indices': indices}
+
+
+@view_config(route_name='admin.jokes', renderer='toja:templates/admin/jokes.jinja2')
+@require_permission('jokes.admin')
+def jokes(request):
+    """Jokes Admin landing page."""
+    if request.method == 'POST':
+        if 'action' in request.params:
+            if request.params['action'] == 'process':
+                process_all_jokes.send()
+        return HTTPFound(request.route_url('admin.jokes'))
+    return {}

@@ -16,6 +16,9 @@
       {% if request|permitted('admin.search') %}
         <li><a href="{{ 'admin.search'|route_url() }}">Search</a></li>
       {% endif %}
+      {% if request|permitted('jokes.admin') %}
+        <li><a href="{{ 'admin.jokes'|route_url() }}">Jokes</a></li>
+      {% endif %}
     </ul>
   </div>
 </section>

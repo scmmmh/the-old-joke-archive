@@ -11,10 +11,11 @@ PERMISSIONS = OrderedDict((('admin.view', 'Access the Admin Interface'),
                            ('admin.search', 'Administer the Search System'),
                            ('users.admin', 'Administer Users'),
                            ('sources.admin', 'Administer Sources'),
-                           ('sources.new', 'Provide new Source Data')))
+                           ('sources.new', 'Provide new Source Data'),
+                           ('jokes.admin', 'Administer Jokes')))
 GROUPS = OrderedDict((('admin', ('admin.view', 'users.admin', 'admin.search')),
                       ('data provider', ('sources.new', )),
-                      ('data admin', ('admin.view', 'sources.admin'))))
+                      ('data admin', ('admin.view', 'sources.admin', 'jokes.admin'))))  # TODO: Fix source admin name
 PERMISSIONS_GROUPS = {}
 for group, permissions in GROUPS.items():
     for permission in permissions:

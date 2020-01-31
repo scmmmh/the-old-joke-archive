@@ -10,6 +10,17 @@ from ..util import extract_annotations, extract_text
 
 
 @dramatiq.actor()
+def process_all_jokes():
+    """Process all jokes.
+
+    This is a dramatiq Actor, so can be run in the background.
+    """
+    dbsession = DBSessionMiddleware.dbsession()
+    for joke in dbsession.query(Image).filter(Image.type == 'joke'):
+        process_joke.send(joke.id)
+
+
+@dramatiq.actor()
 def process_joke(jid):
     """Process a single joke :class:`~toja.models.transcription.Source` with the id
     `jid`.

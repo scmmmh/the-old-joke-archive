@@ -29,7 +29,7 @@ def index_joke(jid):
     dbsession = DBSessionMiddleware.dbsession()
     db_joke = dbsession.query(Image).filter((and_(Image.id == jid,
                                                   Image.type == 'joke',
-                                                  Image.status == 'confirmed'))).first()
+                                                  Image.status == 'final'))).first()
     if db_joke and 'text' in db_joke.attributes:
         joke = Joke(text=extract_text(db_joke.attributes['text']),
                     meta={'id': db_joke.id})
