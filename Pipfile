@@ -26,7 +26,7 @@ cerberus = "*"
 sqlalchemy-json = "*"
 email-validator = "*"
 pillow = "*"
-dramatiq = {extras = ["rabbitmq", "watch"],version = "*"}
+dramatiq = {extras = ["redis", "watch"],version = "<1.8.0>=1.7.0"}
 tesserocr = "*"
 elasticsearch-dsl = "<8.0.0,>=7.0.0"
 
