@@ -1,6 +1,6 @@
 from datetime import timedelta
 from elasticsearch_dsl import (connections, Document, Text, Keyword, Date, FacetedSearch, TermsFacet,
-                               DateHistogramFacet)
+                               DateHistogramFacet, Completion)
 
 from .util import convert_type
 
@@ -10,6 +10,7 @@ class Joke(Document):
 
     text = Text()
     type = Keyword(multi=True)
+    topic = Keyword(multi=True)
     language = Keyword()
     pub_type = Keyword()
     pub_title = Keyword()
@@ -18,6 +19,16 @@ class Joke(Document):
 
     class Index:
         name = 'toja_jokes'
+
+
+class Autosuggest(Document):
+    """Elasticsearch document holding one autosuggest value."""
+
+    category = Keyword()
+    value = Completion()
+
+    class Index:
+        name = 'toja_autosuggests'
 
 
 class YearDateHistogramFacet(DateHistogramFacet):
@@ -39,6 +50,7 @@ class JokeSearch(FacetedSearch):
     fields = ['text']
     facets = {
         'type': TermsFacet(field='type'),
+        'topic': TermsFacet(field='topic'),
         'language': TermsFacet(field='language'),
         'pub_title': TermsFacet(field='pub_title'),
         'pub_type': TermsFacet(field='pub_type'),

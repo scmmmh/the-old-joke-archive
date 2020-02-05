@@ -1,11 +1,12 @@
 import dramatiq
+import hashlib
 
 from sqlalchemy import and_
 
 from .middleware import DBSessionMiddleware
 from ..config import SOURCE_METADATA, JOKE_METADATA
 from ..models import Image
-from ..search import Joke
+from ..search import Joke, Autosuggest
 from ..util import extract_text
 
 
@@ -43,6 +44,19 @@ def index_joke(jid):
         for field in JOKE_METADATA:
             if field['name'] in db_joke.attributes:
                 joke[field['name']] = db_joke.attributes[field['name']]
+                if field['type'] == 'multitext':
+                    # Index auto-suggestion values
+                    for value in db_joke.attributes[field['name']]:
+                        id_value = '{0}-{1}'.format(field['name'], value)
+                        if len(id_value) > 128:
+                            m = hashlib.sha256()
+                            m.update(id_value.encode('utf-8'))
+                            id_value = m.hexdigest()
+                        autosuggest = Autosuggest(category=field['name'],
+                                                  value=value,
+                                                  value_suggests=value,
+                                                  meta={'id': id_value})
+                        autosuggest.save()
         joke.save()
     else:
         try:

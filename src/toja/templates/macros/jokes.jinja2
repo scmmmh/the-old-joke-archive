@@ -59,8 +59,10 @@
         {% endif %}
       </ul>
       <ul class="inline">
-        {% if 'tags' in joke.attributes %}
-          <li><a href="#">Tags</a></li>
+        {% if 'topic' in joke.attributes %}
+          {% for topic in joke.attributes['topic'] %}
+            <li><a href="{{ 'search'|route_url(_query={'filter': 'topic:{0}'|format(topic)}) }}">{{ topic }}</a></li>
+          {% endfor %}
         {% endif %}
     </div>
   </div>

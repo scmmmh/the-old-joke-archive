@@ -35,7 +35,8 @@ def process_joke(jid):
             joke.attributes['text'] = transcription.text
             joke.status = 'final'
             for field in JOKE_METADATA:
-                if field['type'] in ['multichoice', 'select'] and field['name'] in transcription.attributes:
+                if field['type'] in ['multichoice', 'select', 'multitext'] \
+                        and field['name'] in transcription.attributes:
                     if field['name'] in transcription.attributes:
                         joke.attributes[field['name']] = transcription.attributes[field['name']]
                 elif field['type'] == 'extract-single':

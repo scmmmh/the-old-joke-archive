@@ -70,12 +70,32 @@
                 <h2 class="font-size-default">{{ entry.label }}</h2>
                 <div v-if="entry.type === 'multichoice'">
                     <label v-for="value in entry.values">
-                        <input type="checkbox" :value="value[0]" :checked="hasAttributeValue(entry.name, value[0], true) ? 'checked' : null" @change="$event.target.checked ? addAttributeValue(entry.name, value.name) : removeAttributeValue(entry.name, value.name)"> <span v-html="value[1]"></span>
+                        <input type="checkbox" :value="value[0]" :checked="hasAttributeValue(entry.name, value[0], true) ? 'checked' : null" @change="$event.target.checked ? addAttributeValue(entry.name, value[0]) : removeAttributeValue(entry.name, value[0])"> <span v-html="value[1]"></span>
                     </label>
                 </div>
                 <select v-else-if="entry.type === 'select'" @change="setAttributeValue(entry.name, $event.target.value)">
                     <option v-for="value in entry.values" :value="value[0]" :selected="hasAttributeValue(entry.name, value[0]) ? 'selected' : null" v-html="value[1]"></option>
                 </select>
+                <div v-if="entry.type === 'multitext'">
+                    <ol class="no-bullet">
+                        <li v-for="value in getAttributeValue(entry.name)" class="value-and-action">
+                            <span>{{ value }}</span>
+                            <a @click="removeAttributeValue(entry.name, value)" aria-label="Delete">
+                                <svg viewBox="0 0 24 24" class="icon mdi">
+                                    <path d="M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8,9H16V19H8V9M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z" />
+                                </svg>
+                            </a>
+                        </li>
+                    </ol>
+                    <div class="autosuggest">
+                        <input type="text" @keyup="keyUp(entry, $event)"/>
+                        <ul v-if="autosuggests[entry.name] && autosuggests[entry.name].length > 0" class="no-bullet">
+                            <li v-for="suggest in autosuggests[entry.name]">
+                                <a @click="addAttributeValue(entry.name, suggest)">{{ suggest }}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="overlay" v-if="noTranscription">
@@ -93,6 +113,7 @@ import { removeMark, updateMark } from 'tiptap-commands';
 import AnnotationMark from '@/markup/AnnotationMark';
 // @ts-ignore
 import deepcopy from 'deepcopy';
+import axios from 'axios';
 
 import { Joke, Transcription } from '@/interfaces';
 
@@ -106,6 +127,7 @@ export default class JokeTranscriber extends Vue {
     public mode = 'transcribe';
     public editor: Editor | null = null;
     public attributes: any = {};
+    public autosuggests: any = {};
 
     // ****************
     // Lifecycle events
@@ -142,19 +164,26 @@ export default class JokeTranscriber extends Vue {
         this.mode = mode;
     }
 
+    public getAttributeValue(name: string) {
+        return this.attributes[name];
+    }
+
     public addAttributeValue(name: string, value: string) {
-        let values = this.$store.state.transcription.attributes[name];
+        let values = this.attributes[name];
         if (!values) {
             values = [];
         }
-        if (values.indexOf(value) < 0) {
+        if (values.indexOf(value) < 0 && value) {
             values.push(value);
         }
         this.attributes = { ... this.attributes, ... { [name]: values} };
+        if (this.autosuggests[name]) {
+            this.autosuggests = {};
+        }
     }
 
     public removeAttributeValue(name: string, value: string) {
-        const values = this.$store.state.transcription.attributes[name];
+        const values = this.attributes[name];
         if (values) {
             if (values.indexOf(value) >= 0) {
                 values.splice(values.indexOf(value), 1);
@@ -167,6 +196,25 @@ export default class JokeTranscriber extends Vue {
 
     public setAttributeValue(name: string, value: string) {
         this.attributes = { ... this.attributes, ... { [name]: value} };
+    }
+
+    public keyUp(entry: any, event: KeyboardEvent) {
+        if (event !== null && event !== undefined) {
+            if (entry.type === 'multitext') {
+                if (event.keyCode === 13) {
+                    this.addAttributeValue(entry.name, (event.target as HTMLInputElement).value);
+                    (event.target as HTMLInputElement).value = '';
+                } else {
+                    axios.get(entry.autosuggest, {
+                        params: {
+                            value: (event.target as HTMLInputElement).value,
+                        },
+                    }).then((response) => {
+                        this.autosuggests = {[entry.name]: response.data};
+                    });
+                }
+            }
+        }
     }
 
     // ************
@@ -285,7 +333,7 @@ export default class JokeTranscriber extends Vue {
     // *******************
 
     public hasAttributeValue(name: string, value: string, multiple?: boolean) {
-        const values = this.$store.state.transcription.attributes[name];
+        const values = this.attributes[name];
         if (multiple) {
             if (values) {
                 return values.indexOf(value) >= 0;

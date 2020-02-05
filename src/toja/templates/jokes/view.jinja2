@@ -62,7 +62,7 @@
                   {% else %}
                     {{ joke.attributes[field.name]|fancy_date('long') }}
                   {% endif %}
-                {% elif field.type == 'multichoice' %}
+                {% elif field.type in ['multichoice', 'multitext'] %}
                   <ul class="inline">
                     {% for value in joke.attributes[field.name] %}
                       <li>
@@ -96,7 +96,7 @@
                   {% else %}
                     {{ joke.parent.attributes[field.name]|fancy_date('long') }}
                   {% endif %}
-                {% elif field.type == 'multichoice' %}
+                {% elif field.type in ['multichoice', 'multitext'] %}
                   <ul class="inline">
                     {% for value in joke.parent.attributes[field.name] %}
                       <li>

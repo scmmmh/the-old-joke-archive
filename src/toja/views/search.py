@@ -6,7 +6,7 @@ from pyramid.view import view_config
 
 from ..config import SEARCH_FACETS
 from ..models import Image
-from ..search import JokeSearch
+from ..search import JokeSearch, Autosuggest
 
 YEAR_FACETS = []
 for facet in SEARCH_FACETS:
@@ -69,3 +69,15 @@ def index(request):
                 'title': title}
     except ConnectionError:
         return {'error': 'Connection Refused'}
+
+
+@view_config(route_name='search.autosuggest', renderer='json')
+def autosuggest(request):
+    """Return the top ten autosuggest values for a category and value."""
+    search = Autosuggest.search()
+    search = search.filter('term', category=request.matchdict['category'])
+    if 'value' in request.params:
+        search = search.suggest('value_suggestions', request.params['value'], completion={'field': 'value'})
+    else:
+        search = search.suggest('value_suggestions', '', completion={'field': 'value'})
+    return [suggest.text for suggest in search.execute().suggest.value_suggestions[0].options]

@@ -18,6 +18,13 @@ ol {
             content: counter(ol-counter);
             color: var(--color-text-default);
         }
+
+        &.no-bullet {
+            li:before {
+                content: "";
+                display: none;
+            }
+        }
     }
 }
 

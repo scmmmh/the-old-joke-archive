@@ -3,7 +3,7 @@ from pyramid.httpexceptions import HTTPFound
 from pyramid.view import view_config
 
 from ..permissions import require_permission
-from ..search import Joke
+from ..search import Joke, Autosuggest
 from ..tasks.joke import process_all_jokes
 from ..tasks.search import index_all
 
@@ -19,7 +19,7 @@ def index(request):
 @require_permission('admin.search')
 def search(request):
     """Search Admin landing page."""
-    types = [('Jokes', Joke)]
+    types = [('Jokes', Joke), ('Autosuggests', Autosuggest)]
     indices = [(t[0], Index(name=t[1].Index.name)) for t in types]
     if request.method == 'POST':
         if 'action' in request.params:

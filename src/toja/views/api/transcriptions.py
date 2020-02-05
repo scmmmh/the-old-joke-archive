@@ -44,6 +44,9 @@ for metadata in JOKE_METADATA:
         post_transcription_validator['data']['schema']['attributes']['schema'][metadata['name']] = \
             {'type': 'string',
              'allowed': [value for value in metadata['values']]}
+    elif metadata['type'] == 'multitext':
+        post_transcription_validator['data']['schema']['attributes']['schema'][metadata['name']] = \
+            {'type': 'list'}
 
 
 @view_config(route_name='api.transcriptions.post', renderer='json')
@@ -68,7 +71,8 @@ def transcriptions_post(request):
                                           status='final',
                                           attributes={})
             for metadata in JOKE_METADATA:
-                if metadata['type'] in ['multichoice', 'select'] and metadata['name'] in params['data']['attributes']:
+                if metadata['type'] in ['multichoice', 'select', 'multitext'] \
+                        and metadata['name'] in params['data']['attributes']:
                     transcription.attributes[metadata['name']] = params['data']['attributes'][metadata['name']]
             request.dbsession.add(transcription)
             request.dbsession.flush()
@@ -101,6 +105,9 @@ for metadata in JOKE_METADATA:
         patch_transcription_validator['data']['schema']['attributes']['schema'][metadata['name']] = \
             {'type': 'string',
              'allowed': [value for value in metadata['values']]}
+    elif metadata['type'] == 'multitext':
+        patch_transcription_validator['data']['schema']['attributes']['schema'][metadata['name']] = \
+            {'type': 'list'}
 
 
 @view_config(route_name='api.transcription.patch', renderer='json')
@@ -120,7 +127,8 @@ def transcription_patch(request):
         if transcription:
             transcription.text = json.loads(json.dumps(params['data']['attributes']['text']).replace('--', '—'))
             for metadata in JOKE_METADATA:
-                if metadata['type'] in ['multichoice', 'select'] and metadata['name'] in params['data']['attributes']:
+                if metadata['type'] in ['multichoice', 'select', 'multitext'] \
+                        and metadata['name'] in params['data']['attributes']:
                     transcription.attributes[metadata['name']] = params['data']['attributes'][metadata['name']]
             request.dbsession.add(transcription)
             process_joke.send_with_options(kwargs={'jid': transcription.source.id}, delay=1000)

@@ -65,6 +65,7 @@ def includeme(config):
     config.add_route('user.delete', '/users/:uid/delete', request_method='POST')
 
     config.add_route('search', '/search')
+    config.add_route('search.autosuggest', '/search/autosuggest/:category')
 
     config.add_route('explore.recommend.mlt', '/explore/mlt/:jid')
     config.add_route('explore.recommend.random', '/explore/random')

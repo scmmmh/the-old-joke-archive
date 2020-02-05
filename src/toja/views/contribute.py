@@ -57,6 +57,11 @@ def workbench_edit(request):
                              'label': entry['label'],
                              'type': entry['type'],
                              'values': [(value, _(request, value)) for value in entry['values']]})
+        elif entry['type'] == 'multitext':
+            metadata.append({'name': entry['name'],
+                             'label': entry['label'],
+                             'type': entry['type'],
+                             'autosuggest': request.route_url('search.autosuggest', category=entry['name'])})
     if request.current_user.trust == 'full':
         return {'config': {'baseURL': request.route_url('api'),
                            'sourceId': int(request.matchdict['sid']),
