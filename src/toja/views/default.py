@@ -15,7 +15,6 @@ def root(request):
     joke = None
     try:
         search = Search.from_dict({'query': {'function_score': {'query': {'match_all': {}}, 'random_score': {}}}})
-        search = search[1]
         results = search.execute()
         if len(results) == 1:
             joke = request.dbsession.query(Image).filter(and_(Image.id == results[0].meta.id,

@@ -15,11 +15,7 @@
     </div>
     <div>
       {{ format_transcription(joke.attributes.text) }}
-      {% if joke.attributes.ratings %}
-        {{ joke_ratings(joke.attributes.ratings) }}
-      {% else %}
-        {{ joke_ratings({'laugh': 0, 'boo': 0, 'groan': 0})}}
-      {% endif %}
+      {{ joke_ratings(joke) }}
     </div>
   </section>
 {% endif %}
