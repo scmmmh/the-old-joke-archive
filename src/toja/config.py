@@ -1,6 +1,3 @@
-import dramatiq
-
-from dramatiq.brokers.redis import RedisBroker
 from jinja2 import Undefined
 
 SOURCE_METADATA = [{'name': 'pub_type',
@@ -87,6 +84,4 @@ def get_setting(request, setting):
 
 
 def includeme(config):
-    dramatiq.set_broker(RedisBroker(url=config.get_settings()['app.broker.url']))
-
     config.get_jinja2_environment().filters['setting'] = get_setting

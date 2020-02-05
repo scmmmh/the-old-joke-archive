@@ -4,7 +4,8 @@ from pyramid.view import view_config
 
 from ..permissions import require_permission
 from ..search import Joke
-from ..tasks import index_all, process_all_jokes
+from ..tasks.joke import process_all_jokes
+from ..tasks.search import index_all
 
 
 @view_config(route_name='admin.index', renderer='toja:templates/admin/index.jinja2')

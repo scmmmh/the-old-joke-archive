@@ -7,7 +7,7 @@ from sqlalchemy import and_
 from toja.config import JOKE_METADATA
 from toja.models import Image, Transcription
 from toja.session import require_logged_in
-from toja.tasks import process_joke
+from toja.tasks.joke import process_joke
 from toja.util import Validator
 
 
