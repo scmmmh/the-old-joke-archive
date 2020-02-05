@@ -2,6 +2,8 @@ import dramatiq
 import os
 import transaction
 
+from dramatiq.rate_limits import ConcurrentRateLimiter
+from dramatiq.rate_limits.backends import RedisBackend
 from elasticsearch_dsl import connections
 from pyramid.paster import get_appsettings, setup_logging
 from threading import local
@@ -120,3 +122,18 @@ class ElasticsearchMiddleware(dramatiq.Middleware):
     def before_worker_boot(self, broker, worker):
         connections.create_connection(hosts=convert_type(ConfigMiddleware.settings()['app.elasticsearch.hosts'],
                                                          'list'))
+
+
+class RateLimiterMiddleware(dramatiq.Middleware):
+    """The :class:`~toja.tasks.middleware.RateLimiterMiddleware` is a dramatiq
+    :class:`~dramatiq.middleware.Middleware` that sets up the backend for task rate limiting"""
+
+    state = local()
+
+    @classmethod
+    def get_rate_limiter(cls, key, limit=1):
+        return ConcurrentRateLimiter(getattr(cls.state, 'backend', None), key, limit=limit)
+
+    def before_process_message(self, broker, message):
+        if getattr(self.state, 'backend', None) is None:
+            setattr(self.state, 'backend', RedisBackend(url=ConfigMiddleware.settings()['app.broker.url']))

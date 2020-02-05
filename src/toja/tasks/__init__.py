@@ -3,7 +3,7 @@ import dramatiq
 
 from pyramid.paster import get_appsettings
 
-from .middleware import ConfigMiddleware, DBSessionMiddleware, ElasticsearchMiddleware
+from .middleware import ConfigMiddleware, DBSessionMiddleware, ElasticsearchMiddleware, RateLimiterMiddleware
 
 
 def setup_broker(settings):
@@ -14,6 +14,7 @@ def setup_broker(settings):
     dramatiq.get_broker().add_middleware(ConfigMiddleware())
     dramatiq.get_broker().add_middleware(DBSessionMiddleware())
     dramatiq.get_broker().add_middleware(ElasticsearchMiddleware())
+    dramatiq.get_broker().add_middleware(RateLimiterMiddleware())
 
 
 def includeme(config):

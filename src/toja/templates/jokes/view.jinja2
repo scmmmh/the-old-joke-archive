@@ -9,26 +9,14 @@
   <div class="cell-1-4">
     <div class="flex" style="align-items:center;">
       <h1 class="alt-font">{% if joke.attributes.title %}{{ joke.attributes.title }}{% else %}Untitled Joke{% endif %}</h1>
-      <div class="shrink hide-small">
-        {% if joke.attributes.ratings %}
-          {{ joke_ratings(joke.attributes.ratings) }}
-        {% else %}
-          {{ joke_ratings({'laugh': 0, 'boo': 0, 'groan': 0})}}
-        {% endif %}
-      </div>
+      <div class="shrink hide-small">{{ joke_ratings(joke) }}</div>
     </div>
     <blockquote>
       {% if joke.attributes.text %}
         {{ format_transcription(joke.attributes.text) }}
       {% endif %}
     </blockquote>
-    <div class="show-small">
-      {% if joke.attributes.ratings %}
-        {{ joke_ratings(joke.attributes.ratings) }}
-      {% else %}
-        {{ joke_ratings({'laugh': 0, 'boo': 0, 'groan': 0})}}
-      {% endif %}
-    </div>
+    <div class="show-small">{{ joke_ratings(joke) }}</div>
     <div class="align-center margin-bottom">
       <img src="{{ 'joke.image'|route_url(jid=joke.id) }}"/>
     </div>
