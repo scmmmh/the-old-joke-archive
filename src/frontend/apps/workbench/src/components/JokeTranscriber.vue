@@ -55,11 +55,44 @@
                     </label>
                     <template v-for="annotation in annotations">
                         <template v-if="hasAnnotationAttributeValue('category', annotation.name)" v-for="attr in annotation.attrs">
-                            <label>{{ attr.label }}
+                            <label v-if="attr.type === 'select'">{{ attr.label }}
                                 <select v-if="attr.type === 'select'" @change="setAnnotationAttributeValue('settings', {name: attr.name, value: $event.target.value})">
                                     <option v-for="value in attr.values" :value="value[0]" v-html="value[1]" :selected="getAnnotationAttributeValue('settings')[attr.name] === value[0] ? 'selected' : null"></option>
                                 </select>
                             </label>
+                            <div v-else-if="attr.type === 'singletext'">
+                                <div class="autosuggest">
+                                    <label>{{ attr.label }}
+                                        <input type="text" :value="getAnnotationAttributeValue('settings')[attr.name]" @keyup="annotationAttributeAutosuggest('settings', attr, $event)"/>
+                                    </label>
+                                    <ul v-if="autosuggests[attr.name] && autosuggests[attr.name].length > 0" class="no-bullet">
+                                        <li v-for="suggest in autosuggests[attr.name]">
+                                            <a @click="setAnnotationAttributeValue('settings', {name: attr.name, value: suggest})">{{ suggest }}</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div v-else-if="attr.type === 'multitext'">
+                                <label>{{ attr.label }}</label>
+                                <ol class="no-bullet">
+                                    <li v-for="value in getAnnotationAttributeValue('settings')[attr.name]" class="value-and-action">
+                                        <span>{{ value }}</span>
+                                        <a @click="removeAnnotationAttributeValue('settings', {name: attr.name, value: value})" aria-label="Delete">
+                                            <svg viewBox="0 0 24 24" class="icon mdi">
+                                                <path d="M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8,9H16V19H8V9M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z" />
+                                            </svg>
+                                        </a>
+                                    </li>
+                                </ol>
+                                <div class="autosuggest">
+                                    <input type="text" @keyup="annotationAttributeAutosuggest('settings', attr, $event)"/>
+                                    <ul v-if="autosuggests[attr.name] && autosuggests[attr.name].length > 0" class="no-bullet">
+                                        <li v-for="suggest in autosuggests[attr.name]">
+                                            <a @click="addAnnotationAttributeValue('settings', {name: attr.name, value: suggest})">{{ suggest }}</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </template>
                     </template>
                 </div>
@@ -88,7 +121,7 @@
                         </li>
                     </ol>
                     <div class="autosuggest">
-                        <input type="text" @keyup="keyUp(entry, $event)"/>
+                        <input type="text" @keyup="attributeAutosuggest(entry, $event)"/>
                         <ul v-if="autosuggests[entry.name] && autosuggests[entry.name].length > 0" class="no-bullet">
                             <li v-for="suggest in autosuggests[entry.name]">
                                 <a @click="addAttributeValue(entry.name, suggest)">{{ suggest }}</a>
@@ -164,41 +197,7 @@ export default class JokeTranscriber extends Vue {
         this.mode = mode;
     }
 
-    public getAttributeValue(name: string) {
-        return this.attributes[name];
-    }
-
-    public addAttributeValue(name: string, value: string) {
-        let values = this.attributes[name];
-        if (!values) {
-            values = [];
-        }
-        if (values.indexOf(value) < 0 && value) {
-            values.push(value);
-        }
-        this.attributes = { ... this.attributes, ... { [name]: values} };
-        if (this.autosuggests[name]) {
-            this.autosuggests = {};
-        }
-    }
-
-    public removeAttributeValue(name: string, value: string) {
-        const values = this.attributes[name];
-        if (values) {
-            if (values.indexOf(value) >= 0) {
-                values.splice(values.indexOf(value), 1);
-            }
-            this.attributes = { ... this.attributes, ... { [name]: values} };
-        } else {
-            this.attributes = { ... this.attributes, ... { [name]: []} };
-        }
-    }
-
-    public setAttributeValue(name: string, value: string) {
-        this.attributes = { ... this.attributes, ... { [name]: value} };
-    }
-
-    public keyUp(entry: any, event: KeyboardEvent) {
+    public attributeAutosuggest(entry: any, event: KeyboardEvent) {
         if (event !== null && event !== undefined) {
             if (entry.type === 'multitext') {
                 if (event.keyCode === 13) {
@@ -213,6 +212,33 @@ export default class JokeTranscriber extends Vue {
                         this.autosuggests = {[entry.name]: response.data};
                     });
                 }
+            }
+        }
+    }
+
+    public annotationAttributeAutosuggest(section: string, entry: any, event: KeyboardEvent) {
+        if (event !== null && event !== undefined) {
+            if (event.keyCode === 13) {
+                if (entry.type === 'multitext') {
+                    this.addAnnotationAttributeValue(section, {
+                        name: entry.name,
+                        value: (event.target as HTMLInputElement).value,
+                    });
+                    (event.target as HTMLInputElement).value = '';
+                } else if (entry.type === 'singletext') {
+                    this.setAnnotationAttributeValue(section, {
+                        name: entry.name,
+                        value: (event.target as HTMLInputElement).value,
+                    });
+                }
+            } else {
+                axios.get(entry.autosuggest, {
+                    params: {
+                        value: (event.target as HTMLInputElement).value,
+                    },
+                }).then((response) => {
+                    this.autosuggests = {[entry.name]: response.data};
+                });
             }
         }
     }
@@ -328,9 +354,36 @@ export default class JokeTranscriber extends Vue {
         }
     }
 
-    // *******************
-    // Annotation handling
-    // *******************
+    public addAnnotationAttributeValue(attrName: string, value: any) {
+        const attr = this.getAnnotationAttributeValue(attrName);
+        if (attr[value.name]) {
+            const newAttrValues = deepcopy(attr[value.name]);
+            if (newAttrValues.indexOf(value.value) < 0) {
+                newAttrValues.push(value.value);
+                this.setAnnotationAttributeValue(attrName, {name: value.name, value: newAttrValues});
+            }
+        } else {
+            this.setAnnotationAttributeValue(attrName, {name: value.name, value: [value.value]});
+        }
+        if (this.autosuggests[value.name]) {
+            this.autosuggests = {};
+        }
+    }
+
+    public removeAnnotationAttributeValue(attrName: string, value: any) {
+        const attr = this.getAnnotationAttributeValue(attrName);
+        if (attr[value.name]) {
+            const newAttrValues = deepcopy(attr[value.name]);
+            if (newAttrValues.indexOf(value.value) >= 0) {
+                newAttrValues.splice(newAttrValues.indexOf(value.value), 1);
+                this.setAnnotationAttributeValue(attrName, {name: value.name, value: newAttrValues});
+            }
+        }
+    }
+
+    // ******************
+    // Attribute handling
+    // ******************
 
     public hasAttributeValue(name: string, value: string, multiple?: boolean) {
         const values = this.attributes[name];
@@ -343,6 +396,40 @@ export default class JokeTranscriber extends Vue {
         } else {
             return values === value;
         }
+    }
+
+    public getAttributeValue(name: string) {
+        return this.attributes[name];
+    }
+
+    public addAttributeValue(name: string, value: string) {
+        let values = this.attributes[name];
+        if (!values) {
+            values = [];
+        }
+        if (values.indexOf(value) < 0 && value) {
+            values.push(value);
+        }
+        this.attributes = { ... this.attributes, ... { [name]: values} };
+        if (this.autosuggests[name]) {
+            this.autosuggests = {};
+        }
+    }
+
+    public removeAttributeValue(name: string, value: string) {
+        const values = this.attributes[name];
+        if (values) {
+            if (values.indexOf(value) >= 0) {
+                values.splice(values.indexOf(value), 1);
+            }
+            this.attributes = { ... this.attributes, ... { [name]: values} };
+        } else {
+            this.attributes = { ... this.attributes, ... { [name]: []} };
+        }
+    }
+
+    public setAttributeValue(name: string, value: string) {
+        this.attributes = { ... this.attributes, ... { [name]: value} };
     }
 }
 </script>

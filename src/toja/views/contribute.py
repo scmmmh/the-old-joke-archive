@@ -49,6 +49,8 @@ def workbench_edit(request):
             for attr in annotation['attrs']:
                 if 'values' in attr:
                     attr['values'] = [(value, _(request, value)) for value in attr['values']]
+                if attr['type'] in ['singletext', 'multitext']:
+                    attr['autosuggest'] = request.route_url('search.autosuggest', category=attr['name'])
         annotations.append(annotation)
     metadata = []
     for entry in JOKE_METADATA:

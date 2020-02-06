@@ -4,10 +4,10 @@ import hashlib
 from sqlalchemy import and_
 
 from .middleware import DBSessionMiddleware
-from ..config import SOURCE_METADATA, JOKE_METADATA
+from ..config import SOURCE_METADATA, JOKE_METADATA, ANNOTATIONS
 from ..models import Image
 from ..search import Joke, Autosuggest
-from ..util import extract_text
+from ..util import extract_text, extract_annotations
 
 
 @dramatiq.actor()
@@ -47,16 +47,40 @@ def index_joke(jid):
                 if field['type'] == 'multitext':
                     # Index auto-suggestion values
                     for value in db_joke.attributes[field['name']]:
-                        id_value = '{0}-{1}'.format(field['name'], value)
-                        if len(id_value) > 128:
-                            m = hashlib.sha256()
-                            m.update(id_value.encode('utf-8'))
-                            id_value = m.hexdigest()
+                        m = hashlib.sha256()
+                        m.update('{0}-{1}'.format(field['name'], value).encode('utf-8'))
                         autosuggest = Autosuggest(category=field['name'],
                                                   value=value,
                                                   value_suggests=value,
-                                                  meta={'id': id_value})
+                                                  meta={'id': m.hexdigest()})
                         autosuggest.save()
+        for annotation in ANNOTATIONS:
+            if 'attrs' in annotation:
+                annotations = extract_annotations(db_joke.attributes['text'], annotation['name'])
+                for field in annotation['attrs']:
+                    for entry in annotations:
+                        if 'marks' in entry:
+                            for mark in entry['marks']:
+                                if 'attrs' in mark and 'settings' in mark['attrs'] and \
+                                        field['name'] in mark['attrs']['settings']:
+                                    if field['type'] == 'multitext':
+                                        for value in mark['attrs']['settings'][field['name']]:
+                                            m = hashlib.sha256()
+                                            m.update('{0}-{1}'.format(field['name'], value).encode('utf-8'))
+                                            autosuggest = Autosuggest(category=field['name'],
+                                                                      value=value,
+                                                                      value_suggests=value,
+                                                                      meta={'id': m.hexdigest()})
+                                            autosuggest.save()
+                                    if field['type'] == 'singletext':
+                                        value = mark['attrs']['settings'][field['name']]
+                                        m = hashlib.sha256()
+                                        m.update('{0}-{1}'.format(field['name'], value).encode('utf-8'))
+                                        autosuggest = Autosuggest(category=field['name'],
+                                                                  value=value,
+                                                                  value_suggests=value,
+                                                                  meta={'id': m.hexdigest()})
+                                        autosuggest.save()
         joke.save()
     else:
         try:
