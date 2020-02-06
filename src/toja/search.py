@@ -46,7 +46,8 @@ class YearDateHistogramFacet(DateHistogramFacet):
 class JokeSearch(FacetedSearch):
     """Faceted search helper."""
 
-    doc_types = (Joke, )
+    index = 'toja_jokes'
+    doc_types = [Joke]
     fields = ['text']
     facets = {
         'type': TermsFacet(field='type'),
