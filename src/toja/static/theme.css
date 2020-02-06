@@ -762,7 +762,9 @@ ol {
       margin-right: var(--spacing-medium);
       content: counter(ol-counter);
       color: var(--color-text-default); }
-    ol li.no-bullet li:before {
+  ol.no-bullet li {
+    margin-left: 0; }
+    ol.no-bullet li:before {
       content: "";
       display: none; }
 
@@ -778,9 +780,11 @@ ul {
       margin-right: 0.25rem;
       content: "•";
       color: var(--color-brand); }
-  ul.no-bullet li:before {
-    content: "";
-    display: none; }
+  ul.no-bullet li {
+    margin-left: 0; }
+    ul.no-bullet li:before {
+      content: "";
+      display: none; }
 
 li {
   margin-bottom: var(--spacing-x-small); }
@@ -888,6 +892,9 @@ dd {
 
 .padding-left {
   padding-left: var(--spacing); }
+
+.padding-bottom {
+  padding-bottom: var(--spacing); }
 
 /*
  * Paragraph styling
@@ -1018,12 +1025,19 @@ tbody th, tbody td {
     box-sizing: border-box;
     width: 100%;
     border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-medium);
     margin: 0;
     z-index: 1;
     background: var(--color-background); }
-    .autosuggest > ul > li > a {
-      display: block;
-      padding: var(--spacing-small) 0; }
+    .autosuggest > ul > li {
+      margin-bottom: 0; }
+      .autosuggest > ul > li > a {
+        display: block;
+        padding: var(--spacing-small) var(--spacing-small);
+        border-radius: var(--border-radius-medium); }
+        .autosuggest > ul > li > a[aria-selected="true"] {
+          color: var(--color-light);
+          background: var(--color-brand); }
 
 .categories-block {
   margin: 0;

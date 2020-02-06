@@ -43,7 +43,7 @@
         <div v-if="mode === 'transcribe'">
             <editor-content :editor="editor"></editor-content>
             <editor-menu-bar :editor="editor" v-slot="{ commands, isActive }">
-                <div v-if="isActive.annotation()">
+                <div v-if="isActive.annotation()" class="padding-bottom">
                     <label>Annotation Type
                         <select @change="setAnnotationAttributeValue('category', $event.target.value)">
                             <option value="">--- Please Select ---</option>
@@ -60,19 +60,21 @@
                                     <option v-for="value in attr.values" :value="value[0]" v-html="value[1]" :selected="getAnnotationAttributeValue('settings')[attr.name] === value[0] ? 'selected' : null"></option>
                                 </select>
                             </label>
-                            <div v-else-if="attr.type === 'singletext'">
-                                <div class="autosuggest">
-                                    <label>{{ attr.label }}
-                                        <input type="text" :value="getAnnotationAttributeValue('settings')[attr.name]" @keyup="annotationAttributeAutosuggest('settings', attr, $event)"/>
-                                    </label>
-                                    <ul v-if="autosuggests[attr.name] && autosuggests[attr.name].length > 0" class="no-bullet">
-                                        <li v-for="suggest in autosuggests[attr.name]">
-                                            <a @click="setAnnotationAttributeValue('settings', {name: attr.name, value: suggest})">{{ suggest }}</a>
-                                        </li>
-                                    </ul>
-                                </div>
+                            <div v-else-if="attr.type === 'singletext'" class="margin-bottom">
+                                <auto-suggest :url="attr.autosuggest" v-slot="{ suggestions, keyboardNav, mouseNav, isSelected, searchPrefix }" @select="setAnnotationAttributeValue('settings', {name: attr.name, value: $event})">
+                                    <div class="autosuggest">
+                                        <label>{{ attr.label }}
+                                            <input type="text" :value="searchPrefix !== null ? searchPrefix : getAnnotationAttributeValue('settings')[attr.name]" @keyup="keyboardNav"/>
+                                        </label>
+                                        <ul v-if="suggestions.length > 0" class="no-bullet">
+                                            <li v-for="suggest, idx in suggestions">
+                                                <a role="menuitem" @click="mouseNav(idx, $event)" @mouseover="mouseNav(idx, $event)" :aria-selected="isSelected(idx) ? 'true' : 'false'">{{ suggest }}</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </auto-suggest>
                             </div>
-                            <div v-else-if="attr.type === 'multitext'">
+                            <div v-else-if="attr.type === 'multitext'" class="margin-bottom">
                                 <label>{{ attr.label }}</label>
                                 <ol class="no-bullet">
                                     <li v-for="value in getAnnotationAttributeValue('settings')[attr.name]" class="value-and-action">
@@ -84,14 +86,16 @@
                                         </a>
                                     </li>
                                 </ol>
-                                <div class="autosuggest">
-                                    <input type="text" @keyup="annotationAttributeAutosuggest('settings', attr, $event)"/>
-                                    <ul v-if="autosuggests[attr.name] && autosuggests[attr.name].length > 0" class="no-bullet">
-                                        <li v-for="suggest in autosuggests[attr.name]">
-                                            <a @click="addAnnotationAttributeValue('settings', {name: attr.name, value: suggest})">{{ suggest }}</a>
-                                        </li>
-                                    </ul>
-                                </div>
+                                <auto-suggest :url="attr.autosuggest" v-slot="{ suggestions, keyboardNav, mouseNav, isSelected }" @select="addAnnotationAttributeValue('settings', {name: attr.name, value: $event})">
+                                    <div class="autosuggest">
+                                        <input type="text" @keyup="keyboardNav"/>
+                                        <ul v-if="suggestions.length > 0" class="no-bullet">
+                                            <li v-for="suggest, idx in suggestions">
+                                                <a role="menuitem" @click="mouseNav(idx, $event)" @mouseover="mouseNav(idx, $event)" :aria-selected="isSelected(idx) ? 'true' : 'false'">{{ suggest }}</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </auto-suggest>
                             </div>
                         </template>
                     </template>
@@ -120,14 +124,16 @@
                             </a>
                         </li>
                     </ol>
-                    <div class="autosuggest">
-                        <input type="text" @keyup="attributeAutosuggest(entry, $event)"/>
-                        <ul v-if="autosuggests[entry.name] && autosuggests[entry.name].length > 0" class="no-bullet">
-                            <li v-for="suggest in autosuggests[entry.name]">
-                                <a @click="addAttributeValue(entry.name, suggest)">{{ suggest }}</a>
-                            </li>
-                        </ul>
-                    </div>
+                    <auto-suggest :url="entry.autosuggest" v-slot="{ suggestions, keyboardNav, mouseNav, isSelected }" @select="addAttributeValue(entry.name, $event)">
+                        <div class="autosuggest">
+                            <input type="text" @keyup="keyboardNav"/>
+                            <ul v-if="suggestions.length > 0" class="no-bullet">
+                                <li v-for="suggest, idx in suggestions">
+                                    <a role="menuitem" @click="mouseNav(idx, $event)" @mouseover="mouseNav(idx, $event)" :aria-selected="isSelected(idx) ? 'true' : 'false'">{{ suggest }}</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </auto-suggest>
                 </div>
             </div>
         </div>
@@ -149,11 +155,13 @@ import deepcopy from 'deepcopy';
 import axios from 'axios';
 
 import { Joke, Transcription } from '@/interfaces';
+import AutoSuggest from './AutoSuggest.vue';
 
 @Component({
     components: {
         EditorContent,
         EditorMenuBar,
+        AutoSuggest,
     },
 })
 export default class JokeTranscriber extends Vue {

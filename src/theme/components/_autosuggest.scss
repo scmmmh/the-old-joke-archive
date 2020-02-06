@@ -8,13 +8,24 @@
         box-sizing: border-box;
         width: 100%;
         border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-medium);
         margin: 0;
         z-index: 1;
         background: var(--color-background);
 
-        > li > a {
-            display: block;
-            padding: var(--spacing-small) 0;
+        > li {
+            margin-bottom: 0;
+            
+            > a {
+                display: block;
+                padding: var(--spacing-small) var(--spacing-small);
+                border-radius: var(--border-radius-medium);
+
+                &[aria-selected="true"] {
+                    color: var(--color-light);
+                    background: var(--color-brand);
+                }
+            }
         }
     }
 }

@@ -19,8 +19,13 @@ ol {
             color: var(--color-text-default);
         }
 
-        &.no-bullet {
-            li:before {
+    }
+
+    &.no-bullet {
+        li {
+            margin-left: 0;
+
+            &:before {
                 content: "";
                 display: none;
             }
@@ -46,9 +51,15 @@ ul {
         }
     }
 
-    &.no-bullet li:before {
-        content: "";
-        display: none;
+    &.no-bullet {
+        li {
+            margin-left: 0;
+
+            &:before {
+                content: "";
+                display: none;
+            }
+        }
     }
 }
 
