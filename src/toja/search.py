@@ -12,6 +12,7 @@ class Joke(Document):
     type = Keyword(multi=True)
     topic = Keyword(multi=True)
     language = Keyword()
+    attribution = Keyword()
     pub_type = Keyword()
     pub_title = Keyword()
     pub_section = Keyword()
@@ -53,6 +54,7 @@ class JokeSearch(FacetedSearch):
         'type': TermsFacet(field='type'),
         'topic': TermsFacet(field='topic'),
         'language': TermsFacet(field='language'),
+        'attribution': TermsFacet(field='attribution'),
         'pub_title': TermsFacet(field='pub_title'),
         'pub_type': TermsFacet(field='pub_type'),
         'pub_section': TermsFacet(field='pub_section'),

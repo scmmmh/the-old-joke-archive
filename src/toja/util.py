@@ -1,4 +1,5 @@
 import cerberus
+import inflect
 import logging
 import smtplib
 
@@ -248,17 +249,20 @@ def extract_text(node):
         return ''.join([extract_text(child) for child in node['content']])
 
 
-def extract_annotations(node, category):
+def extract_annotations(node, category=None):
     """Extract all annotations that are marked up with the given mark category."""
     result = []
     if 'marks' in node:
         for mark in node['marks']:
-            if mark['type'] == 'annotation' and mark['attrs']['category'] == category:
+            if mark['type'] == 'annotation' and (category is None or mark['attrs']['category'] == category):
                 result.append(node)
     if 'content' in node:
         for child in node['content']:
             result.extend(extract_annotations(child, category))
     return result
+
+
+inflect_engine = inflect.engine()
 
 
 def includeme(config):
@@ -267,3 +271,6 @@ def includeme(config):
     config.get_jinja2_environment().filters['fancy_date'] = fancy_date
     config.get_jinja2_environment().filters['strftime'] = strftime
     config.get_jinja2_environment().filters['format'] = format
+    config.get_jinja2_environment().filters['extract_annotations'] = extract_annotations
+    config.get_jinja2_environment().filters['extract_text'] = extract_text
+    config.get_jinja2_environment().filters['plural'] = inflect_engine.plural

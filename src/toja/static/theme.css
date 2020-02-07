@@ -804,10 +804,34 @@ li {
     padding: 0; }
 
 dl {
-  font-size: var(--font-size-default); }
+  font-size: var(--font-size-small);
+  margin-bottom: var(--spacing-small); }
+  dl.metadata {
+    display: -webkit-box;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    flex-direction: row;
+    flex-wrap: wrap; }
+    dl.metadata dt {
+      -webkit-box-flex: 0;
+      flex: 0 0 auto;
+      box-sizing: border-box;
+      width: 35%;
+      border-bottom: var(--border-width-thin) solid var(--color-border);
+      padding: var(--spacing-small) var(--spacing-small) var(--spacing-x-small) 0; }
+    dl.metadata dd {
+      -webkit-box-flex: 0;
+      flex: 0 0 auto;
+      box-sizing: border-box;
+      width: 64%;
+      border-bottom: var(--border-width-thin) solid var(--color-border);
+      margin-bottom: 0;
+      padding: var(--spacing-small) 0 var(--spacing-x-small) 0; }
 
 dt {
-  font-weight: var(--font-weight-semibold); }
+  font-weight: var(--font-weight-semibold);
+  font-style: italic; }
 
 dd {
   margin: 0 0 var(--spacing); }
