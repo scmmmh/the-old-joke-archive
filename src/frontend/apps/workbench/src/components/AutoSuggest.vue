@@ -31,6 +31,12 @@ export default class AutoSuggest extends Vue {
                 this.selected = -1;
                 (event.target as HTMLInputElement).value = '';
                 this.searchPrefix = null;
+            } else if (this.suggestions.length === 0 && (event.target as HTMLInputElement).value !== '') {
+                this.$emit('select', (event.target as HTMLInputElement).value);
+                this.suggestions = [];
+                this.selected = -1;
+                (event.target as HTMLInputElement).value = '';
+                this.searchPrefix = null;
             }
         } else if (event.keyCode === 38) {
             this.selected = Math.max(-1, Math.min(this.selected - 1, this.suggestions.length - 1));
