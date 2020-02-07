@@ -63,15 +63,44 @@ export default class AutoSuggest extends Vue {
                 this.$emit('select', this.suggestions[idx]);
                 this.suggestions = [];
                 this.selected = -1;
-                // @ts-ignore
-                event.target.parentElement.parentElement.parentElement.querySelector('input[type="text"]').value = '';
+                const autosuggest = this.getRootAutosuggest(event.target as HTMLElement);
+                if (autosuggest !== null) {
+                    const input = autosuggest.querySelector('input[type="text"]');
+                    if (input !== null) {
+                        (input as HTMLInputElement).value = '';
+                    }
+                }
                 this.searchPrefix = null;
+            } else {
+                const autosuggest = this.getRootAutosuggest(event.target as HTMLElement);
+                if (autosuggest !== null) {
+                    const input = autosuggest.querySelector('input[type="text"]');
+                    if (input !== null && (input as HTMLInputElement).value !== '') {
+                        this.$emit('select', (input as HTMLInputElement).value);
+                        (input as HTMLInputElement).value = '';
+                        this.suggestions = [];
+                        this.selected = -1;
+                        this.searchPrefix = null;
+                    }
+                }
             }
         }
     }
 
     public isSelected(idx: number) {
         return this.selected === idx;
+    }
+
+    private getRootAutosuggest(element: HTMLElement): HTMLElement | null {
+        if (element.classList.contains('autosuggest')) {
+            return element;
+        } else {
+            if (element.parentElement) {
+                return this.getRootAutosuggest(element.parentElement);
+            } else {
+                return null;
+            }
+        }
     }
 }
 </script>

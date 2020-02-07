@@ -85,7 +85,14 @@
                                 </ul>
                                 <auto-suggest :url="attr.autosuggest" v-slot="{ suggestions, keyboardNav, mouseNav, isSelected }" @select="addAnnotationAttributeValue('settings', {name: attr.name, value: $event})">
                                     <div class="autosuggest">
-                                        <input type="text" @keyup="keyboardNav"/>
+                                        <div class="position-relative">
+                                            <a @click="mouseNav(idx, $event)" class="form-element-nested-action">
+                                                <svg viewBox="0 0 24 24" class="icon mdi">
+                                                    <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                                                </svg>
+                                            </a>
+                                            <input type="text" @keyup="keyboardNav"/>
+                                        </div>
                                         <ul v-if="suggestions.length > 0" class="no-bullet">
                                             <li v-for="suggest, idx in suggestions">
                                                 <a role="menuitem" @click="mouseNav(idx, $event)" @mouseover="mouseNav(idx, $event)" :aria-selected="isSelected(idx) ? 'true' : 'false'">{{ suggest }}</a>
@@ -111,7 +118,7 @@
                     <option v-for="value in entry.values" :value="value[0]" :selected="hasAttributeValue(entry.name, value[0]) ? 'selected' : null" v-html="value[1]"></option>
                 </select>
                 <div v-if="entry.type === 'multitext'">
-                    <ol class="no-bullet">
+                    <ul>
                         <li v-for="value in getAttributeValue(entry.name)" class="value-and-action">
                             <span>{{ value }}</span>
                             <a @click="removeAttributeValue(entry.name, value)" aria-label="Delete">
@@ -120,10 +127,17 @@
                                 </svg>
                             </a>
                         </li>
-                    </ol>
+                    </ul>
                     <auto-suggest :url="entry.autosuggest" v-slot="{ suggestions, keyboardNav, mouseNav, isSelected }" @select="addAttributeValue(entry.name, $event)">
                         <div class="autosuggest">
-                            <input type="text" @keyup="keyboardNav"/>
+                            <div class="position-relative">
+                                <a @click="mouseNav(idx, $event)" class="form-element-nested-action">
+                                    <svg viewBox="0 0 24 24" class="icon mdi">
+                                        <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z" />
+                                    </svg>
+                                </a>
+                                <input type="text" @keyup="keyboardNav"/>
+                            </div>
                             <ul v-if="suggestions.length > 0" class="no-bullet">
                                 <li v-for="suggest, idx in suggestions">
                                     <a role="menuitem" @click="mouseNav(idx, $event)" @mouseover="mouseNav(idx, $event)" :aria-selected="isSelected(idx) ? 'true' : 'false'">{{ suggest }}</a>

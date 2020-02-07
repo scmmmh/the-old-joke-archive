@@ -288,6 +288,9 @@
       grid-column-start: 7;
       grid-column-end: 7; } }
 
+.position-relative {
+  position: relative; }
+
 .block {
   display: block; }
 
@@ -614,11 +617,19 @@ fieldset {
 label {
   display: block;
   margin: 0 0 var(--spacing-small) 0;
-  color: var(--color-input-text); }
+  color: var(--color-input-text);
+  position: relative; }
   label + label {
     margin-top: var(--spacing-medium); }
   label span.message {
     display: none; }
+
+a.form-element-nested-action {
+  position: absolute;
+  top: 50%;
+  right: var(--spacing-small);
+  -webkit-transform: translateY(-50%);
+  transform: translateY(-50%); }
 
 [type="email"],
 [type="number"],

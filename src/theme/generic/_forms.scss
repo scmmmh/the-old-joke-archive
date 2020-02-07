@@ -16,6 +16,7 @@ label {
     display: block;
     margin: 0 0 var(--spacing-small) 0;
     color: var(--color-input-text);
+    position: relative;
 
     + label {
         margin-top: var(--spacing-medium);
@@ -24,6 +25,14 @@ label {
     span.message {
         display: none;
     }
+
+}
+
+a.form-element-nested-action {
+    position: absolute;
+    top: 50%;
+    right: var(--spacing-small);
+    transform: translateY(-50%);
 }
 
 [type="email"],
