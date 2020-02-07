@@ -44,7 +44,8 @@
             <editor-content :editor="editor"></editor-content>
             <editor-menu-bar :editor="editor" v-slot="{ commands, isActive }">
                 <div v-if="isActive.annotation()" class="padding-bottom">
-                    <label>Annotation Type
+                    <div class="margin-bottom">
+                        <h2 class="font-size-default">Annotation Type</h2>
                         <select @change="setAnnotationAttributeValue('category', $event.target.value)">
                             <option value="">--- Please Select ---</option>
                             <template v-for="annotation in annotations">
@@ -52,20 +53,17 @@
                                 <option :value="annotation.name" v-html="annotation.label" :selected="hasAnnotationAttributeValue('category', annotation.name) ? 'selected' : null"></option>
                             </template>
                         </select>
-                    </label>
-                    <template v-for="annotation in annotations">
-                        <template v-if="hasAnnotationAttributeValue('category', annotation.name)" v-for="attr in annotation.attrs">
-                            <label v-if="attr.type === 'select'">{{ attr.label }}
-                                <select v-if="attr.type === 'select'" @change="setAnnotationAttributeValue('settings', {name: attr.name, value: $event.target.value})">
-                                    <option v-for="value in attr.values" :value="value[0]" v-html="value[1]" :selected="getAnnotationAttributeValue('settings')[attr.name] === value[0] ? 'selected' : null"></option>
-                                </select>
-                            </label>
-                            <div v-else-if="attr.type === 'singletext'" class="margin-bottom">
+                    </div>
+                    <div v-for="annotation in annotations">
+                        <div v-if="hasAnnotationAttributeValue('category', annotation.name)" v-for="attr in annotation.attrs" class="margin-bottom">
+                            <h2 class="font-size-default">{{ attr.label }}</h2>
+                            <select v-if="attr.type === 'select'" @change="setAnnotationAttributeValue('settings', {name: attr.name, value: $event.target.value})">
+                                <option v-for="value in attr.values" :value="value[0]" v-html="value[1]" :selected="getAnnotationAttributeValue('settings')[attr.name] === value[0] ? 'selected' : null"></option>
+                            </select>
+                            <div v-else-if="attr.type === 'singletext'">
                                 <auto-suggest :url="attr.autosuggest" v-slot="{ suggestions, keyboardNav, mouseNav, isSelected, searchPrefix }" @select="setAnnotationAttributeValue('settings', {name: attr.name, value: $event})">
                                     <div class="autosuggest">
-                                        <label>{{ attr.label }}
-                                            <input type="text" :value="searchPrefix !== null ? searchPrefix : getAnnotationAttributeValue('settings')[attr.name]" @keyup="keyboardNav"/>
-                                        </label>
+                                        <input type="text" :value="searchPrefix !== null ? searchPrefix : getAnnotationAttributeValue('settings')[attr.name]" @keyup="keyboardNav"/>
                                         <ul v-if="suggestions.length > 0" class="no-bullet">
                                             <li v-for="suggest, idx in suggestions">
                                                 <a role="menuitem" @click="mouseNav(idx, $event)" @mouseover="mouseNav(idx, $event)" :aria-selected="isSelected(idx) ? 'true' : 'false'">{{ suggest }}</a>
@@ -74,9 +72,8 @@
                                     </div>
                                 </auto-suggest>
                             </div>
-                            <div v-else-if="attr.type === 'multitext'" class="margin-bottom">
-                                <label>{{ attr.label }}</label>
-                                <ol class="no-bullet">
+                            <div v-else-if="attr.type === 'multitext'">
+                                <ul>
                                     <li v-for="value in getAnnotationAttributeValue('settings')[attr.name]" class="value-and-action">
                                         <span>{{ value }}</span>
                                         <a @click="removeAnnotationAttributeValue('settings', {name: attr.name, value: value})" aria-label="Delete">
@@ -85,7 +82,7 @@
                                             </svg>
                                         </a>
                                     </li>
-                                </ol>
+                                </ul>
                                 <auto-suggest :url="attr.autosuggest" v-slot="{ suggestions, keyboardNav, mouseNav, isSelected }" @select="addAnnotationAttributeValue('settings', {name: attr.name, value: $event})">
                                     <div class="autosuggest">
                                         <input type="text" @keyup="keyboardNav"/>
@@ -97,8 +94,8 @@
                                     </div>
                                 </auto-suggest>
                             </div>
-                        </template>
-                    </template>
+                        </div>
+                    </div>
                 </div>
             </editor-menu-bar>
         </div>
@@ -198,7 +195,7 @@ export default class JokeTranscriber extends Vue {
     }
 
     public discardChanges() {
-        this.editor.setContent(this.$store.state.transcription.attributes.text);
+        this.$store.dispatch('loadTranscription');
     }
 
     public setMode(mode: string) {
