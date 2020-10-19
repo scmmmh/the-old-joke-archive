@@ -17,3 +17,4 @@ Dependencies
 
 libleptonica-dev
 libtesseract-dev
+tesseract-ocr
