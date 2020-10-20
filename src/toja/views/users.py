@@ -99,7 +99,7 @@ The Old Joke Archive
                     'selected_icon': selected_icon[1]}
     verification_icons = list(enumerate(sample(VALIDATION_ICONS, 7)))
     selected_icon = choice(verification_icons[1:])
-    request.session['verification_id'] = selected_icon[0]
+    request.session['verification_id'] = str(selected_icon[0])
     return {'errors': {},
             'verification_icons': verification_icons,
             'selected_icon': selected_icon[1]}
