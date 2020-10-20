@@ -6,16 +6,16 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
-    "foundation-sites": "^6.5.3",
+    "foundation-sites": "^6.6.3",
     "gulp": "^4.0.2",
-    "gulp-sass": "^4.0.2"
+    "gulp-sass": "^4.1.0"
   },
   "dependencies": {
-    "cypress": "^3.6.1",
+    "cypress": "^5.4.0",
     "fabricjs": "^1.0.0",
     "gulp-autoprefixer": "^7.0.1",
     "gulp-concat": "^2.6.1",
-    "openseadragon": "^2.4.1",
+    "openseadragon": "^2.4.2",
     "pump": "^3.0.0"
   }
 }
