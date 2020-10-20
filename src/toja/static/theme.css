@@ -1810,7 +1810,8 @@ div.joke-rating ul {
 
 .verification {
   -webkit-box-pack: center;
-  justify-content: center; }
+  justify-content: center;
+  overflow: hidden; }
   .verification label {
     margin: 0;
     -webkit-box-flex: 0;
