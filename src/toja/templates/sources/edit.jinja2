@@ -9,7 +9,7 @@
     <h1 class="alt-font margin-bottom">Edit a Source</h1>
     {% for metadata_field in request|setting('SOURCE_METADATA') %}
       {% if metadata_field.type == 'date' %}
-        {{ field(metadata_field.name, 'text', label, attributes={'value': source.attributes[metadata_field.name]}) }}
+        {{ field(metadata_field.name, 'text', '{0} (YYYY, YYYY-MM, or YYYY-MM-DD)'|format(label), attributes={'value': source.attributes[metadata_field.name]}) }}
       {% elif metadata_field.type == 'select' %}
         {{ select(metadata_field.name, metadata_field['values']|zip(request|_(metadata_field['values'])), source.attributes[metadata_field.name], metadata_field.label) }}
       {% else %}

@@ -11,7 +11,7 @@
     {{ field('license', 'checkbox', 'Please confirm that you are permitted to upload this  source image under a CC-BY-4.0 license. For more details on the license, please use the Copyright questions link in the page\'s footer')}}
     {% for metadata_field in request|setting('SOURCE_METADATA') %}
       {% if metadata_field.type == 'date' %}
-        {{ field(metadata_field.name, 'text', metadata_field.label) }}
+        {{ field(metadata_field.name, 'text', '{0} (YYYY, YYYY-MM, or YYYY-MM-DD)'|format(metadata_field.label)) }}
       {% elif metadata_field.type == 'select' %}
         {{ select(metadata_field.name, metadata_field['values']|zip(request|_(metadata_field['values'])), '', metadata_field.label) }}
       {% else %}
