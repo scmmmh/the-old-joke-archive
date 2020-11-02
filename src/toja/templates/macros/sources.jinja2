@@ -4,10 +4,10 @@
     {% if request|logged_in and request.current_user.trust == 'full' %}
       <li><a href="{{ 'contribute.workbench.edit'|route_url(sid=source.id) }}" aria-label="Transcribe in the Workbench" title="Edit in the Workbench">{{ icon('anvil') }}</a></li>
     {% endif %}
-    {% if request|permitted('sources.admin or @edit image %i'|format(source.id)) %}
+    {% if request|permitted('sources.admin or @edit image {0}'|format(source.id)) %}
       <li><a href="{{ 'source.edit'|route_url(sid=source.id) }}" aria-label="Edit this source" title="Edit this source">{{ icon('pencil') }}</a></li>
     {% endif %}
-    {% if request|permitted('sources.admin or @delete image %i'|format(source.id)) %}
+    {% if request|permitted('sources.admin or @delete image {0}'|format(source.id)) %}
       <li><a href="{{ 'source.delete'|route_url(sid=source.id) }}" aria-label="Delete this source" title="Delete this source" data-action="post-link" data-confirm-prompt="Please confirm you wish to delete this source?">{{ icon('delete') }}</a></li>
     {% endif %}
   </ul>
