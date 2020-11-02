@@ -4,6 +4,7 @@ from pyramid.view import view_config
 from sqlalchemy import and_
 
 from ..models import Image
+from ..search import Joke
 
 
 @view_config(route_name='root', renderer='toja:templates/root.jinja2')
@@ -15,6 +16,7 @@ def root(request):
     joke = None
     try:
         search = Search.from_dict({'query': {'function_score': {'query': {'match_all': {}}, 'random_score': {}}}})
+        search.index(Joke.Index.name)
         search = search[0]
         results = search.execute()
         if len(results) == 1:
