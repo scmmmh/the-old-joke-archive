@@ -1,0 +1,6 @@
+paths: 
+  - src/toja
+  - src/frontend
+paths-ignore: 
+  - node_modules
+  - static
