@@ -20,5 +20,6 @@ def main(global_config, **settings):
     config.include('.permissions')
     config.include('.routes')
     config.include('.translation')
+    config.include('.tests')
     config.scan()
     return config.make_wsgi_app()

@@ -1,0 +1,39 @@
+name: End-to-End Tests
+
+on:
+  push:
+    branches: [ default ]
+  pull_request:
+    branches: [ default ]
+
+jobs:
+  e2e-test:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Add .local path
+      run: |
+        echo "::add-path::$HOME/.local/bin"
+
+    - name: Install Base Dependencies
+      run: |
+        sudo apt-get install python3-venv pipx
+        pipx install poetry
+
+    - name: Install Yarn Dependencies
+      uses: CultureHQ/actions-yarn@master
+      with:
+        args: install
+
+    - name: Install Python Dependencies
+      run: |
+        poetry config virtualenvs.in-project true
+        poetry install
+
+    - name: Run Tests
+      run: |
+        poetry config virtualenvs.in-project true
+        poetry run test-server.sh &
+        node_modules/.bin/testcafe firefox:headless tests
