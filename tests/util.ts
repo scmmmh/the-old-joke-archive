@@ -4,7 +4,7 @@ export async function request(url: string) {
     return new Promise((resolve, reject) => {
         const req = nodeRequest(url, (res) => {
             if (res.statusCode === 200) {
-                resolve();
+                resolve(res);
             } else {
                 reject();
             }
