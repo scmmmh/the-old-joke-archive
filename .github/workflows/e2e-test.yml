@@ -28,6 +28,7 @@ jobs:
         pipx install poetry
 
     - name: Install Dependencies
+      run: |
         poetry config virtualenvs.in-project true
         poetry install --no-dev
         yarn install
