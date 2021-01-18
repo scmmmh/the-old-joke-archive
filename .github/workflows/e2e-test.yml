@@ -43,6 +43,5 @@ jobs:
 
     - name: Run Tests
       run: |
-        poetry config virtualenvs.in-project true
         poetry run ./test-server.sh &
         node_modules/.bin/testcafe firefox:headless tests
