@@ -2,7 +2,7 @@ name: End-to-End Tests
 
 on:
   push:
-    branches: [ default ]
+    branches: [ default, testcafe-switch ]
   pull_request:
     branches: [ default ]
 
