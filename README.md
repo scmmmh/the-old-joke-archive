@@ -1,7 +1,7 @@
 The Old Joke Archive
 ====================
 
-![](https://github.com/biirrr/the-old-joke-archive/workflows/End-to-End%20Tests/badge.svg)
+![](https://github.com/scmmmh/the-old-joke-archive/workflows/End-to-End%20Tests/badge.svg)
 
 Dependencies
 ------------
