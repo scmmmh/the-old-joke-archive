@@ -27,17 +27,13 @@ jobs:
         sudo apt-get install python3-venv pipx libtesseract4 libtesseract-dev
         pipx install poetry
 
-    - name: Install Yarn Dependencies
-      run: |
-        yarn install
-
-    - name: Install Python Dependencies
-      run: |
+    - name: Install Dependencies
         poetry config virtualenvs.in-project true
         poetry install --no-dev
+        yarn install
 
     - name: Run Tests
       run: |
         poetry config virtualenvs.in-project true
-        poetry run test-server.sh &
+        poetry run ./test-server.sh &
         node_modules/.bin/testcafe firefox:headless tests
