@@ -11,11 +11,11 @@
     "gulp-sass": "^4.1.0"
   },
   "dependencies": {
-    "cypress": "^5.4.0",
     "fabricjs": "^1.0.0",
     "gulp-autoprefixer": "^7.0.1",
     "gulp-concat": "^2.6.1",
     "openseadragon": "^2.4.2",
-    "pump": "^3.0.0"
+    "pump": "^3.0.0",
+    "testcafe": "^1.10.1"
   }
 }
