@@ -1,4 +1,4 @@
-from elasticsearch import ConnectionError
+from elasticsearch import ConnectionError, NotFoundError
 from elasticsearch_dsl import Search
 from pyramid.view import view_config
 from sqlalchemy import and_
@@ -23,6 +23,8 @@ def root(request):
             joke = request.dbsession.query(Image).filter(and_(Image.id == results[0].meta.id,
                                                               Image.type == 'joke')).first()
     except ConnectionError:
+        pass
+    except NotFoundError:
         pass
     return {'total_joke_count': total_joke_count,
             'transcribed_joke_count': transcribed_joke_count,

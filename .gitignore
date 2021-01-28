@@ -12,3 +12,4 @@ __pycache__
 .tox
 cypress/videos
 cypress/screenshots
+dist
