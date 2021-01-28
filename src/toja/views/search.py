@@ -1,7 +1,7 @@
 import math
 
 from datetime import datetime
-from elasticsearch import ConnectionError
+from elasticsearch import ConnectionError, NotFoundError
 from pyramid.view import view_config
 
 from ..config import SEARCH_FACETS
@@ -68,6 +68,8 @@ def index(request):
                 'facets': results.facets,
                 'title': title}
     except ConnectionError:
+        return {'error': 'Connection Refused'}
+    except NotFoundError:
         return {'error': 'Connection Refused'}
 
 
