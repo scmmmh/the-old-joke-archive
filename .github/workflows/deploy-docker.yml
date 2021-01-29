@@ -35,13 +35,18 @@ jobs:
         poetry build
         cp dist/*.whl docker/
 
-    - name: Build and Push Image
-      uses: docker/build-push-action@v2
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v1
       with:
         username: scmmmh
         password: ${{ secrets.DOCKERACCESSTOKEN }}
+
+    - name: Build and Push Image
+      uses: docker/build-push-action@v2
+      with:
         context: docker
         repository: scmmmh/oldjokearchive
         tags: ${{ steps.branch_name.outputs.SOURCE_TAG }}
-        tag_with_sha: true
-        dockerfile: binder/Dockerfile
