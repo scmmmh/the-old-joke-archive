@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo $SQLALCHEMY_URL
+DEFAULT_GATEWAY=`ip route show | grep "default via" | grep -E -o "[0-9]+\.[0-9]+\.[0-9]+\.[0-9]"`
 
 sed -i -e "s#sqlalchemy.url =.*#sqlalchemy.url = $SQLALCHEMY_URL#g" \
        -e "s#app.session_secret =.*#app.session_secret = ${SESSION_SECRET}#g" \
@@ -10,7 +10,9 @@ sed -i -e "s#sqlalchemy.url =.*#sqlalchemy.url = $SQLALCHEMY_URL#g" \
        -e "s#app.email.ssl =.*#app.email.ssl = ${EMAIL_SMTP_SSL}#g" \
        -e "s#app.email.username =.*#app.email.username = ${EMAIL_SMTP_USERNAME}#g" \
        -e "s#app.email.password =.*#app.email.password = ${EMAIL_SMTP_PASSWORD}#g" \
-       -e "s#app.email.sender =.*#app.email.sender = ${EMAIL_SENDER}#g" /etc/toja/production.ini
+       -e "s#app.email.sender =.*#app.email.sender = ${EMAIL_SENDER}#g" \
+       -e "s#trusted_proxy =.*#trusted_proxy = ${DEFAULT_GATEWAY}#g" \
+       /etc/toja/production.ini
 
 # Setup the database
 toja -c /etc/toja/production.ini init-db
