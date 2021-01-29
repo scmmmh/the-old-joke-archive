@@ -1,0 +1,42 @@
+version: "3.9"
+services:
+  app:
+    image: scmmmh/oldjokearchive:0.1.0
+    environment:
+      SQLALCHEMY_URL: postgresql+psycopg2://postgres:thepostgrespassword@postgres/postgres
+      ELASTICSEARCH_HOSTS: elasticsearch
+      BROKER_URL: redis://redis:6379/0
+      SESSION_SECRET: 8638866d8ad199fc7a83ed77899ed6474e1dc08a68fef02c6aecc4d1c81231fd
+      EMAIL_SMTP_HOST: mail.room3b.eu
+      EMAIL_SMTP_SSL: "true"
+      EMAIL_SMTP_USERNAME: mhall@mail.room3b.eu
+      EMAIL_SMTP_PASSWORD: lkSW87ui
+      EMAIL_SENDER: no-reply@oldjokearchive.com
+    ports:
+      - "8080:8080"
+    volumes:
+      - "app:/var/lib/toja"
+  postgres:
+    image: postgres:13.1
+    environment:
+      POSTGRES_PASSWORD: thepostgrespassword
+    volumes:
+      - "pgdata:/var/lib/postgresql/data"
+  elasticsearch:
+    image: elasticsearch:7.10.1
+    environment:
+      - node.name=es01
+      - cluster.name=es-toja-cluster
+      - cluster.initial_master_nodes=es01
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - "esdata:/usr/share/elasticsearch/data"
+  redis:
+    image: redis:6.0.10
+    volumes:
+      - "redisdata:/data"
+volumes:
+  app:
+  pgdata:
+  esdata:
+  redisdata:

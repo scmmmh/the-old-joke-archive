@@ -33,7 +33,7 @@ jobs:
     - name: Build Application
       run: |
         poetry build
-        cp dist/*.whl docker/toja.whl
+        cp dist/*.whl docker/
 
     - name: Build and Push Image
       uses: docker/build-push-action@v2
