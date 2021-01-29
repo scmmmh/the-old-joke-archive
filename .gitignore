@@ -10,6 +10,3 @@ pre-build
 post-build
 __pycache__
 .tox
-cypress/videos
-cypress/screenshots
-dist
