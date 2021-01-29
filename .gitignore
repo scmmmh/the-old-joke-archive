@@ -10,3 +10,4 @@ pre-build
 post-build
 __pycache__
 .tox
+dist
