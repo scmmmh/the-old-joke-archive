@@ -14,11 +14,11 @@ RUN apt-get update && \
     apt-get install -y tini libtesseract-dev libleptonica-dev tesseract-ocr
 
 # Copy the application and configuration file
-COPY toja-0.1.0-py3-none-any.whl /tmp/
+COPY toja.whl /tmp/
 COPY production.ini /etc/toja/production.ini
 
 # Install the application
-RUN python -m pip install /tmp/toja-0.1.0-py3-none-any.whl[postgresql]
+RUN python -m pip install /tmp/toja.whl[postgresql]
 COPY start_toja.sh /usr/bin/
 RUN chmod a+x /usr/bin/start_toja.sh && \
     mkdir /var/lib/toja && \
