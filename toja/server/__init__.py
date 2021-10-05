@@ -21,9 +21,9 @@ def run_application_server(config: dict) -> None:
     app = Application(
         [
             ('/api/users', CollectionHandler, {'config': config, 'type': Joke}),
-            ('/api/users/([0-9]+)', ItemHandler, {'config': config, 'type': Joke}),
+            ('/api/users/([a-z0-9]+)', ItemHandler, {'config': config, 'type': Joke}),
             ('/api/jokes', CollectionHandler, {'config': config, 'type': Joke}),
-            ('/api/jokes/([0-9]+)', ItemHandler, {'config': config, 'type': Joke})
+            ('/api/jokes/([a-z0-9]+)', ItemHandler, {'config': config, 'type': Joke})
         ],
         debug=config['debug'])
     logger.debug(f'Application listening on {config["server"]["host"]} port {config["server"]["port"]}')
