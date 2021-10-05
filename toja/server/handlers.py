@@ -4,6 +4,7 @@ import logging
 import traceback
 
 from importlib import resources
+from importlib.abc import Traversable
 from io import StringIO
 from mimetypes import guess_type
 from tornado.web import RequestHandler
@@ -95,7 +96,7 @@ class FrontendHandler(RequestHandler):
             logger.debug('Sending index.html')
             self._get_resource(public, ('index.html', ))
 
-    def _get_resource(self: 'FrontendHandler', resource: resources.Traversable, path: list[str]) -> None:
+    def _get_resource(self: 'FrontendHandler', resource: Traversable, path: list[str]) -> None:
         """Send a file.
 
         Performs mimetype guessing and sets the appropriate Content-Type header.
