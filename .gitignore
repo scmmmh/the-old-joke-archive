@@ -11,4 +11,3 @@ post-build
 __pycache__
 .tox
 dist
-config.yml

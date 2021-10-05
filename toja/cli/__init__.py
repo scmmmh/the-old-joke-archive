@@ -1,4 +1,5 @@
 """TOJA command-line application."""
+import asyncio
 import click
 import logging.config
 import yaml
@@ -7,6 +8,7 @@ import os
 from cerberus import Validator
 from typing import Union
 
+from ..models import setup_database
 from ..server import run_application_server
 
 
@@ -26,6 +28,22 @@ CONFIG_SCHEMA = {
         'default': {
             'host': '127.0.0.1',
             'port': 6543
+        }
+    },
+    'database': {
+        'type': 'dict',
+        'required': True,
+        'schema': {
+            'server': {
+                'type': 'string',
+                'default': 'http://localhost:5984'
+            },
+            'user': {
+                'type': 'string'
+            },
+            'password': {
+                'type': 'string'
+            }
         }
     },
     'debug': {
@@ -104,3 +122,13 @@ def background(ctx: click.Context) -> None:
 
 
 main.add_command(background)
+
+
+@click.command()
+@click.pass_context
+def setup(ctx: click.Context) -> None:
+    """Set up the TOJA system."""
+    asyncio.run(setup_database(ctx.obj['config']))
+
+
+main.add_command(setup)
