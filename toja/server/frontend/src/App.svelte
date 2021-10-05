@@ -1,30 +1,45 @@
 <script lang="ts">
-	export let name: string;
+	import { Router } from "svelte-navigator";
+
+	import Header from './components/Header.svelte';
 </script>
 
-<main>
-	<h1>Hello {name}!</h1>
-	<p>Visit the <a href="https://svelte.dev/tutorial">Svelte tutorial</a> to learn how to build Svelte apps.</p>
-</main>
+<div class="bg-gray-900 p-vw-2">
+	<div class="bg-white p-vw-8">
+		<main class="md:border-brand pt-8">
+			<Router>
+				<Header/>
+			</Router>
+		</main>
+	</div>
+</div>
 
-<style>
-	main {
-		text-align: center;
-		padding: 1em;
-		max-width: 240px;
-		margin: 0 auto;
+<style global>
+	@font-face {
+    	font-family: 'blackriver-bold';
+    	src: url('/app/fonts/blackriver-bold.woff2') format('woff2'),
+			 url('/app/fonts/blackriver-bold.woff') format('woff'),
+			 url('/app/fonts/blackriver-bold.ttf') format('ttf');
+    	font-weight: normal;
+    	font-style: normal;
+    	font-display: swap;
 	}
 
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-	}
+	@tailwind base;
+	@tailwind components;
+	@tailwind utilities;
 
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
+	@layer utilities {
+		@variants responsive {
+			.border-brand {
+			    border-image: url('/app/img/body-border-brand.svg') 5 75 75 fill stretch;
+    			border-width: 5px 75px 75px;
+    			border-style: solid;
+			}
 		}
+	}
+
+	body {
+		@apply bg-gray-900;
 	}
 </style>

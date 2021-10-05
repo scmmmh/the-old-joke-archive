@@ -1,10 +1,10 @@
 """The TOJA Server application."""
 import logging
 
-from tornado.web import Application
+from tornado.web import Application, RedirectHandler
 from tornado.ioloop import IOLoop
 
-from .api import CollectionHandler, ItemHandler
+from .handlers import CollectionHandler, ItemHandler, FrontendHandler
 from ..models import Joke
 
 
@@ -20,6 +20,8 @@ def run_application_server(config: dict) -> None:
     logger.debug('Application server starting up...')
     app = Application(
         [
+            ('/', RedirectHandler, {'permanent': False, 'url': '/app'}),
+            ('/app(.*)', FrontendHandler),
             ('/api/users', CollectionHandler, {'config': config, 'type': Joke}),
             ('/api/users/([a-z0-9]+)', ItemHandler, {'config': config, 'type': Joke}),
             ('/api/jokes', CollectionHandler, {'config': config, 'type': Joke}),
