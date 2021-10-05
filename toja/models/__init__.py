@@ -1,29 +1,22 @@
 """Database models."""
-from aiocouch import CouchDB, exception
+from .base import Session, NotFoundError  # noqa
+from .joke import Joke  # noqa
 
 
-def connect_database(config: dict) -> CouchDB:
-    """Connect to the database.
+session_singleton = None
 
-    :param config: The configuration to use for connecting
-    :type config: dict
-    :return: The CouchDB session
-    :rtype: :class:`~aiocouch.CouchDB`
+
+def get_session(config: dict) -> Session:
+    """Get the database session.
+
+    A singleton database session is provided.
     """
-    return CouchDB(server=config['database']['server'],
-                   user=config['database']['user'],
-                   password=config['database']['password'])
+    global session_singleton
+
+    if session_singleton is None:
+        session_singleton = Session(config)
+    return session_singleton
 
 
 async def setup_database(config: dict) -> None:
     """Set up the database."""
-    async with connect_database(config) as session:
-        await session.check_credentials()
-        try:
-            await session['jokes']
-        except exception.NotFoundError:
-            await session.create('jokes')
-        try:
-            await session['users']
-        except exception.NotFoundError:
-            await session.create('users')

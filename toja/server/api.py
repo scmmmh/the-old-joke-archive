@@ -1,33 +1,61 @@
 """API Handlers."""
-from aiocouch import exception
+import traceback
+
+from io import StringIO
 from tornado.web import RequestHandler
 
-from ..models import connect_database
+from ..models import get_session, NotFoundError
 
 
-class CollectionHandler(RequestHandler):
+class JSONAPIHandler(RequestHandler):
+    """Base object for JSONAPI request handling."""
+
+    def initialize(self, config: dict) -> None:  # noqa: ANN101
+        """Initialize the handler."""
+        self._config = config
+
+    def write_error(self, status_code: int, **kwargs: dict) -> None:  # noqa: ANN101
+        """Write an error message."""
+        error = {
+            'status': status_code,
+        }
+        if 'reason' in kwargs:
+            error['detail'] = kwargs['reason']
+        if 'exc_info' in kwargs:
+            error_type, error_instance, tb = kwargs['exc_info']
+            error['title'] = error_type.__name__
+            if self._config['debug']:
+                buffer = StringIO()
+                traceback.print_tb(tb, file=buffer)
+                error['detail'] = buffer.getvalue()
+            else:
+                error['detail'] = str(error_instance)
+
+        self.write({'errors': [error]})
+
+
+class CollectionHandler(JSONAPIHandler):
     """Handler for JSONAPI Collections."""
 
     def initialize(self, config: dict, type: str) -> None:  # noqa: ANN101
         """Initialise the handler."""
-        self._config = config
+        super().initialize(config)
         self._type = type
 
 
-class ItemHandler(RequestHandler):
+class ItemHandler(JSONAPIHandler):
     """Handler for an individual JSONAPI Item."""
 
     def initialize(self, config: dict, type: str) -> None:  # noqa: ANN101
         """Initialise the handler."""
-        self._config = config
+        super().initialize(config)
         self._type = type
 
     async def get(self, identifier: str) -> None:  # noqa: ANN101
         """Fetch a single item."""
-        async with connect_database(self._config) as session:
-            try:
-                db = await session[self._type]
-                item = await db[identifier]
-                self.write(item)
-            except exception.NotFoundError:
-                self.send_error(404)
+        session = get_session(self._config)
+        try:
+            result = await session.query(self._type).single(identifier)
+            self.write(result.as_jsonapi())
+        except NotFoundError:
+            self.send_error(404, reason=f'{self._type.__name__} {identifier} not found')
