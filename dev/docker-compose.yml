@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  couchdb:
+    image: couchdb:3
+    environment:
+      COUCHDB_USER: main
+      COUCHDB_PASSWORD: ohchieM0iefeuto5
+    ports:
+      - "127.0.0.1:5984:5984"
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "127.0.0.1:1883:1883"
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
