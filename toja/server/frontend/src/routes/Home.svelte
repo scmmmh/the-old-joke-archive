@@ -21,10 +21,10 @@
     </div>
     <form class="mb-12 md:mx-20 lg:mx-28 xl:mx-auto xl:max-w-3xl">
         <h2 class="font-blackriver-bold text-lg lg:text-xl xl:text-2xl mb-4">Find Something Funny</h2>
-        <label class="block relative w-full bg-gray-200 rounded flex">
+        <label class="block relative w-full bg-gray-200 rounded-lg flex">
             <span class="sr-only">Search for jokes</span>
-            <input type="search" name="q" class="flex-auto bg-gray-200 px-3 py-2 rounded"/>
-            <button aria-label="Search" class="px-3 text-accent">
+            <input type="search" name="q" class="flex-auto bg-gray-200 px-3 py-3 rounded-lg focus:outline-primary"/>
+            <button aria-label="Search" class="px-3 text-accent rounded-lg focus:outline-primary">
                 <svg viewBox="0 0 24 24" class="w-6 h-6">
                     <path fill="currentColor" d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z" />
                 </svg>

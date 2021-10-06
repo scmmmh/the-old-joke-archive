@@ -45,4 +45,8 @@
 	body {
 		@apply bg-gray-900;
 	}
+
+	a {
+		@apply rounded focus:outline-primary;
+	}
 </style>

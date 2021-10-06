@@ -21,6 +21,9 @@ module.exports = {
                 'merriweather-bold': 'Merriweather-Bold, serif',
                 'merriweather-bold-italic': 'Merriweather-BoldItalic, serif',
             },
+            outline: {
+                primary: '2px solid #814158',
+            }
         },
     },
     variants: {
