@@ -1,0 +1,9 @@
+@font-face {
+    font-family: 'blackriver-bold';
+    src: url('/app/fonts/blackriver-bold.woff2') format('woff2'),
+         url('/app/fonts/blackriver-bold.woff') format('woff'),
+         url('/app/fonts/blackriver-bold.ttf') format('ttf');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
