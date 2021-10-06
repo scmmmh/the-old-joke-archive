@@ -2,6 +2,7 @@
 	import { Router, Route } from "svelte-navigator";
 
 	import Header from './components/Header.svelte';
+	import Footer from './components/Footer.svelte';
 	import Home from './routes/Home.svelte';
 </script>
 
@@ -11,6 +12,7 @@
 			<Router basepath="/app">
 				<Header/>
 				<Route path="/"><Home/></Route>
+				<Footer/>
 			</Router>
 		</main>
 	</div>

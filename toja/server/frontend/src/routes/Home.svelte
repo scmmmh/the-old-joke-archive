@@ -2,7 +2,7 @@
     import { Link } from 'svelte-navigator';
 </script>
 
-<article class="container mx-auto">
+<article class="container mx-auto mb-12">
     <h1 class="sr-only">Welcome to The Old Joke Archive</h1>
     <div class="flex flex-row items-center md:px-8 mb-12">
         <div class="flex-none" role="presentation">
@@ -19,7 +19,7 @@
             <img src="/app/img/img-character-f.png" alt="" class="w-16 md:w-24 lg:w-40 xl:w-60"/>
         </div>
     </div>
-    <form class="mb-12 md:mx-20 lg:mx-28">
+    <form class="mb-12 md:mx-20 lg:mx-28 xl:mx-auto xl:max-w-3xl">
         <h2 class="font-blackriver-bold text-lg lg:text-xl xl:text-2xl mb-4">Find Something Funny</h2>
         <label class="block relative w-full bg-gray-200 rounded flex">
             <span class="sr-only">Search for jokes</span>
