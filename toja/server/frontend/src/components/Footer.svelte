@@ -9,10 +9,10 @@
     <div class="flex flex-row flex-wrap mx-6">
         <nav class="flex-none w-full md:w-3/4 lg:w-1/2 mb-4">
             <ul class="flex flex-row flex-wrap">
-                <li role="presentation" class="flex-none w-1/2"><Link to="/about/copyright" class="text-accent">Copyright questions</Link></li>
-                <li role="presentation" class="flex-none w-1/2"><Link to="/about/press" class="text-accent">Press &amp; media</Link></li>
-                <li role="presentation" class="flex-none w-1/2"><Link to="/about/privacy" class="text-accent">Privacy policy</Link></li>
-                <li role="presentation" class="flex-none w-1/2"><Link to="/about/terms" class="text-accent">Terms &amp; Conditions</Link></li>
+                <li role="presentation" class="flex-none w-1/2"><Link to="/about/copyright" class="text-accent hover:text-primary transition-colors hover:underline">Copyright questions</Link></li>
+                <li role="presentation" class="flex-none w-1/2"><Link to="/about/press" class="text-accent hover:text-primary transition-colors hover:underline">Press &amp; media</Link></li>
+                <li role="presentation" class="flex-none w-1/2"><Link to="/about/privacy" class="text-accent hover:text-primary transition-colors hover:underline">Privacy policy</Link></li>
+                <li role="presentation" class="flex-none w-1/2"><Link to="/about/terms" class="text-accent hover:text-primary transition-colors hover:underline">Terms &amp; Conditions</Link></li>
             </ul>
         </nav>
         <nav class="flex-none w-full md:w-1/4 lg:w-1/2">

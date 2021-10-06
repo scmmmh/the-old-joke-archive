@@ -36,8 +36,8 @@
             <h2 class="font-blackriver-bold text-lg lg:text-xl xl:text-2xl mb-2">The Old Joke Archive</h2>
             <p class="mb-2">When the 18-year-old Victoria came to the throne in 1837, victories over Revolutionary and Napoleonic France had increased Britain’s influence abroad. Queen Victoria ruled Britain for over 60 years. During this long reign, the country acquired unprecedented power and wealth.</p>
             <ul class="flex flex-row text-sm">
-                <li role="presentation" class="flex-none pr-2 mr-2 border-solid border-r-px border-gray-400"><Link to="/about" class="text-accent">Find out more</Link></li>
-                <li role="presentation" class="flex-none"><Link to="/contribute" class="text-accent">Contribute</Link></li>
+                <li role="presentation" class="flex-none pr-2 mr-2 border-solid border-r-px border-gray-400"><Link to="/about" class="text-accent hover:text-primary transition-colors hover:underline">Find out more</Link></li>
+                <li role="presentation" class="flex-none"><Link to="/contribute" class="text-accent hover:text-primary transition-colors hover:underline">Contribute</Link></li>
             </ul>
         </div>
         <div class="flex-auto w-1/2 lg:w-1/4 px-2 text-center">
