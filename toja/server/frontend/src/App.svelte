@@ -1,14 +1,16 @@
 <script lang="ts">
-	import { Router } from "svelte-navigator";
+	import { Router, Route } from "svelte-navigator";
 
 	import Header from './components/Header.svelte';
+	import Home from './routes/Home.svelte';
 </script>
 
-<div class="bg-gray-900 p-vw-2">
+<div class="bg-gray-900 p-vw-2 font-merriweather-regular">
 	<div class="bg-white p-vw-8">
 		<main class="md:border-brand pt-8">
 			<Router basepath="/app">
 				<Header/>
+				<Route path="/"><Home/></Route>
 			</Router>
 		</main>
 	</div>
@@ -31,6 +33,11 @@
 				flex-basis: 100%;
 			}
 		}
+	}
+
+	html {
+		@apply font-merriweather-regular;
+		font-size: 11pt;
 	}
 
 	body {

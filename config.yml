@@ -2,6 +2,8 @@ database:
   server: http://localhost:5984
   user: main
   password: ohchieM0iefeuto5
+server:
+  host: '0.0.0.0'
 debug: True
 logging:
   version: 1

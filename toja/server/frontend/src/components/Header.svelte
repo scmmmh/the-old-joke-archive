@@ -4,9 +4,9 @@
     import { breakpoint } from '../stores';
 </script>
 
-<header class="container mx-auto flex flex-col lg:flex-row">
+<header class="container mx-auto flex flex-col lg:flex-row mb-12">
     <div class="flex-none pb-6 lg:pb-0">
-        <span class="block font-blackriver-bold font-bold text-primary text-4xl whitespace-nowrap text-center md:text-left">The Old Joke Archive</span>
+        <Link to="/" class="block font-blackriver-bold font-bold text-primary text-4xl whitespace-nowrap text-center md:text-left">The Old Joke Archive</Link>
         <span class="block font-blackriver-bold font-bold text-gray-500 text-2xl text-center md:text-left md:pl-8">Are we amused?</span>
     </div>
     <div class="flex-none lg:flex-1"></div>

@@ -16,6 +16,10 @@ module.exports = {
             },
             fontFamily: {
                 'blackriver-bold': 'blackriver-bold, serif',
+                'merriweather-regular': 'Merriweather-Regular, serif',
+                'merriweather-italic': 'Merriweather-Italic, serif',
+                'merriweather-bold': 'Merriweather-Bold, serif',
+                'merriweather-bold-italic': 'Merriweather-BoldItalic, serif',
             },
         },
     },
