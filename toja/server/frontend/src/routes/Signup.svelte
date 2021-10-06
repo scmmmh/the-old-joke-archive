@@ -1,0 +1,52 @@
+<script lang="ts">
+    import { saveJsonApiObject } from '../stores';
+    import Input from '../components/Input.svelte';
+    import Button from '../components/Button.svelte';
+
+    let email = '';
+    let emailError = '';
+    let name = '';
+    let nameError = '';
+
+    let busy = false;
+
+    async function register(ev: Event) {
+        ev.preventDefault();
+        busy = true;
+        emailError = '';
+        nameError = '';
+
+        try {
+            const user = await saveJsonApiObject({
+                'type': 'users',
+                'attributes': {
+                    'email': email,
+                    'name': name,
+                },
+            });
+            console.log(user);
+            busy = false;
+        } catch (error) {
+            for (const err of error.errors) {
+                if (err.source) {
+
+                } else {
+                    emailError = err.title;
+                    nameError = err.title;
+                }
+            }
+            busy = false;
+        }
+    }
+</script>
+
+<article class="md:max-w-2xl mx-auto mb-12 {busy ? 'cursor-wait' : ''}">
+    <h1 class="font-blackriver-bold text-4xl mb-8">Sign up to <span class="text-primary">The Old Joke Archive</span></h1>
+    <form on:submit={register}>
+        <Input bind:value={email} type="email" error={emailError} disabled={busy}>E-Mail Address</Input>
+        <Input bind:value={name} type="text" error={nameError} disabled={busy}>Name</Input>
+        <div class="mt-8 text-right">
+            <Button disabled={busy}>{#if busy}Signing up...{:else}Sign up{/if}</Button>
+        </div>
+    </form>
+</article>

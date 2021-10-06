@@ -4,6 +4,7 @@
 	import Header from './components/Header.svelte';
 	import Footer from './components/Footer.svelte';
 	import Home from './routes/Home.svelte';
+	import Signup from './routes/Signup.svelte';
 </script>
 
 <div class="bg-gray-900 p-vw-2 font-merriweather-regular">
@@ -12,6 +13,7 @@
 			<Router basepath="/app">
 				<Header/>
 				<Route path="/"><Home/></Route>
+				<Route path="/user/sign-up"><Signup/></Route>
 				<Footer/>
 			</Router>
 		</main>
