@@ -1,9 +1,10 @@
 <script lang="ts">
-    import { tick } from 'svelte';
-    import { Link } from 'svelte-navigator';
+    import { tick, onDestroy } from 'svelte';
+    import { Link, useLocation } from 'svelte-navigator';
 
     import { breakpoint } from '../stores';
 
+    const location = useLocation();
     let menuVisible = false;
     let popupList = null;
     let showMenuButton = null;
@@ -29,6 +30,12 @@
             hideMenu();
         }
     }
+
+    const unsubscribe = location.subscribe(() => {
+        menuVisible = false;
+    });
+
+    onDestroy(unsubscribe);
 </script>
 
 <header class="container mx-auto flex flex-col lg:flex-row mb-8">
