@@ -1,5 +1,4 @@
 """TOJA command-line application."""
-import asyncio
 import click
 import logging.config
 import yaml
@@ -8,8 +7,8 @@ import os
 from cerberus import Validator
 from typing import Union
 
-from ..models import setup_database
 from ..server import run_application_server
+from ..utils import set_config
 
 
 CONFIG_SCHEMA = {
@@ -86,8 +85,7 @@ def validate_config(config: dict) -> dict:
 
 
 @click.group()
-@click.pass_context
-def main(ctx: click.Context) -> None:
+def main() -> None:
     """Run the TOJA applications."""
     config = None
     if os.path.exists('config.yml'):
@@ -99,24 +97,22 @@ def main(ctx: click.Context) -> None:
     if not config:
         raise click.ClickException('No configuration found (./config.yml, /etc/toja/config.yml)')
     normalised = validate_config(config)
-    ctx.obj = {'config': normalised}
+    set_config(normalised)
     if 'logging' in normalised:
         logging.config.dictConfig(normalised['logging'])
 
 
 @click.command()
-@click.pass_context
-def server(ctx: click.Context) -> None:
+def server() -> None:
     """Run the TOJA server."""
-    run_application_server(ctx.obj['config'])
+    run_application_server()
 
 
 main.add_command(server)
 
 
 @click.command()
-@click.pass_context
-def background(ctx: click.Context) -> None:
+def background() -> None:
     """Run the TOJA background processing application."""
     pass
 
@@ -125,10 +121,9 @@ main.add_command(background)
 
 
 @click.command()
-@click.pass_context
-def setup(ctx: click.Context) -> None:
+def setup() -> None:
     """Set up the TOJA system."""
-    asyncio.run(setup_database(ctx.obj['config']))
+    pass
 
 
 main.add_command(setup)

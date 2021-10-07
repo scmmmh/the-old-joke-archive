@@ -24,18 +24,21 @@
                     'name': name,
                 },
             });
-            console.log(user);
             busy = false;
         } catch (error) {
+            busy = false;
             for (const err of error.errors) {
                 if (err.source) {
-
+                    if (err.source.pointer === 'attributes.email') {
+                        emailError = err.title;
+                    } else if (err.source.pointer === 'attributes.name') {
+                        nameError = err.title;
+                    }
                 } else {
                     emailError = err.title;
                     nameError = err.title;
                 }
             }
-            busy = false;
         }
     }
 </script>

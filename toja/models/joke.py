@@ -1,8 +1,8 @@
 """Classes for representing jokes."""
-from .base import CouchDBBase
+from .base import Base
 
 
-class Joke(CouchDBBase):
+class Joke(Base):
     """The database class for jokes."""
 
     name = 'jokes'

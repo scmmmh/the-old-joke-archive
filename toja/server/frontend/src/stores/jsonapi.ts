@@ -7,12 +7,20 @@ export class JsonApiException extends Error {
     }
 }
 
+function getCookie(name: string): string | undefined {
+    const cookies = Object.fromEntries(document.cookie.split(';').map((cookie) => {
+        return cookie.split('=');
+    }));
+    return cookies[name];
+}
+
 export async function saveJsonApiObject(obj: JsonApiObject) {
     if (obj['_id']) {
-        const response = await window.fetch('/' + obj.type + '/' + obj['_id'], {
+        const response = await window.fetch('/api/' + obj.type + '/' + obj['_id'], {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                'X-XSRFToken': getCookie('_xsrf'),
             },
             body: JSON.stringify({'data': obj})
         });
@@ -20,18 +28,20 @@ export async function saveJsonApiObject(obj: JsonApiObject) {
             const data = await response.json() as JsonApiResponse;
             return data.data;
         } else {
+            let data = null;
             try {
-                const data = await response.json();
-                throw new JsonApiException(data.errors);
-            } catch {
+                data = await response.json();
+            } catch (err) {
                 throw new JsonApiException([{status: response.status.toString(), title: 'Network error'}]);
             }
+            throw new JsonApiException(data.errors);
         }
     } else {
-        const response = await window.fetch('/' + obj.type, {
+        const response = await window.fetch('/api/' + obj.type, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-XSRFToken': getCookie('_xsrf'),
             },
             body: JSON.stringify({'data': obj})
         });
@@ -39,12 +49,13 @@ export async function saveJsonApiObject(obj: JsonApiObject) {
             const data = await response.json() as JsonApiResponse;
             return data.data;
         } else {
+            let data = null;
             try {
-                const data = await response.json();
-                throw new JsonApiException(data.errors);
-            } catch {
+                data = await response.json();
+            } catch (err) {
                 throw new JsonApiException([{status: response.status.toString(), title: 'Network error'}]);
             }
+            throw new JsonApiException(data.errors);
         }
     }
 }
