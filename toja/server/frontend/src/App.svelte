@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { Router, Route } from "svelte-navigator";
 
+	import { busy } from './stores';
 	import Header from './components/Header.svelte';
 	import Footer from './components/Footer.svelte';
 	import Home from './routes/Home.svelte';
 	import Signup from './routes/Signup.svelte';
+	import Login from './routes/Login.svelte';
 </script>
 
 <div class="bg-gray-900 p-vw-2 font-merriweather-regular">
@@ -14,10 +16,14 @@
 				<Header/>
 				<Route path="/"><Home/></Route>
 				<Route path="/user/sign-up"><Signup/></Route>
+				<Route path="/user/log-in"><Login/></Route>
 				<Footer/>
 			</Router>
 		</main>
 	</div>
+	{#if $busy}
+		<div class="fixed top-0 left-0 w-screen h-screen cursor-wait z-50"></div>
+	{/if}
 </div>
 
 <style global>

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { saveJsonApiObject } from '../stores';
+    import { saveJsonApiObject, busy } from '../stores';
     import Input from '../components/Input.svelte';
     import Button from '../components/Button.svelte';
 
@@ -8,12 +8,11 @@
     let name = '';
     let nameError = '';
 
-    let busy = false;
     let success = false;
 
     async function register(ev: Event) {
         ev.preventDefault();
-        busy = true;
+        busy.startBusy();
         emailError = '';
         nameError = '';
 
@@ -25,10 +24,10 @@
                     'name': name,
                 },
             });
-            busy = false;
+            busy.endBusy();
             success = true;
         } catch (error) {
-            busy = false;
+            busy.endBusy();
             for (const err of error.errors) {
                 if (err.source) {
                     if (err.source.pointer === 'attributes.email') {
@@ -45,17 +44,17 @@
     }
 </script>
 
-<article class="md:max-w-2xl mx-auto mb-12 {busy ? 'cursor-wait' : ''}">
+<article class="md:max-w-2xl mx-auto mb-12">
     {#if success}
         <h1 class="font-blackriver-bold text-4xl mb-8">Signed up to <span class="text-primary">The Old Joke Archive</span></h1>
         <p>You have signed up to The Old Joke Archive. You have been sent a login e-mail. This may have landed in your spam folder.</p>
     {:else}
         <h1 class="font-blackriver-bold text-4xl mb-8">Sign up to <span class="text-primary">The Old Joke Archive</span></h1>
         <form on:submit={register}>
-            <Input bind:value={email} type="email" error={emailError} disabled={busy}>E-Mail Address</Input>
-            <Input bind:value={name} type="text" error={nameError} disabled={busy}>Name</Input>
+            <Input bind:value={email} type="email" error={emailError} disabled={$busy}>E-Mail Address</Input>
+            <Input bind:value={name} type="text" error={nameError} disabled={$busy}>Name</Input>
             <div class="mt-8 text-right">
-                <Button disabled={busy}>{#if busy}Signing up...{:else}Sign up{/if}</Button>
+                <Button disabled={$busy}>{#if $busy}Signing up...{:else}Sign up{/if}</Button>
             </div>
         </form>
     {/if}

@@ -4,7 +4,7 @@ import logging
 from tornado.web import Application, RedirectHandler
 from tornado.ioloop import IOLoop
 
-from .handlers import CollectionHandler, ItemHandler, FrontendHandler
+from .handlers import CollectionHandler, ItemHandler, LoginHandler, FrontendHandler
 from ..models import Joke, User
 from ..utils import config
 
@@ -24,6 +24,7 @@ def run_application_server() -> None:
             ('/', RedirectHandler, {'permanent': False, 'url': '/app'}),
             ('/app(.*)', FrontendHandler),
             ('/api/users', CollectionHandler, {'type': User}),
+            ('/api/users/_login', LoginHandler),
             ('/api/users/([a-z0-9]+)', ItemHandler, {'type': User}),
             ('/api/jokes', CollectionHandler, {'type': Joke}),
             ('/api/jokes/([a-z0-9]+)', ItemHandler, {'type': Joke})

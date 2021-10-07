@@ -14,16 +14,21 @@ function getCookie(name: string): string | undefined {
     return cookies[name];
 }
 
+export async function sendJsonApiRequest(method: string, url: string, obj: JsonApiObject) {
+    return await window.fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+            'X-XSRFToken': getCookie('_xsrf'),
+        },
+        body: JSON.stringify({'data': obj}),
+});
+}
+
 export async function saveJsonApiObject(obj: JsonApiObject) {
     if (obj['_id']) {
-        const response = await window.fetch('/api/' + obj.type + '/' + obj['_id'], {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-XSRFToken': getCookie('_xsrf'),
-            },
-            body: JSON.stringify({'data': obj})
-        });
+
+        const response = await sendJsonApiRequest('PUT', '/api/' + obj.type + '/' + obj['_id'], obj);
         if (response.status === 201) {
             const data = await response.json() as JsonApiResponse;
             return data.data;
@@ -37,14 +42,7 @@ export async function saveJsonApiObject(obj: JsonApiObject) {
             throw new JsonApiException(data.errors);
         }
     } else {
-        const response = await window.fetch('/api/' + obj.type, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-XSRFToken': getCookie('_xsrf'),
-            },
-            body: JSON.stringify({'data': obj})
-        });
+        const response = await sendJsonApiRequest('POST', '/api/' + obj.type, obj);
         if (response.status === 201) {
             const data = await response.json() as JsonApiResponse;
             return data.data;

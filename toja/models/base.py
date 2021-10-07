@@ -47,12 +47,11 @@ class Base():
     @classmethod
     def from_couchdb(cls: 'Base', obj: dict) -> 'Base':
         """Load the object from the CouchDB representation."""
-        obj = deepcopy(obj)
         id_ = obj['_id']
         for key in list(obj.keys()):
             if key.startswith('_'):
                 del obj[key]
-        return cls(id_=id_, attributes=obj)
+        return cls(id_=id_, attributes=dict(obj))
 
     def as_couchdb(self: 'Base') -> dict:
         """Return the object in CouchDB representation."""

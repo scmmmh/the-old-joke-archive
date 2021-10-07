@@ -4,7 +4,7 @@ from secrets import token_hex
 
 from .base import Base
 from ..utils import config, send_email
-from ..validation import ValidationError
+from ..validation import TojaValidator, ValidationError
 
 
 class User(Base):
@@ -37,6 +37,35 @@ class User(Base):
             }
         }
     }
+
+    login_schema = {
+        'type': {
+            'type': 'string',
+            'required': True,
+            'empty': False,
+            'allowed': ['users']
+        },
+        'attributes': {
+            'type': 'dict',
+            'schema': {
+                'email': {
+                    'type': 'string',
+                    'required': True,
+                    'empty': False,
+                    'check_with': 'validate_email',
+                    'coerce': 'email',
+                }
+            }
+        }
+    }
+
+    @classmethod
+    def validate_login(cls: 'Base', obj: dict) -> dict:
+        """Validate the ``obj`` as input for logging in."""
+        validator = TojaValidator(cls.login_schema)
+        if not validator.validate(obj):
+            raise ValidationError(validator.errors)
+        return validator.document
 
     async def check_unique(self: 'User', db: CouchDB) -> None:
         """Check that this user is unique.

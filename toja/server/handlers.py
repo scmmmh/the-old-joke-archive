@@ -8,9 +8,10 @@ from importlib import resources
 from importlib.abc import Traversable
 from io import StringIO
 from mimetypes import guess_type
+from secrets import token_hex
 from tornado.web import RequestHandler
 
-from ..models import Base
+from ..models import Base, User
 from ..validation import ValidationError
 from ..utils import config, couchdb
 
@@ -93,6 +94,32 @@ class ItemHandler(JSONAPIHandler):
             self.write({'data': result.as_jsonapi()})
         except NotFoundError:
             self.send_error(404, reason=f'{self._type.__name__} {identifier} not found')'''
+
+
+class LoginHandler(JSONAPIHandler):
+    """Handler for logging the user in."""
+
+    async def post(self: 'LoginHandler') -> None:
+        """Handle a login request."""
+        try:
+            async with couchdb() as session:
+                db = await session['users']
+                obj = User.from_jsonapi(User.validate_login(json.loads(self.request.body)['data']))
+                db_obj = None
+                async for user in db.find({'email': obj._attributes['email']}):
+                    db_obj = user
+                if db_obj is None:
+                    self.send_error(403, errors=[{
+                        'code': 403,
+                        'title': 'This e-mail address is not registered or your account has been blocked'
+                    }])
+                else:
+                    db_obj['token'] = token_hex(128)
+                    obj = User.from_couchdb(db_obj)
+                    await obj.send_login_email()
+                    self.set_status(204)
+        except ValidationError as ve:
+            self.send_error(400, errors=ve.errors)
 
 
 class FrontendHandler(RequestHandler):
