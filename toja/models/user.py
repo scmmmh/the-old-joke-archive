@@ -1,7 +1,9 @@
 """User models."""
 from aiocouch import CouchDB
+from secrets import token_hex
 
 from .base import Base
+from ..utils import config, send_email
 from ..validation import ValidationError
 
 
@@ -48,9 +50,21 @@ class User(Base):
     async def pre_create(self: 'User', db: CouchDB) -> None:
         """Add the necessary groups when creating."""
         self._attributes['groups'] = []
+        self._attributes['token'] = token_hex(128)
         if (await db.info())['doc_count'] == 0:
             self._attributes['groups'] = ['admin']
 
-    async def post_create(self: 'Base', db: CouchDB) -> None:
+    async def post_create(self: 'User', db: CouchDB) -> None:
         """After creating, automatically send a login e-mail."""
-        pass
+        await self.send_login_email()
+
+    async def send_login_email(self: 'User') -> None:
+        """Send the login email."""
+        send_email(self._attributes['email'], 'Log in to The Old Joke Archive', f'''Hello {self._attributes["name"]},
+
+Please use the following link to log into The Old Joke Archive:
+
+{config()['server']['base']}/app/user/log-in?token={self._attributes["token"]}
+
+The Old Joke Automaton.
+''')

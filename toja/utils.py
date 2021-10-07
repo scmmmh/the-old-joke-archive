@@ -1,7 +1,12 @@
 """Utility functions."""
+import logging
+
 from aiocouch import CouchDB
+from email.message import EmailMessage
+from email.utils import formatdate
+from smtplib import SMTP
 
-
+logger = logging.getLogger(__name__)
 _config = {}
 
 
@@ -21,3 +26,23 @@ def couchdb() -> CouchDB:
     return CouchDB(config()['database']['server'],
                    config()['database']['user'],
                    config()['database']['password'])
+
+
+def send_email(recipient: str, subject: str, body: str) -> None:
+    """Send an email."""
+    logger.debug('Sending e-mail')
+    logger.debug(subject)
+    logger.debug(body)
+    if 'email' in config():
+        with SMTP(config()['email']['server']) as smtp:
+            if config()['email']['secure']:
+                smtp.starttls()
+            if 'auth' in config()['email']:
+                smtp.login(config()['email']['auth']['user'], config()['email']['auth']['password'])
+            email = EmailMessage()
+            email.set_content(body)
+            email['Subject'] = subject
+            email['To'] = recipient
+            email['From'] = config()['email']['sender']
+            email['Date'] = formatdate()
+            smtp.send_message(email)

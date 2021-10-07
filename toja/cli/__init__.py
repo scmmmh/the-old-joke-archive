@@ -22,11 +22,16 @@ CONFIG_SCHEMA = {
             'port': {
                 'type': 'integer',
                 'default': 6543
+            },
+            'base': {
+                'type': 'string',
+                'default': 'http://127.0.0.1:6543'
             }
         },
         'default': {
             'host': '127.0.0.1',
-            'port': 6543
+            'port': 6543,
+            'base': 'http://127.0.0.1:6543'
         }
     },
     'database': {
@@ -42,6 +47,39 @@ CONFIG_SCHEMA = {
             },
             'password': {
                 'type': 'string'
+            }
+        }
+    },
+    'email': {
+        'type': 'dict',
+        'schema': {
+            'server': {
+                'type': 'string',
+                'required': True,
+                'empty': False,
+            },
+            'secure': {
+                'type': 'boolean',
+                'default': True,
+            },
+            'auth': {
+                'type': 'dict',
+                'schema': {
+                    'user': {
+                        'type': 'string',
+                        'required': True,
+                        'empty': False,
+                    },
+                    'password': {
+                        'type': 'string',
+                        'required': True,
+                        'empty': False,
+                    }
+                }
+            },
+            'sender': {
+                'type': 'string',
+                'default': 'automaton@oldjokearchive.com'
             }
         }
     },

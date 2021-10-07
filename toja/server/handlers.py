@@ -70,6 +70,7 @@ class CollectionHandler(JSONAPIHandler):
                 except ValidationError as ve:
                     await db_obj.delete()
                     raise ve
+                self.set_status(201)
                 self.write({'data': obj.as_jsonapi()})
         except ValidationError as ve:
             self.send_error(400, errors=ve.errors)
