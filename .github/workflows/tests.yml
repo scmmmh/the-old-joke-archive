@@ -15,7 +15,7 @@ jobs:
 
     - uses: actions/setup-python@v2
       with:
-        python-version: '3.9'
+        python-version: "3.9"
 
     - name: Add .local path
       run: |
@@ -38,4 +38,4 @@ jobs:
         docker-compose up --no-start
         docker-compose start
         poetry run python -m toja server &
-        py.test api_tests
+        poetry run py.test api_tests
