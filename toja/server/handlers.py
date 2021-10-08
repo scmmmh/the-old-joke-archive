@@ -4,6 +4,7 @@ import logging
 import traceback
 from uuid import uuid1
 
+from aiocouch import exception as couchdb_exc
 from importlib import resources
 from importlib.abc import Traversable
 from io import StringIO
@@ -17,6 +18,12 @@ from ..utils import config, couchdb
 
 
 logger = logging.getLogger(__name__)
+
+
+class UnauthorisedError(Exception):
+    """Error for indicating unauthorised access."""
+
+    pass
 
 
 class JSONAPIHandler(RequestHandler):
@@ -44,6 +51,25 @@ class JSONAPIHandler(RequestHandler):
                 logger.exception(tb)
             self.write({'errors': [error]})
 
+    async def check_access(self: 'JSONAPIHandler', action: str, obj: Base) -> None:
+        """Check whether the request is allowed the ``action`` on the ``obj``."""
+        if 'X-Toja-Auth' in self.request.headers:
+            try:
+                user_id, token = self.request.headers['X-Toja-Auth'].split('$$')
+                async with couchdb() as session:
+                    db = await session['users']
+                    user = await db[user_id]
+                    if user and user['token'] == token:
+                        if obj.allow_access(action=action, user_id=user_id, groups=user['groups']):
+                            return
+            except ValueError:
+                if obj.allow_access(action=action, user_id=None, groups=[]):
+                    return
+        else:
+            if obj.allow_access(action=action, user_id=None, groups=[]):
+                return
+        raise UnauthorisedError()
+
 
 class CollectionHandler(JSONAPIHandler):
     """Handler for JSONAPI Collections."""
@@ -61,6 +87,7 @@ class CollectionHandler(JSONAPIHandler):
                 obj = self._type.from_jsonapi(self._type.validate_create(json.loads(self.request.body)['data']))
                 await obj.check_unique(db)
                 await obj.pre_create(db)
+                await self.check_access('create', obj)
                 db_obj = await db.create(str(uuid1()))
                 db_obj.update(obj.as_couchdb())
                 await db_obj.save()
@@ -75,6 +102,8 @@ class CollectionHandler(JSONAPIHandler):
                 self.write({'data': obj.as_jsonapi()})
         except ValidationError as ve:
             self.send_error(400, errors=ve.errors)
+        except UnauthorisedError:
+            self.send_error(403, reason='You are not authorised to access this resource')
 
 
 class ItemHandler(JSONAPIHandler):
@@ -87,13 +116,17 @@ class ItemHandler(JSONAPIHandler):
 
     async def get(self: 'ItemHandler', identifier: str) -> None:
         """Fetch a single item."""
-        pass
-        '''session = get_session(self._config)
         try:
-            result = await session.query(self._type).single(identifier)
-            self.write({'data': result.as_jsonapi()})
-        except NotFoundError:
-            self.send_error(404, reason=f'{self._type.__name__} {identifier} not found')'''
+            async with couchdb() as session:
+                db = await session[self._type.name]
+                db_obj = await db[identifier]
+                obj = self._type.from_couchdb(db_obj)
+                await self.check_access('read', obj)
+                self.write({'data': obj.as_jsonapi()})
+        except couchdb_exc.NotFoundError:
+            self.send_error(404, reason=f'{self._type.__name__} {identifier} not found')
+        except UnauthorisedError:
+            self.send_error(403, reason='You are not authorised to access this resource')
 
 
 class LoginHandler(JSONAPIHandler):
@@ -105,19 +138,33 @@ class LoginHandler(JSONAPIHandler):
             async with couchdb() as session:
                 db = await session['users']
                 obj = User.from_jsonapi(User.validate_login(json.loads(self.request.body)['data']))
-                db_obj = None
-                async for user in db.find({'email': obj._attributes['email']}):
-                    db_obj = user
-                if db_obj is None:
-                    self.send_error(403, errors=[{
-                        'code': 403,
-                        'title': 'This e-mail address is not registered or your account has been blocked'
-                    }])
+                if 'token' in obj._attributes:
+                    db_obj = None
+                    async for user in db.find({'email': obj._attributes['email'], 'token': obj._attributes['token']}):
+                        db_obj = user
+                    if db_obj is None:
+                        self.send_error(403, errors=[{
+                            'code': 403,
+                            'title': 'This e-mail address is not registered or the token is no longer valid'
+                        }])
+                    else:
+                        obj = User.from_couchdb(db_obj)
+                        self.write({'data': obj.as_jsonapi()})
                 else:
-                    db_obj['token'] = token_hex(128)
-                    obj = User.from_couchdb(db_obj)
-                    await obj.send_login_email()
-                    self.set_status(204)
+                    db_obj = None
+                    async for user in db.find({'email': obj._attributes['email']}):
+                        db_obj = user
+                    if db_obj is None:
+                        self.send_error(403, errors=[{
+                            'code': 403,
+                            'title': 'This e-mail address is not registered or your account has been blocked'
+                        }])
+                    else:
+                        db_obj['token'] = token_hex(128)
+                        await db_obj.save()
+                        obj = User.from_couchdb(db_obj)
+                        await obj.send_login_email()
+                        self.set_status(204)
         except ValidationError as ve:
             self.send_error(400, errors=ve.errors)
 

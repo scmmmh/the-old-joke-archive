@@ -1,7 +1,7 @@
 """Base database access methods."""
 from aiocouch import CouchDB
 from copy import deepcopy
-from typing import Union
+from typing import Union, List
 
 from ..validation import TojaValidator, ValidationError
 
@@ -71,3 +71,7 @@ class Base():
     async def post_create(self: 'Base', db: CouchDB) -> None:
         """Run any post-creation steps."""
         pass
+
+    def allow_access(self: 'Base', action: str, user_id: str, groups: List[str]) -> bool:
+        """Check that access is allowed for the action, user_id, and groups."""
+        return True

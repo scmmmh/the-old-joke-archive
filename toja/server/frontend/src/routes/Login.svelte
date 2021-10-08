@@ -1,11 +1,15 @@
 <script lang="ts">
-    import { busy, sendJsonApiRequest } from '../stores';
+    import { useNavigate } from 'svelte-navigator';
+
+    import { busy, sendJsonApiRequest, authToken, authUser } from '../stores';
+    import { localStoreValue, sessionStoreValue } from '../local-persistence';
     import Input from '../components/Input.svelte';
     import Button from '../components/Button.svelte';
 
     let email = '';
     let emailError = '';
     let success = false;
+    const navigate = useNavigate();
 
     async function login(ev: Event) {
         ev.preventDefault();
@@ -23,12 +27,43 @@
             if (response.status === 204) {
                 success = true;
             } else {
-                emailError = 'This e-mail address is not registered or your account has been blocked';
+                emailError = 'This e-mail address is not registered or the token is no longer valid';
             }
         } catch (error) {
             busy.endBusy();
             emailError = error;
         }
+    }
+
+    async function login_step2(params: URLSearchParams) {
+        email = params.get('email');
+        busy.startBusy();
+        try {
+            const response = await sendJsonApiRequest('POST', '/api/users/_login', {
+                'type': 'users',
+                'attributes': {
+                    'email': email,
+                    'token': params.get('token')
+                }
+            });
+            busy.endBusy();
+            if (response.status === 200) {
+                const obj = await response.json();
+                authUser.set(obj.data);
+                localStoreValue('auth', {id: obj.data.id, token: params.get('token')});
+                navigate('/');
+            } else {
+                emailError = 'The e-mail address does not exist or the token is no longer valid';
+            }
+        } catch (error) {
+            busy.endBusy();
+            emailError = error;
+        }
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('token') && params.get('email')) {
+        login_step2(params);
     }
 </script>
 

@@ -1,10 +1,17 @@
 """User models."""
+import logging
+
 from aiocouch import CouchDB
 from secrets import token_hex
+from urllib.parse import urlencode
+from typing import List
 
 from .base import Base
 from ..utils import config, send_email
 from ..validation import TojaValidator, ValidationError
+
+
+logger = logging.getLogger(name=__name__)
 
 
 class User(Base):
@@ -54,6 +61,10 @@ class User(Base):
                     'empty': False,
                     'check_with': 'validate_email',
                     'coerce': 'email',
+                },
+                'token': {
+                    'type': 'string',
+                    'empty': False,
                 }
             }
         }
@@ -66,6 +77,14 @@ class User(Base):
         if not validator.validate(obj):
             raise ValidationError(validator.errors)
         return validator.document
+
+    def as_jsonapi(self: 'User') -> dict:
+        """Return the user object in JSONAPI representation."""
+        obj = super().as_jsonapi()
+        if 'attributes' in obj:
+            if 'token' in obj['attributes']:
+                del obj['attributes']['token']
+        return obj
 
     async def check_unique(self: 'User', db: CouchDB) -> None:
         """Check that this user is unique.
@@ -93,7 +112,22 @@ class User(Base):
 
 Please use the following link to log into The Old Joke Archive:
 
-{config()['server']['base']}/app/user/log-in?token={self._attributes["token"]}
+{config()['server']['base']}/app/user/log-in?{urlencode((('email', self._attributes["email"]), ('token', self._attributes["token"])))}
 
 The Old Joke Automaton.
-''')
+''')  # noqa: E501
+
+    def allow_access(self: 'Base', action: str, user_id: str, groups: List[str]) -> bool:
+        """Check that access is allowed for the given ``action``."""
+        if action == 'read':
+            if user_id and (self._id == user_id or 'admin' in groups or 'admin:users' in groups):
+                return True
+        elif action == 'create':
+            return True
+        elif action == 'update':
+            if user_id and (self._id == user_id or 'admin' in groups or 'admin:users' in groups):
+                return True
+        elif action == 'delete':
+            if user_id and (self._id == user_id or 'admin' in groups or 'admin:users' in groups):
+                return True
+        return False
