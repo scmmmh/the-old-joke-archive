@@ -45,6 +45,10 @@ jobs:
 
   e2e-tests:
     runs-on: ubuntu-20.04
+    strategy:
+      max-parallel: 2
+      matrix:
+        browser: ['firefox:headless', 'chromium:headless']
 
     steps:
     - uses: actions/checkout@v2
@@ -71,7 +75,7 @@ jobs:
     - name: Install Dependencies
       run: |
         poetry env use 3.9
-        poetry install
+        poetry install --no-dev
         cd tests/e2e
         npm install
 
@@ -83,5 +87,5 @@ jobs:
         docker-compose start
         poetry run python -m toja server &
         sleep 5
-        cd tests/e2e
-        ./node_modules/.bin/testcafe firefox:headless
+        cd e2e
+        ./node_modules/.bin/testcafe ${{ matrix.browser }}
