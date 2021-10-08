@@ -1,6 +1,6 @@
 import { writable, derived } from "svelte/store";
 
-import { localLoadValue, sessionLoadValue, localDeleteValue, sessionDeleteValue, NestedStorage } from '../local-persistence';
+import { localLoadValue, sessionLoadValue, NestedStorage } from '../local-persistence';
 import { getJsonApiObject } from './jsonapi';
 
 export const authUser = writable(null as JsonApiObject);
@@ -24,8 +24,6 @@ export async function attemptAuthentication() {
         } catch {
             authToken.set('');
             authUser.set(null);
-            localDeleteValue('auth');
-            sessionDeleteValue('auth');
         }
     }
 }

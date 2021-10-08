@@ -2,7 +2,7 @@
     import { useNavigate } from 'svelte-navigator';
 
     import { busy, sendJsonApiRequest, authToken, authUser } from '../stores';
-    import { localStoreValue, sessionStoreValue } from '../local-persistence';
+    import { localStoreValue, sessionStoreValue, localDeleteValue, sessionDeleteValue } from '../local-persistence';
     import Input from '../components/Input.svelte';
     import Button from '../components/Button.svelte';
 
@@ -18,6 +18,8 @@
         emailError = '';
 
         try {
+            localDeleteValue('auth');
+            sessionDeleteValue('auth');
             const response = await sendJsonApiRequest('POST', '/api/users/_login', {
                 'type': 'users',
                 'attributes': {
