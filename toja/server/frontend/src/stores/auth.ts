@@ -14,7 +14,7 @@ export const isAuthenticated = derived(authUser, (user) => {
 export async function attemptAuthentication() {
     let auth = sessionLoadValue('auth', null) as NestedStorage;
     if (!auth) {
-        auth = sessionLoadValue('auth', null) as NestedStorage;
+        auth = localLoadValue('auth', null) as NestedStorage;
     }
     if (auth) {
         authToken.set(auth.id + '$$' + auth.token);
