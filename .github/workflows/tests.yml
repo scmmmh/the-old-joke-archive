@@ -76,8 +76,16 @@ jobs:
       run: |
         poetry env use 3.9
         poetry install --no-dev
+        cd toja/server/frontend
+        npm install
+        cd ../../../
         cd tests/e2e
         npm install
+
+    - name: Build the UI
+      run: |
+        cd toja/server/frontend
+        ./node_modules/.bin/rollup -c
 
     - name: Run Tests
       run: |
