@@ -168,6 +168,26 @@ class LoginHandler(JSONAPIHandler):
         except ValidationError as ve:
             self.send_error(400, errors=ve.errors)
 
+    async def delete(self: 'LoginHandler') -> None:
+        """Handle a logout request."""
+        try:
+            if 'X-Toja-Auth' in self.request.headers:
+                try:
+                    user_id, token = self.request.headers['X-Toja-Auth'].split('$$')
+                    async with couchdb() as session:
+                        db = await session['users']
+                        user = await db[user_id]
+                        if user and user['token'] == token:
+                            user['token'] = None
+                            await user.save()
+                            self.set_status(204)
+                            return
+                except ValueError:
+                    pass
+            raise UnauthorisedError()
+        except UnauthorisedError:
+            self.send_error(403, reason='You are not authorised to access this resource')
+
 
 class FrontendHandler(RequestHandler):
     """Handler for the frontend application files."""

@@ -1,8 +1,9 @@
 <script lang="ts">
     import { tick, onDestroy } from 'svelte';
+    import { get } from 'svelte/store';
     import { Link, useLocation } from 'svelte-navigator';
 
-    import { breakpoint, isAuthenticated, authUser } from '../stores';
+    import { breakpoint, isAuthenticated, authUser, sendJsonApiRequest, busy, attemptAuthentication } from '../stores';
 
     const location = useLocation();
     let menuVisible = false;
@@ -28,6 +29,15 @@
     function popupKeyUp(ev: KeyboardEvent) {
         if (ev.key === 'Escape') {
             hideMenu();
+        }
+    }
+
+    async function logout() {
+        busy.startBusy();
+        const response = await sendJsonApiRequest('DELETE', '/api/users/_login', null);
+        busy.endBusy();
+        if (response.status === 204) {
+            await attemptAuthentication();
         }
     }
 
@@ -66,7 +76,7 @@
                         <li role="presentation"><Link to="/about" class="block px-8 py-2 font-blackriver-bold text-accent">About</Link></li>
                         {#if $isAuthenticated}
                             <li class="flex-none" role="presentation"><Link to="/user/{$authUser.id}" class="block px-8 py-1 font-blackriver-bold text-accent">{$authUser.attributes.name}</Link></li>
-                            <li class="flex-none" role="presentation"><Link to="/user/log-out" class="block px-8 py-1 font-blackriver-bold text-accent">Log out</Link></li>
+                            <li class="flex-none" role="presentation"><button on:click={logout} class="block px-8 py-1 font-blackriver-bold text-accent text-center">Log out</button></li>
                         {:else}
                             <li class="flex-none" role="presentation"><Link to="/user/sign-up" class="block px-8 py-1 font-blackriver-bold text-accent">Sign Up</Link></li>
                             <li class="flex-none" role="presentation"><Link to="/user/log-in" class="block px-8 py-1 font-blackriver-bold text-accent">Log in</Link></li>
@@ -89,7 +99,7 @@
                 <li class="flex-1" role="presentation"></li>
                 {#if $isAuthenticated}
                     <li class="flex-none" role="presentation"><Link to="/user/{$authUser.id}" class="block px-8 py-1 font-blackriver-bold text-accent text-center">{$authUser.attributes.name}</Link></li>
-                    <li class="flex-none" role="presentation"><Link to="/user/log-out" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Log out</Link></li>
+                    <li class="flex-none" role="presentation"><button on:click={logout} class="block px-8 py-1 font-blackriver-bold text-accent text-center">Log out</button></li>
                 {:else}
                     <li class="flex-none" role="presentation"><Link to="/user/sign-up" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Sign Up</Link></li>
                     <li class="flex-none" role="presentation"><Link to="/user/log-in" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Log in</Link></li>
@@ -100,7 +110,7 @@
                 <li class="flex-auto" role="presentation"></li>
                 {#if $isAuthenticated}
                     <li class="flex-none" role="presentation"><Link to="/user/{$authUser.id}" class="block px-8 py-1 font-blackriver-bold text-accent text-center">{$authUser.attributes.name}</Link></li>
-                    <li class="flex-none" role="presentation"><Link to="/user/log-out" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Log out</Link></li>
+                    <li class="flex-none" role="presentation"><button on:click={logout} class="block px-8 py-1 font-blackriver-bold text-accent text-center">Log out</button></li>
                 {:else}
                     <li class="flex-none" role="presentation"><Link to="/user/sign-up" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Sign Up</Link></li>
                     <li class="flex-none" role="presentation"><Link to="/user/log-in" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Log in</Link></li>
@@ -119,7 +129,7 @@
                 <li class="flex-1 w-20" role="presentation"></li>
                 {#if $isAuthenticated}
                     <li class="flex-none" role="presentation"><Link to="/user/{$authUser.id}" class="block px-8 py-1 font-blackriver-bold text-accent text-center">{$authUser.attributes.name}</Link></li>
-                    <li class="flex-none" role="presentation"><Link to="/user/log-out" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Log out</Link></li>
+                    <li class="flex-none" role="presentation"><button on:click={logout} class="block px-8 py-1 font-blackriver-bold text-accent text-center">Log out</button></li>
                 {:else}
                     <li class="flex-none" role="presentation"><Link to="/user/sign-up" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Sign Up</Link></li>
                     <li class="flex-none" role="presentation"><Link to="/user/log-in" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Log in</Link></li>
