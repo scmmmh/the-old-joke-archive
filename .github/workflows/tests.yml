@@ -35,10 +35,10 @@ jobs:
 
     - name: Run Tests
       run: |
-        cd tests
-        docker-compose up --no-start
-        docker-compose start
-        poetry config virtualenvs.in-project true
-        cd ..
-        poetry run python -m toja server &
-        poetry run py.test tests
+        # cd tests
+        # docker-compose up --no-start
+        # docker-compose start
+        # cd ..
+        source .venv/bin/activate
+        python -m toja server &
+        py.test tests
