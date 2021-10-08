@@ -1,0 +1,41 @@
+name: Tests
+
+on:
+  push:
+    branches: [ default, update ]
+  pull_request:
+    branches: [ default ]
+
+jobs:
+  api-tests:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'
+
+    - name: Add .local path
+      run: |
+        echo "PATH=$HOME/.local/bin:$PATH" >> $GITHUB_ENV
+        echo "PIPX_HOME=$HOME/.local/pipx" >> $GITHUB_ENV
+        echo "PIPX_BIN_DIR=$HOME/.local/bin" >> $GITHUB_ENV
+
+    - name: Install Base Dependencies
+      run: |
+        sudo apt-get install python3-venv pipx libtesseract4 libtesseract-dev
+        pipx install poetry docker-compose
+
+    - name: Install Dependencies
+      run: |
+        poetry install
+
+    - name: Run Tests
+      run: |
+        cd tests
+        docker-compose up --no-start
+        docker-compose start
+        poetry run python -m toja server &
+        py.test api_tests
