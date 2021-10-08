@@ -30,7 +30,8 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        poetry config virtualenvs.in-project true
+        which python3.9
+        poetry env use 3.9
         poetry install
 
     - name: Run Tests
