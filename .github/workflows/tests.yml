@@ -30,16 +30,15 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        which python3.9
         poetry env use 3.9
         poetry install
 
     - name: Run Tests
       run: |
-        # cd tests
+        poetry env use 3.9
+        cd tests
         # docker-compose up --no-start
         # docker-compose start
         # cd ..
-        source .venv/bin/activate
-        python -m toja server &
-        py.test tests
+        poetry run python -m toja server &
+        poetry run py.test tests
