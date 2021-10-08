@@ -50,6 +50,7 @@
             if (response.status === 200) {
                 const obj = await response.json();
                 authUser.set(obj.data);
+                authToken.set(obj.data.id + '$$' + params.get('token'));
                 localStoreValue('auth', {id: obj.data.id, token: params.get('token')});
                 navigate('/');
             } else {
@@ -70,7 +71,7 @@
 <article class="md:max-w-2xl mx-auto mb-12">
     {#if success}
         <h1 class="font-blackriver-bold text-4xl mb-8">Logged in to <span class="text-primary">The Old Joke Archive</span></h1>
-        <p>You have logged in to The Old Joke Archive. You have been sent a login e-mail. This may have landed in your spam folder.</p>
+        <p>You are being logged into The Old Joke Archive. You have been sent an e-mail with an access link. This is not a joke and it may have landed in your spam folder.</p>
     {:else}
         <h1 class="font-blackriver-bold text-4xl mb-8">Log in to <span class="text-primary">The Old Joke Archive</span></h1>
         <form on:submit={login}>
