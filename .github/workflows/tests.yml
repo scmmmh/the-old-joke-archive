@@ -40,4 +40,5 @@ jobs:
         docker-compose up --no-start
         docker-compose start
         poetry run python -m toja server &
+        sleep 5
         poetry run py.test api_tests
