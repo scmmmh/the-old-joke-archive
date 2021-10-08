@@ -26,7 +26,8 @@ jobs:
     - name: Install Base Dependencies
       run: |
         sudo apt-get install python3-venv pipx libtesseract4 libtesseract-dev
-        pipx install poetry docker-compose
+        pipx install poetry
+        pipx install docker-compose
 
     - name: Install Dependencies
       run: |
