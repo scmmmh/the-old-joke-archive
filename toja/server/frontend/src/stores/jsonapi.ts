@@ -1,5 +1,7 @@
 import { get } from 'svelte/store';
-import { authToken } from './auth';
+
+import { authToken, authUser } from './auth';
+import { localLoadValue, sessionLoadValue, NestedStorage } from '../local-persistence';
 
 export class JsonApiException extends Error {
     public errors = [] as JsonApiError[];
@@ -80,3 +82,22 @@ export async function getJsonApiObject(type: string, id: string): Promise<JsonAp
         throw new JsonApiException(data.errors);
     }
 }
+
+export async function attemptAuthentication() {
+    let auth = sessionLoadValue('auth', null) as NestedStorage;
+    if (!auth) {
+        auth = localLoadValue('auth', null) as NestedStorage;
+    }
+    if (auth) {
+        authToken.set(auth.id + '$$' + auth.token);
+        try {
+            const user = await getJsonApiObject('users', auth.id as string);
+            authUser.set(user);
+        } catch {
+            authToken.set('');
+            authUser.set(null);
+        }
+    }
+}
+
+attemptAuthentication();
