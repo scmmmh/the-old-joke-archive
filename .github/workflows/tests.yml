@@ -37,5 +37,8 @@ jobs:
         cd tests
         docker-compose up --no-start
         docker-compose start
-        poetry run python -m toja server &
-        poetry run py.test api_tests
+        cd ..
+        poetry shell
+        cd tests
+        python -m toja server &
+        py.test api_tests
