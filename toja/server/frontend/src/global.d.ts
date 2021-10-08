@@ -8,7 +8,7 @@ interface JsonApiResponse {
 interface JsonApiObject {
     type: string;
     id?: string;
-    attributes?: {[key: string]: string};
+    attributes?: {[key: string]: string | boolean | number};
 }
 
 interface JsonApiError {

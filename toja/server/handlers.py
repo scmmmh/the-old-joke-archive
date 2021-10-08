@@ -138,6 +138,7 @@ class LoginHandler(JSONAPIHandler):
             async with couchdb() as session:
                 db = await session['users']
                 obj = User.from_jsonapi(User.validate_login(json.loads(self.request.body)['data']))
+                remember = obj._attributes['remember']
                 if 'token' in obj._attributes:
                     db_obj = None
                     async for user in db.find({'email': obj._attributes['email'], 'token': obj._attributes['token']}):
@@ -163,7 +164,7 @@ class LoginHandler(JSONAPIHandler):
                         db_obj['token'] = token_hex(128)
                         await db_obj.save()
                         obj = User.from_couchdb(db_obj)
-                        await obj.send_login_email()
+                        await obj.send_login_email(remember='true' if remember else 'false')
                         self.set_status(204)
         except ValidationError as ve:
             self.send_error(400, errors=ve.errors)

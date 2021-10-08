@@ -9,6 +9,7 @@
     let email = '';
     let emailError = '';
     let success = false;
+    let remember = false;
     const navigate = useNavigate();
 
     async function login(ev: Event) {
@@ -20,7 +21,8 @@
             const response = await sendJsonApiRequest('POST', '/api/users/_login', {
                 'type': 'users',
                 'attributes': {
-                    'email': email
+                    'email': email,
+                    'remember': remember
                 }
             });
             busy.endBusy();
@@ -51,7 +53,11 @@
                 const obj = await response.json();
                 authUser.set(obj.data);
                 authToken.set(obj.data.id + '$$' + params.get('token'));
-                localStoreValue('auth', {id: obj.data.id, token: params.get('token')});
+                if (params.get('remember') === 'true') {
+                    localStoreValue('auth', {id: obj.data.id, token: params.get('token')});
+                } else {
+                    sessionStoreValue('auth', {id: obj.data.id, token: params.get('token')});
+                }
                 navigate('/');
             } else {
                 emailError = 'The e-mail address does not exist or the token is no longer valid';
@@ -76,6 +82,7 @@
         <h1 class="font-blackriver-bold text-4xl mb-8">Log in to <span class="text-primary">The Old Joke Archive</span></h1>
         <form on:submit={login}>
             <Input bind:value={email} type="email" error={emailError} disabled={$busy}>E-Mail Address</Input>
+            <Input bind:value={remember} type="checkbox" disabled={$busy}>Remember me <span class="text-sm">(do not select this on a shared or public system)</span></Input>
             <div class="mt-8 text-right">
                 <Button disabled={$busy}>{#if $busy}Logging in...{:else}Log in{/if}</Button>
             </div>

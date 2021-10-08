@@ -65,6 +65,10 @@ class User(Base):
                 'token': {
                     'type': 'string',
                     'empty': False,
+                },
+                'remember': {
+                    'type': 'boolean',
+                    'default': False,
                 }
             }
         }
@@ -106,13 +110,13 @@ class User(Base):
         """After creating, automatically send a login e-mail."""
         await self.send_login_email()
 
-    async def send_login_email(self: 'User') -> None:
+    async def send_login_email(self: 'User', remember: str = 'false') -> None:
         """Send the login email."""
         send_email(self._attributes['email'], 'Log in to The Old Joke Archive', f'''Hello {self._attributes["name"]},
 
 Please use the following link to log into The Old Joke Archive:
 
-{config()['server']['base']}/app/user/log-in?{urlencode((('email', self._attributes["email"]), ('token', self._attributes["token"])))}
+{config()['server']['base']}/app/user/log-in?{urlencode((('email', self._attributes["email"]), ('token', self._attributes["token"]), ('remember', remember)))}
 
 The Old Joke Automaton.
 ''')  # noqa: E501
