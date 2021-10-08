@@ -30,6 +30,7 @@ jobs:
 
     - name: Install Dependencies
       run: |
+        poetry config virtualenvs.in-project true
         poetry install
 
     - name: Run Tests
@@ -37,6 +38,7 @@ jobs:
         cd tests
         docker-compose up --no-start
         docker-compose start
+        poetry config virtualenvs.in-project true
         cd ..
         poetry run python -m toja server &
         poetry run py.test tests
