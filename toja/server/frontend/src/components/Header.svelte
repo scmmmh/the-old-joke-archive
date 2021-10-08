@@ -1,9 +1,8 @@
 <script lang="ts">
     import { tick, onDestroy } from 'svelte';
-    import { get } from 'svelte/store';
     import { Link, useLocation } from 'svelte-navigator';
 
-    import { breakpoint, isAuthenticated, authUser, sendJsonApiRequest, busy, attemptAuthentication } from '../stores';
+    import { breakpoint, isAuthenticated, authUser, sendJsonApiRequest, busy, attemptAuthentication, isGroupAdminUsers } from '../stores';
 
     const location = useLocation();
     let menuVisible = false;
@@ -74,6 +73,9 @@
                         <li role="presentation"><Link to="/search" class="block px-8 py-2 font-blackriver-bold text-accent">Search</Link></li>
                         <li role="presentation"><Link to="/contribute" class="block px-8 py-2 font-blackriver-bold text-accent">Contribute</Link></li>
                         <li role="presentation"><Link to="/about" class="block px-8 py-2 font-blackriver-bold text-accent">About</Link></li>
+                        {#if $isGroupAdminUsers}
+                            <li class="flex-none" role="presentation"><Link to="/admin" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Admin</Link></li>
+                        {/if}
                         {#if $isAuthenticated}
                             <li class="flex-none" role="presentation"><Link to="/user/{$authUser.id}" class="block px-8 py-1 font-blackriver-bold text-accent">{$authUser.attributes.name}</Link></li>
                             <li class="flex-none" role="presentation"><button on:click={logout} class="block px-8 py-1 font-blackriver-bold text-accent text-center">Log out</button></li>
@@ -96,6 +98,9 @@
                 <li class="flex-none" role="presentation"><Link to="/search" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Search</Link></li>
                 <li class="flex-none" role="presentation"><Link to="/contribute" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Contribute</Link></li>
                 <li class="flex-none" role="presentation"><Link to="/about" class="block px-8 py-1 font-blackriver-bold text-accent text-center">About</Link></li>
+                {#if $isGroupAdminUsers}
+                    <li class="flex-none" role="presentation"><Link to="/admin" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Admin</Link></li>
+                {/if}
                 <li class="flex-1" role="presentation"></li>
                 {#if $isAuthenticated}
                     <li class="flex-none" role="presentation"><Link to="/user/{$authUser.id}" class="block px-8 py-1 font-blackriver-bold text-accent text-center">{$authUser.attributes.name}</Link></li>
@@ -121,11 +126,17 @@
                 <li class="flex-none" role="presentation"><Link to="/contribute" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Contribute</Link></li>
                 <li class="flex-none" role="presentation"><Link to="/about" class="block px-8 py-1 font-blackriver-bold text-accent text-center">About</Link></li>
             </ul>
+            {#if $isGroupAdminUsers}
+                <li class="flex-none" role="presentation"><Link to="/admin" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Admin</Link></li>
+            {/if}
         {:else}
             <ul class="flex flex-row flex-wrap">
                 <li class="flex-none" role="presentation"><Link to="/search" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Search</Link></li>
                 <li class="flex-none" role="presentation"><Link to="/contribute" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Contribute</Link></li>
                 <li class="flex-none" role="presentation"><Link to="/about" class="block px-8 py-1 font-blackriver-bold text-accent text-center">About</Link></li>
+                {#if $isGroupAdminUsers}
+                    <li class="flex-none" role="presentation"><Link to="/admin" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Admin</Link></li>
+                {/if}
                 <li class="flex-1 w-20" role="presentation"></li>
                 {#if $isAuthenticated}
                     <li class="flex-none" role="presentation"><Link to="/user/{$authUser.id}" class="block px-8 py-1 font-blackriver-bold text-accent text-center">{$authUser.attributes.name}</Link></li>
