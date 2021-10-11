@@ -14,6 +14,11 @@ async def empty_database() -> None:
     """Provide an empty database."""
     async with CouchDB('http://localhost:5984', 'main', 'aiZiojoh7Eux') as session:
         try:
+            await session.create('_users')
+            await session.create('_replicator')
+        except exception.PreconditionFailedError:
+            pass
+        try:
             await session.create('users')
         except exception.PreconditionFailedError:
             db = await session['users']
