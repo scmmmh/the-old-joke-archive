@@ -12,6 +12,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - uses: actions/setup-python@v2
+      with:
+        python-version: "3.9"
+
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+
     - name: Branch name
       id: branch_name
       run: |
@@ -32,6 +40,10 @@ jobs:
 
     - name: Build Application
       run: |
+        cd toja/server/frontend
+        rollup -c
+        cd ../../../
+        poetry env use 3.9
         poetry build
         cp dist/*.whl docker/
 
