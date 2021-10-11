@@ -48,12 +48,17 @@
 </script>
 
 <header class="container mx-auto flex flex-col lg:flex-row mb-8">
-    <div class="flex-none pb-6 lg:pb-0">
-        <Link to="/" class="block font-blackriver-bold font-bold text-primary text-4xl whitespace-nowrap text-center md:text-left">The Old Joke Archive</Link>
-        <span class="block font-blackriver-bold font-bold text-gray-500 text-2xl text-center md:text-left md:pl-8">Are we amused?</span>
+    <div class="flex-none pb-6 lg:pb-0 flex flex-row justify-between">
+        <div class="flex-auto">
+            <Link to="/" class="block font-blackriver-bold font-bold text-primary text-4xl whitespace-nowrap">The Old Joke Archive</Link>
+            <span class="block font-blackriver-bold font-bold text-gray-500 text-2xl pl-8">Are we amused?</span>
+        </div>
+        <div class="flex-none lg:pl-8">
+            <img src="/app/logo.png" alt="" aria-hidden="true" class="h-16"/>
+        </div>
     </div>
     <div class="flex-none lg:flex-1"></div>
-    <nav class="relative">
+    <nav class="relative lg:ml-8">
         {#if $breakpoint <= 1}
             <ul class="flex flex-row">
                 <li class="flex-none" role="presentation"><Link to="/search" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Search</Link></li>
@@ -83,14 +88,12 @@
                             <li class="flex-none" role="presentation"><Link to="/user/sign-up" class="block px-8 py-1 font-blackriver-bold text-accent">Sign Up</Link></li>
                             <li class="flex-none" role="presentation"><Link to="/user/log-in" class="block px-8 py-1 font-blackriver-bold text-accent">Log in</Link></li>
                         {/if}
-                        </ul>
-                    <div>
-                        <button on:click={hideMenu} class="block text-accent py-1 rounded focus:outline-primary" aria-label="Hide the full menu">
-                            <svg viewBox="0 0 24 24" class="w-6 h-6">
-                                <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
-                            </svg>
-                        </button>
-                    </div>
+                    </ul>
+                    <button on:click={hideMenu} class="block text-accent py-1 rounded focus:outline-primary" aria-label="Hide the full menu">
+                        <svg viewBox="0 0 24 24" class="w-6 h-6">
+                            <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
+                        </svg>
+                    </button>
                 </div>
             {/if}
         {:else if $breakpoint <= 3}
@@ -110,7 +113,7 @@
                     <li class="flex-none" role="presentation"><Link to="/user/log-in" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Log in</Link></li>
                 {/if}
             </ul>
-        {:else if $breakpoint === 4}
+        {:else if $breakpoint <= 5}
             <ul class="flex flex-row flex-wrap">
                 <li class="flex-auto" role="presentation"></li>
                 {#if $isAuthenticated}
@@ -125,10 +128,10 @@
                 <li class="flex-none" role="presentation"><Link to="/search" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Search</Link></li>
                 <li class="flex-none" role="presentation"><Link to="/contribute" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Contribute</Link></li>
                 <li class="flex-none" role="presentation"><Link to="/about" class="block px-8 py-1 font-blackriver-bold text-accent text-center">About</Link></li>
+                {#if $isGroupAdminUsers}
+                    <li class="flex-none" role="presentation"><Link to="/admin" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Admin</Link></li>
+                {/if}
             </ul>
-            {#if $isGroupAdminUsers}
-                <li class="flex-none" role="presentation"><Link to="/admin" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Admin</Link></li>
-            {/if}
         {:else}
             <ul class="flex flex-row flex-wrap">
                 <li class="flex-none" role="presentation"><Link to="/search" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Search</Link></li>
