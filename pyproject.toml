@@ -4,6 +4,8 @@ version = "1.0.0b1"
 description = "The Old Joke Archive"
 authors = ["Mark Hall <mark.hall@work.room3b.eu>"]
 license = "MIT"
+include = ["toja/server/frontend/public/build/*.*"]
+exclude = ["toja/server/frontend/src", "toja/server/frontend/*.*"]
 
 [tool.poetry.dependencies]
 python = "^3.9"

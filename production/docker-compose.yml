@@ -1,0 +1,13 @@
+version: "3.9"
+services:
+  toja_server:
+    image: toja:latest
+    ports:
+      - "127.0.0.1:6543:6543"
+    volumes:
+      - ./config.yml:/etc/toja/config.yml
+  couchdb:
+    image: couchdb:3
+    environment:
+      COUCHDB_USER: main
+      COUCHDB_PASSWORD: to6aen2aethe8ouH
