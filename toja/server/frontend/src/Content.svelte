@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Route, useLocation } from "svelte-navigator";
-    import { onDestroy } from "svelte";
+    import { tick, onDestroy } from "svelte";
 
     import Header from './components/Header.svelte';
     import Footer from './components/Footer.svelte';
@@ -8,13 +8,21 @@
     import Signup from './routes/Signup.svelte';
     import Login from './routes/Login.svelte';
 
-    let Admin;
+    let Admin = null;
     const location = useLocation();
     const unsubscribeLocation = location.subscribe((location) => {
         if (location.pathname === '/admin') {
-            import('./routes/Admin.svelte').then((mod) => {
-                Admin = mod.default;
-            })
+            if (Admin === null) {
+                import('./routes/Admin.svelte').then((mod) => {
+                    Admin = mod.default;
+                    tick().then(() => {
+                        const elem = document.querySelector('h1');
+                        if (elem) {
+                            elem.focus();
+                        }
+                    });
+                });
+            }
         }
     });
 
