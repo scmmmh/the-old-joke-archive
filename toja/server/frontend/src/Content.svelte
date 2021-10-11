@@ -22,8 +22,10 @@
 </script>
 
 <Header/>
-<Route path="/"><Home/></Route>
-<Route path="/user/sign-up"><Signup/></Route>
-<Route path="/user/log-in"><Login/></Route>
-<Route path="/admin"><svelte:component this={Admin}/></Route>
+<article class="container mx-auto mb-12">
+    <Route path="/"><Home/></Route>
+    <Route path="/user/sign-up"><Signup/></Route>
+    <Route path="/user/log-in"><Login/></Route>
+    <Route path="/admin"><svelte:component this={Admin}/></Route>
+</article>
 <Footer/>

@@ -76,7 +76,7 @@
     }
 </script>
 
-<article class="md:max-w-2xl mx-auto mb-12">
+<div class="md:max-w-2xl mx-auto">
     {#if success}
         <h1 class="font-blackriver-bold text-4xl mb-8">Logged in to <span class="text-primary">The Old Joke Archive</span></h1>
         <p>You are being logged into The Old Joke Archive. You have been sent an e-mail with an access link. This is not a joke and it may have landed in your spam folder.</p>
@@ -90,4 +90,4 @@
             </div>
         </form>
     {/if}
-</article>
+</div>

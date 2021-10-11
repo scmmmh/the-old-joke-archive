@@ -2,6 +2,4 @@
 
 </script>
 
-<article class="container mx-auto mb-12">
-    <h1>Administrative Functions</h1>
-</article>
+<h1 class="font-blackriver-bold text-4xl mb-8">Administrative Functions</h1>

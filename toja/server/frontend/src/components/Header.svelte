@@ -47,7 +47,7 @@
     onDestroy(unsubscribe);
 </script>
 
-<header class="container mx-auto flex flex-col lg:flex-row mb-8">
+<header class="container mx-auto flex flex-col lg:flex-row mb-12">
     <div class="flex-none pb-6 lg:pb-0 flex flex-row justify-between">
         <div class="flex-auto">
             <Link to="/" class="block font-blackriver-bold font-bold text-primary text-4xl whitespace-nowrap">The Old Joke Archive</Link>
