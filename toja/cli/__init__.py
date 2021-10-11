@@ -1,15 +1,20 @@
 """TOJA command-line application."""
+import asyncio
 import click
+import logging
 import logging.config
 import yaml
 import os
 
 from cerberus import Validator
+from aiocouch import exception
 from typing import Union
 
 from ..server import run_application_server
-from ..utils import set_config
+from ..utils import set_config, couchdb
 
+
+logger = logging.getLogger(__name__)
 
 CONFIG_SCHEMA = {
     'server': {
@@ -158,10 +163,21 @@ def background() -> None:
 main.add_command(background)
 
 
+async def async_setup() -> None:
+    """Run an asynchronous setup process."""
+    async with couchdb() as session:
+        for dbname in ['_users', '_replicator', 'users']:
+            try:
+                logger.debug(f'Creating database {dbname}')
+                await session.create(dbname)
+            except exception.PreconditionFailedError:
+                pass
+
+
 @click.command()
 def setup() -> None:
     """Set up the TOJA system."""
-    pass
+    asyncio.run(async_setup())
 
 
 main.add_command(setup)
