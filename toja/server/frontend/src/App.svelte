@@ -1,23 +1,15 @@
 <script lang="ts">
-	import { Router, Route } from "svelte-navigator";
+	import { Router } from "svelte-navigator";
 
 	import { busy } from './stores';
-	import Header from './components/Header.svelte';
-	import Footer from './components/Footer.svelte';
-	import Home from './routes/Home.svelte';
-	import Signup from './routes/Signup.svelte';
-	import Login from './routes/Login.svelte';
+	import Content from './Content.svelte';
 </script>
 
 <div class="bg-gray-900 p-vw-2 font-merriweather-regular">
 	<div class="bg-white p-vw-8">
 		<main class="md:border-brand pt-8">
 			<Router basepath="/app">
-				<Header/>
-				<Route path="/"><Home/></Route>
-				<Route path="/user/sign-up"><Signup/></Route>
-				<Route path="/user/log-in"><Login/></Route>
-				<Footer/>
+				<Content/>
 			</Router>
 		</main>
 	</div>
