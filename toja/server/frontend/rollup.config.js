@@ -10,7 +10,9 @@ import css from 'rollup-plugin-css-only';
 import tailwindcss from 'tailwindcss';
 import autoprefixer from 'autoprefixer';
 
-fs.rmdirSync('public/build', { recursive: true });
+if (fs.existsSync('public/build')) {
+	fs.rmdirSync('public/build', { recursive: true });
+}
 
 const production = !process.env.ROLLUP_WATCH;
 
