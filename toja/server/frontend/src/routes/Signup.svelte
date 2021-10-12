@@ -47,7 +47,8 @@
 <div class="md:max-w-2xl mx-auto">
     {#if success}
         <h1 class="font-blackriver-bold text-4xl mb-8">Signed up to <span class="text-primary">The Old Joke Archive</span></h1>
-        <p>You have signed up to The Old Joke Archive. You have been sent a login e-mail. This may have landed in your spam folder.</p>
+        <p>Welcome to The Old Joke Archive! We hope you have a fun time here.</p>
+        <p>You have been sent an e-mail to confirm your account and allow you to log in. The e-mail may have landed <span class="text-primary">in your spam folder</span>.</p>
     {:else}
         <h1 class="font-blackriver-bold text-4xl mb-8">Sign up to <span class="text-primary">The Old Joke Archive</span></h1>
         <form on:submit={register}>
