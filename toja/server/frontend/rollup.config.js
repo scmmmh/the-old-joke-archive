@@ -1,3 +1,4 @@
+import fs from 'fs';
 import svelte from 'rollup-plugin-svelte';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
@@ -8,6 +9,8 @@ import typescript from '@rollup/plugin-typescript';
 import css from 'rollup-plugin-css-only';
 import tailwindcss from 'tailwindcss';
 import autoprefixer from 'autoprefixer';
+
+fs.rmdirSync('public/build', { recursive: true });
 
 const production = !process.env.ROLLUP_WATCH;
 
