@@ -92,6 +92,25 @@ class JSONAPIHandler(RequestHandler):
                 return
         raise UnauthorisedError()
 
+    async def check_collection_access(self: 'JSONAPIHandler', action: str, cls: Base) -> None:
+        """Check whether the request is allowed the ``action`` on the ``cls`` at the collection level."""
+        if 'X-Toja-Auth' in self.request.headers:
+            try:
+                user_id, token = self.request.headers['X-Toja-Auth'].split('$$')
+                async with couchdb() as session:
+                    db = await session['users']
+                    user = await db[user_id]
+                    if user and user['token'] == token:
+                        if cls.allow_collection_access(action=action, user_id=user_id, groups=user['groups']):
+                            return
+            except ValueError:
+                if cls.allow_collection_access(action=action, user_id=None, groups=[]):
+                    return
+        else:
+            if cls.allow_collection_access(action=action, user_id=None, groups=[]):
+                return
+        raise UnauthorisedError()
+
     def request_jsonapi_body(self: 'JSONAPIHandler') -> dict:
         """Decode the request JSONAPI body."""
         try:
@@ -114,9 +133,23 @@ class CollectionHandler(JSONAPIHandler):
         super().initialize()
         self._type = type
 
+    async def get(self: 'CollectionHandler') -> None:
+        """Fetch all items."""
+        try:
+            await self.check_collection_access('read', self._type)
+            async with couchdb() as session:
+                db = await session[self._type.name]
+                objs = []
+                async for data in db.find({'$not': {'_id': ''}}):
+                    objs.append(self._type.from_couchdb(data).as_jsonapi())
+                self.write({'data': objs})
+        except UnauthorisedError:
+            self.send_error(403, reason='You are not authorised to access this resource')
+
     async def post(self: 'CollectionHandler') -> None:
         """Create a new JSONAPI item."""
         try:
+            await self.check_collection_access('create', self._type)
             async with couchdb() as session:
                 db = await session[self._type.name]
                 obj = self._type.from_jsonapi(self._type.validate_create(self.request_jsonapi_body()))

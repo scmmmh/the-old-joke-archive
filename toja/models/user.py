@@ -121,7 +121,7 @@ Please use the following link to log into The Old Joke Archive:
 The Old Joke Automaton.
 ''')  # noqa: E501
 
-    def allow_access(self: 'Base', action: str, user_id: str, groups: List[str]) -> bool:
+    def allow_access(self: 'User', action: str, user_id: str, groups: List[str]) -> bool:
         """Check that access is allowed for the given ``action``."""
         if action == 'read':
             if user_id and (self._id == user_id or 'admin' in groups or 'admin:users' in groups):
@@ -134,4 +134,13 @@ The Old Joke Automaton.
         elif action == 'delete':
             if user_id and (self._id == user_id or 'admin' in groups or 'admin:users' in groups):
                 return True
+        return False
+
+    @classmethod
+    def allow_collection_access(self: 'User', action: str, user_id: str, groups: List[str]) -> bool:
+        """Check that access is allowed at the collection level for the action, user_id, and groups."""
+        if action == 'read':
+            return 'admin' in groups or 'admin:users' in groups
+        elif action == 'create':
+            return True
         return False

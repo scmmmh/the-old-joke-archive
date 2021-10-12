@@ -2,6 +2,7 @@
 	import { Route, useLocation } from "svelte-navigator";
     import { tick, onDestroy } from "svelte";
 
+    import { isGroupAdminUsers } from './stores';
     import Header from './components/Header.svelte';
     import Footer from './components/Footer.svelte';
     import Home from './routes/Home.svelte';
@@ -34,6 +35,8 @@
     <Route path="/"><Home/></Route>
     <Route path="/user/sign-up"><Signup/></Route>
     <Route path="/user/log-in"><Login/></Route>
-    <Route path="/admin"><svelte:component this={Admin}/></Route>
+    {#if $isGroupAdminUsers}
+        <Route path="/admin/*"><svelte:component this={Admin}/></Route>
+    {/if}
 </article>
 <Footer/>

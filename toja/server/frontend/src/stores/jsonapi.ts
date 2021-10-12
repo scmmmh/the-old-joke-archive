@@ -83,6 +83,22 @@ export async function getJsonApiObject(type: string, id: string): Promise<JsonAp
     }
 }
 
+export async function getJsonApiObjects(type: string): Promise<JsonApiObject[]> {
+    const response = await sendJsonApiRequest('GET', '/api/' + type, null);
+    if (response.status === 200) {
+        const data = await response.json() as JsonApiResponse;
+        return data.data as JsonApiObject[];
+    } else {
+        let data = null;
+        try {
+            data = await response.json();
+        } catch (err) {
+            throw new JsonApiException([{status: response.status.toString(), title: 'Network error'}]);
+        }
+        throw new JsonApiException(data.errors);
+    }
+}
+
 export async function attemptAuthentication() {
     let auth = sessionLoadValue('auth', null) as NestedStorage;
     if (!auth) {

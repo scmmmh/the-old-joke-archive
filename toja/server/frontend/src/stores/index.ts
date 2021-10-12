@@ -1,6 +1,6 @@
 import { authToken, isAuthenticated, authUser } from './auth';
 import { breakpoint } from './breakpoint';
-import { sendJsonApiRequest, saveJsonApiObject, getJsonApiObject, attemptAuthentication } from './jsonapi';
+import { sendJsonApiRequest, saveJsonApiObject, getJsonApiObject, getJsonApiObjects, attemptAuthentication } from './jsonapi';
 import { busy } from './busy';
 import { isGroupAdmin, isGroupAdminUsers } from './groups';
 
@@ -15,6 +15,7 @@ export {
     sendJsonApiRequest,
     saveJsonApiObject,
     getJsonApiObject,
+    getJsonApiObjects,
 
     busy,
 

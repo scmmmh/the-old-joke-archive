@@ -75,3 +75,8 @@ class Base():
     def allow_access(self: 'Base', action: str, user_id: str, groups: List[str]) -> bool:
         """Check that access is allowed for the action, user_id, and groups."""
         return True
+
+    @classmethod
+    def allow_collection_access(self: 'Base', action: str, user_id: str, groups: List[str]) -> bool:
+        """Check that access is allowed at the collection level for the action, user_id, and groups."""
+        return False
