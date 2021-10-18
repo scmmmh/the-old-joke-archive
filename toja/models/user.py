@@ -1,7 +1,7 @@
 """User models."""
 import logging
 
-from aiocouch import CouchDB
+from aiocouch import CouchDB, Document
 from secrets import token_hex
 from urllib.parse import urlencode
 from typing import List
@@ -45,6 +45,51 @@ class User(Base):
         }
     }
 
+    update_schema = {
+        'type': {
+            'type': 'string',
+            'required': True,
+            'empty': False,
+            'allowed': ['users']
+        },
+        'id': {
+            'type': 'string',
+            'required': True,
+            'empty': False,
+        },
+        'attributes': {
+            'type': 'dict',
+            'schema': {
+                'email': {
+                    'type': 'string',
+                    'required': True,
+                    'empty': False,
+                    'check_with': 'validate_email',
+                    'coerce': 'email',
+                },
+                'name': {
+                    'type': 'string',
+                    'required': True,
+                    'empty': False,
+                },
+                'groups': {
+                    'type': 'list',
+                    'schema': {
+                        'type': 'string',
+                        'required': True,
+                        'empty': False,
+                    },
+                    'required': False,
+                },
+                'status': {
+                    'type': 'string',
+                    'required': False,
+                    'allowed': ['active', 'blocked'],
+                },
+            }
+        }
+    }
+
     login_schema = {
         'type': {
             'type': 'string',
@@ -73,6 +118,16 @@ class User(Base):
             }
         }
     }
+
+    def allow_update(self: 'Base', obj: dict, user: Document) -> bool:
+        """Check whether the ``user`` is allowed to update the ``obj``."""
+        if user is not None:
+            if self._id == user['_id']:
+                if 'groups' not in obj and 'status' not in obj:
+                    return True
+            elif 'admin' in user['groups'] or 'admin:user' in user['groups']:
+                return True
+        return False
 
     @classmethod
     def validate_login(cls: 'Base', obj: dict) -> dict:

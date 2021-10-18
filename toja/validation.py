@@ -4,8 +4,10 @@ from cerberus.errors import ValidationError
 from email_validator import validate_email, EmailNotValidError
 from typing import Union, List
 
+from .utils import JSONAPIError
 
-class ValidationError(Exception):
+
+class ValidationError(JSONAPIError):
     """Validation error that provides JSONAPI compatible error messages."""
 
     def __init__(self: 'ValidationError', errors: List[ValidationError]) -> 'ValidationError':
@@ -13,8 +15,7 @@ class ValidationError(Exception):
 
         This will automatically convert the Cerberus errors into the JSONAPI error structure.
         """
-        super().__init__(self, 'Validation error')
-        self.errors = []
+        flat_errors = []
 
         def flatten(key: str, value: Union[dict, list, str], path: str = '') -> None:
             if isinstance(value, list):
@@ -25,7 +26,7 @@ class ValidationError(Exception):
                     flatten(part_key, part_value, path=f'{path}.{key}')
             else:
                 path = f'{path}.{key}'.strip('.')
-                self.errors.append({
+                flat_errors.append({
                     'title': value[0].capitalize() + value[1:],
                     'source': {
                         'pointer': path
@@ -34,6 +35,8 @@ class ValidationError(Exception):
 
         for key, value in errors.items():
             flatten(key, value)
+
+        super().__init__(400, flat_errors)
 
 
 class TojaValidator(Validator):

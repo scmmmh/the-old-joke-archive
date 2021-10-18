@@ -1,5 +1,6 @@
 <script lang="ts">
     import { getJsonApiObjects } from '../stores';
+    import UserAdminEntry from '../components/UserAdminEntry.svelte';
 
     let users = [];
 
@@ -23,13 +24,7 @@
     </thead>
     <tbody>
         {#each users as user}
-            <tr>
-                <td class="text-left border-b border-accent py-4">{user.attributes.email}</td>
-                <td class="text-left border-b border-accent py-4">{user.attributes.name}</td>
-                <td class="text-left border-b border-accent py-4">{user.attributes.groups.join(', ')}</td>
-                <td class="text-left border-b border-accent py-4"></td>
-                <td class="text-left border-b border-accent py-4"></td>
-            </tr>
+            <UserAdminEntry user={user}/>
         {/each}
     </tbody>
 </table>

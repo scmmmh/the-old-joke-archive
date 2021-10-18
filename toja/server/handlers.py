@@ -4,8 +4,7 @@ import logging
 import traceback
 from uuid import uuid1
 
-from aiocouch import exception as couchdb_exc
-from cerberus import DocumentError
+from aiocouch import exception as couchdb_exc, Document
 from importlib import resources
 from importlib.abc import Traversable
 from io import StringIO
@@ -15,7 +14,7 @@ from tornado.web import RequestHandler
 
 from ..models import Base, User
 from ..validation import ValidationError
-from ..utils import config, couchdb
+from ..utils import config, couchdb, JSONAPIError
 
 
 logger = logging.getLogger(__name__)
@@ -27,12 +26,12 @@ class UnauthorisedError(Exception):
     pass
 
 
-class ClientRequestError(Exception):
+class ClientRequestError(JSONAPIError):
     """Error for indicating an invalid client request."""
 
     def __init__(self: 'ClientRequestError', error: dict) -> 'ClientRequestError':
         """Create a new ClientRequestError."""
-        self.error = error
+        super().__init__(404, [error])
 
 
 class JSONAPIHandler(RequestHandler):
@@ -40,37 +39,21 @@ class JSONAPIHandler(RequestHandler):
 
     def write_error(self: 'JSONAPIHandler', status_code: int, **kwargs: dict) -> None:
         """Write an error message."""
-        if 'errors' in kwargs:
-            self.write({'errors': kwargs['errors']})
-        elif 'exc_info' in kwargs:
-            error = {
-                'status': status_code,
-            }
-            error_type, error_instance, tb = kwargs['exc_info']
-            error['title'] = 'Invalid Request'
-            if isinstance(error_instance, DocumentError):
-                self.set_status(400)
-                error['status'] = 400
-                error['detail'] = 'The request body is not a valid JSONAPI document'
-            elif isinstance(error_instance, ClientRequestError):
-                self.set_status(400)
-                error = error_instance.error
-            else:
-                error['title'] = error_type.__name__
-                if config()['debug']:
-                    buffer = StringIO()
-                    traceback.print_tb(tb, file=buffer)
-                    error['detail'] = f'{str(error_instance)}\n\n{buffer.getvalue()}'
-                else:
-                    error['detail'] = str(error_instance)
-                logger.exception(tb)
-            self.write({'errors': [error]})
+        error_type, error_instance, tb = kwargs['exc_info']
+        if isinstance(error_instance, JSONAPIError):
+            self.set_status(error_instance.status_code)
+            self.write(error_instance.as_jsonapi())
         else:
-            error = {
-                'status': status_code,
-            }
-            if 'reason' in kwargs:
-                error['detail'] = kwargs['reason']
+            error = {}
+            error['title'] = error_type.__name__
+            if config()['debug']:
+                buffer = StringIO()
+                traceback.print_tb(tb, file=buffer)
+                error['detail'] = f'{str(error_instance)}\n\n{buffer.getvalue()}'
+            else:
+                error['detail'] = str(error_instance)
+            logger.exception(tb)
+            self.set_status(status_code)
             self.write({'errors': [error]})
 
     async def check_access(self: 'JSONAPIHandler', action: str, obj: Base) -> None:
@@ -111,18 +94,32 @@ class JSONAPIHandler(RequestHandler):
                 return
         raise UnauthorisedError()
 
+    async def get_session_user(self: 'JSONAPIHandler') -> Document:
+        """Get the user from the session."""
+        if 'X-Toja-Auth' in self.request.headers:
+            try:
+                user_id, token = self.request.headers['X-Toja-Auth'].split('$$')
+                async with couchdb() as session:
+                    db = await session['users']
+                    user = await db[user_id]
+                    if user and user['token'] == token:
+                        return user
+            except ValueError:
+                pass
+        return None
+
     def request_jsonapi_body(self: 'JSONAPIHandler') -> dict:
         """Decode the request JSONAPI body."""
         try:
             return json.loads(self.request.body)['data']
         except json.JSONDecodeError:
-            raise ClientRequestError({'status': 400,
-                                      'title': 'The request body is not a valid JSONAPI document',
-                                      'detail': 'Could not parse JSON data'})
+            raise JSONAPIError(400, {'status': 400,
+                                     'title': 'The request body is not a valid JSONAPI document',
+                                     'detail': 'Could not parse JSON data'})
         except KeyError:
-            raise ClientRequestError({'status': 400,
-                                      'title': 'The request body is not a valid JSONAPI document',
-                                      'detail': 'No data key provided'})
+            raise JSONAPIError(400, {'status': 400,
+                                     'title': 'The request body is not a valid JSONAPI document',
+                                     'detail': 'No data key provided'})
 
 
 class CollectionHandler(JSONAPIHandler):
@@ -195,6 +192,17 @@ class ItemHandler(JSONAPIHandler):
             self.send_error(404, reason=f'{self._type.__name__} {identifier} not found')
         except UnauthorisedError:
             self.send_error(403, reason='You are not authorised to access this resource')
+
+    async def put(self: 'ItemHandler', identifier: str) -> None:
+        """Update a single item."""
+        async with couchdb() as session:
+            db = await session[self._type.name]
+            async with Document(db, identifier) as doc:
+                logger.debug(doc)
+                # obj = self._type.from_couchdb(doc)
+            # obj.update(self.request_jsonapi_body(), await self.get_session_user())
+            # db_obj.update(obj.as_couchdb())
+            # self.write({'data': obj.as_jsonapi()})
 
 
 class LoginHandler(JSONAPIHandler):

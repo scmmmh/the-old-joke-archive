@@ -1,9 +1,14 @@
 """Base database access methods."""
-from aiocouch import CouchDB
+import logging
+
+from aiocouch import CouchDB, Document
 from copy import deepcopy
 from typing import Union, List
 
 from ..validation import TojaValidator, ValidationError
+from ..utils import JSONAPIError
+
+logger = logging.getLogger(__name__)
 
 
 class Base():
@@ -15,10 +20,31 @@ class Base():
         self._id = id_
         self._attributes = deepcopy(attributes) if attributes is not None else {}
 
+    def allow_update(self: 'Base', obj: dict, user: Document) -> bool:
+        """Check whether the ``user`` is allowed to update the ``obj``."""
+        return False
+
+    def update(self: 'Base', obj: dict, user: Document) -> None:
+        """Update the ``obj`` by the ``user``."""
+        validator = TojaValidator(self.update_schema)
+        if not validator.validate(obj):
+            raise ValidationError(validator.errors)
+        obj = validator.document
+        if not self.allow_update(obj, user):
+            raise JSONAPIError(403, {'title': 'You are not authorised to make update this resource.'})
+
     @classmethod
     def validate_create(cls: 'Base', obj: dict) -> dict:
         """Validate the ``obj`` as input for creating a new instance."""
         validator = TojaValidator(cls.create_schema)
+        if not validator.validate(obj):
+            raise ValidationError(validator.errors)
+        return validator.document
+
+    @classmethod
+    def validate_update(cls: 'Base', obj: dict) -> dict:
+        """Validate the ``obj`` as input for updating an instance."""
+        validator = TojaValidator(cls.update_schema)
         if not validator.validate(obj):
             raise ValidationError(validator.errors)
         return validator.document
@@ -59,6 +85,10 @@ class Base():
         if self._id:
             obj['_id'] = self._id
         return obj
+
+    def update_from(self: 'Base', other: 'Base') -> None:
+        """Update this object from the ``other``."""
+        self._attributes = deepcopy(other._attributes)
 
     async def check_unique(self: 'Base', db: CouchDB) -> None:
         """Check any unique constraints."""

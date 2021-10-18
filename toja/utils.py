@@ -5,6 +5,7 @@ from aiocouch import CouchDB
 from email.message import EmailMessage
 from email.utils import formatdate
 from smtplib import SMTP
+from tornado.web import HTTPError
 
 logger = logging.getLogger(__name__)
 _config = {}
@@ -46,3 +47,16 @@ def send_email(recipient: str, subject: str, body: str) -> None:
             email['From'] = config()['email']['sender']
             email['Date'] = formatdate()
             smtp.send_message(email)
+
+
+class JSONAPIError(HTTPError):
+    """Base class for JSONAPI errors."""
+
+    def __init__(self: 'JSONAPIError', status_code: int, errors: list) -> 'JSONAPIError':
+        """Construct a new JSONAPIError with the given ``errors``."""
+        super().__init__(status_code)
+        self.errors = errors
+
+    def as_jsonapi(self: 'JSONAPIError') -> dict:
+        """Format the errors as a JSONAPI error object."""
+        return {'errors': self.errors}
