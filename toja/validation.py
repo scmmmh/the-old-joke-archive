@@ -56,3 +56,11 @@ class TojaValidator(Validator):
             return valid.email.lower()
         except EmailNotValidError:
             return value
+
+
+def validate(schema: dict, data: dict) -> dict:
+    """Validate the given ``data`` using the ``schema``."""
+    validator = TojaValidator(schema)
+    if not validator.validate(data):
+        raise ValidationError(validator.errors)
+    return validator.document

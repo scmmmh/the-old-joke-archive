@@ -12,9 +12,11 @@ from mimetypes import guess_type
 from secrets import token_hex
 from tornado.web import RequestHandler
 
-from ..models import Base, User
-from ..validation import ValidationError
-from ..utils import config, couchdb, JSONAPIError
+from toja.models import Base, User
+from toja.validation import ValidationError
+from toja.utils import config, couchdb, JSONAPIError
+
+from .user import UserCollectionHandler  # noqa
 
 
 logger = logging.getLogger(__name__)
