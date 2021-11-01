@@ -76,23 +76,23 @@ class JSONAPIHandler(RequestHandler):
 class JSONAPICollectionHandler(JSONAPIHandler):
     """Base class for handling collection-level requests."""
 
-    async def allow_post(self: 'JSONAPIHandler', data: dict, user: Union[Document, None]) -> None:
+    async def allow_post(self: 'JSONAPICollectionHandler', data: dict, user: Union[Document, None]) -> None:
         """Check whether POST requests are allowed."""
         raise JSONAPIError(403, [{'title': 'You are not authorised to create new items of this type'}])
 
-    async def validate_post(self: 'JSONAPIHandler', data: dict, user: Union[Document, None]) -> dict:
+    async def validate_post(self: 'JSONAPICollectionHandler', data: dict, user: Union[Document, None]) -> dict:
         """Validate that the POST data is valid."""
         return data
 
-    async def create_post(self: 'JSONAPIHandler', data: dict, user: Union[Document, None]) -> Document:
-        """Createa  new CouchDB document."""
+    async def create_post(self: 'JSONAPICollectionHandler', data: dict, user: Union[Document, None]) -> Document:
+        """Create a new CouchDB document."""
         raise JSONAPIError(500, [{'title': 'New items of this type cannot be created'}])
 
-    async def as_jsonapi(self: 'JSONAPIHandler', doc: Document) -> dict:
+    async def as_jsonapi(self: 'JSONAPICollectionHandler', doc: Document) -> dict:
         """Return a single ``doc`` in JSONAPI format."""
         return {}
 
-    async def post(self: 'JSONAPIHandler') -> None:
+    async def post(self: 'JSONAPICollectionHandler') -> None:
         """Handle POST requests."""
         user = await self.get_user()
         data = await self.jsonapi_body()
@@ -101,4 +101,35 @@ class JSONAPICollectionHandler(JSONAPIHandler):
         doc = await self.create_post(obj, user)
         data = await self.as_jsonapi(doc)
         self.set_status(201)
+        self.write({'data': data})
+
+
+class JSONAPIItemHandler(JSONAPIHandler):
+    """Base class for handling item-level requests."""
+
+    async def allow_put(self: 'JSONAPIItemHandler', iid: str, data: dict, user: Union[Document, None]) -> None:
+        """Check whether PUT requests are allowed."""
+        raise JSONAPIError(403, [{'title': 'You are not authorised to update items of this type'}])
+
+    async def validate_put(self: 'JSONAPIItemHandler', iid: str, data: dict, user: Union[Document, None]) -> dict:
+        """Validate that the PUT data is valid."""
+        return data
+
+    async def create_put(self: 'JSONAPIItemHandler', iid: str, data: dict, user: Union[Document, None]) -> Document:
+        """Update a CouchDB document for a PUT request."""
+        raise JSONAPIError(500, [{'title': 'Items of this type cannot be updated'}])
+
+    async def as_jsonapi(self: 'JSONAPIItemHandler', doc: Document) -> dict:
+        """Return a single ``doc`` in JSONAPI format."""
+        return {}
+
+    async def put(self: 'JSONAPIItemHandler', iid: str) -> None:
+        """Handle PUT requests."""
+        user = await self.get_user()
+        data = await self.jsonapi_body()
+        await self.allow_put(iid, data, user)
+        obj = await self.validate_put(iid, data, user)
+        doc = await self.create_put(iid, obj, user)
+        data = await self.as_jsonapi(doc)
+        self.set_status(200)
         self.write({'data': data})

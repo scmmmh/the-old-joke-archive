@@ -43,6 +43,25 @@ async def minimal_database(empty_database: CouchDB) -> None:
 
 
 @pytest.fixture
+async def standard_database(empty_database: CouchDB) -> None:
+    """Provide a database with a standard set of data."""
+    users = await empty_database['users']
+    admin = await users.create(str(uuid1()))
+    admin['email'] = 'admin@example.com'
+    admin['name'] = 'The Admin'
+    admin['groups'] = ['admin']
+    admin['token'] = token_hex(128)
+    await admin.save()
+    user1 = await users.create(str(uuid1()))
+    user1['email'] = 'user1@example.com'
+    user1['name'] = 'User One'
+    user1['groups'] = []
+    user1['token'] = token_hex(128)
+    await user1.save()
+    yield empty_database, {'admin': admin, 'user1': user1}
+
+
+@pytest.fixture
 async def http_client() -> None:
     """Provide a HTTP client."""
     client = AsyncHTTPClient()
@@ -73,6 +92,10 @@ async def http_client() -> None:
     async def post(url: str, body: Union[str, dict], token: str = None) -> HTTPResponse:
         return await fetch('POST', url, body=body, token=token)
 
+    async def put(url: str, body: Union[str, dict], token: str = None) -> HTTPResponse:
+        return await fetch('PUT', url, body=body, token=token)
+
     return {
-        'post': post
+        'post': post,
+        'put': put,
     }

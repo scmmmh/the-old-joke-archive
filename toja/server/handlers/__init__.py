@@ -16,7 +16,7 @@ from toja.models import Base, User
 from toja.validation import ValidationError
 from toja.utils import config, couchdb, JSONAPIError
 
-from .user import UserCollectionHandler  # noqa
+from .user import UserCollectionHandler, UserItemHandler  # noqa
 
 
 logger = logging.getLogger(__name__)
