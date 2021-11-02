@@ -84,7 +84,7 @@ async def test_fail_incorrect_id(standard_database: Tuple[CouchDB, dict], http_c
 
 @pytest.mark.asyncio
 async def test_fail_get_other_user_by_non_admin(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
-    """Test that fetching a non-existant user fails."""
+    """Test that fetching another user by a non-admin fails."""
     session, users = standard_database
     with pytest.raises(HTTPClientError) as exc_info:
         await http_client['get'](f'/api/users/{users["admin"]["_id"]}',
