@@ -107,9 +107,26 @@ class JSONAPICollectionHandler(JSONAPIHandler):
 class JSONAPIItemHandler(JSONAPIHandler):
     """Base class for handling item-level requests."""
 
+    async def allow_get(self: 'JSONAPIItemHandler', iid: str, user: Union[Document, None]) -> None:
+        """Check whether GET requests are allowed."""
+        raise JSONAPIError(403, [{'title': 'You are not authorised to access this item'}])
+
+    async def create_get(self: 'JSONAPIItemHandler', iid: str, user: Union[Document, None]) -> Document:
+        """Fetch a CouchDB document for a GET request."""
+        raise JSONAPIError(500, [{'title': 'Items of this type cannot be updated'}])
+
+    async def get(self: 'JSONAPIItemHandler', iid: str) -> None:
+        """Handle GET requests."""
+        user = await self.get_user()
+        await self.allow_get(iid, user)
+        doc = await self.create_get(iid, user)
+        data = await self.as_jsonapi(doc)
+        self.set_status(200)
+        self.write({'data': data})
+
     async def allow_put(self: 'JSONAPIItemHandler', iid: str, data: dict, user: Union[Document, None]) -> None:
         """Check whether PUT requests are allowed."""
-        raise JSONAPIError(403, [{'title': 'You are not authorised to update items of this type'}])
+        raise JSONAPIError(403, [{'title': 'You are not authorised to update this item'}])
 
     async def validate_put(self: 'JSONAPIItemHandler', iid: str, data: dict, user: Union[Document, None]) -> dict:
         """Validate that the PUT data is valid."""
@@ -118,10 +135,6 @@ class JSONAPIItemHandler(JSONAPIHandler):
     async def create_put(self: 'JSONAPIItemHandler', iid: str, data: dict, user: Union[Document, None]) -> Document:
         """Update a CouchDB document for a PUT request."""
         raise JSONAPIError(500, [{'title': 'Items of this type cannot be updated'}])
-
-    async def as_jsonapi(self: 'JSONAPIItemHandler', doc: Document) -> dict:
-        """Return a single ``doc`` in JSONAPI format."""
-        return {}
 
     async def put(self: 'JSONAPIItemHandler', iid: str) -> None:
         """Handle PUT requests."""
@@ -133,3 +146,7 @@ class JSONAPIItemHandler(JSONAPIHandler):
         data = await self.as_jsonapi(doc)
         self.set_status(200)
         self.write({'data': data})
+
+    async def as_jsonapi(self: 'JSONAPIItemHandler', doc: Document) -> dict:
+        """Return a single ``doc`` in JSONAPI format."""
+        return {}

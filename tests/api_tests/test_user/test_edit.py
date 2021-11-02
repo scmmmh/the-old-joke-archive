@@ -1,4 +1,4 @@
-"""Tests for user creation."""
+"""Tests for user editing."""
 import json
 import pytest
 

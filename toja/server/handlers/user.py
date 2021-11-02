@@ -1,5 +1,5 @@
 """User-related request handlers."""
-from aiocouch import Document
+from aiocouch import Document, exception as aio_exc
 
 from secrets import token_hex
 from typing import Union
@@ -91,12 +91,29 @@ The Old Joke Automaton.
 class UserItemHandler(JSONAPIItemHandler):
     """Handler for item-level collection requests."""
 
+    async def allow_get(self: 'JSONAPIItemHandler', iid: str, user: Union[Document, None]) -> None:
+        """Check whether GET requests are allowed."""
+        if user is not None:
+            if 'admin' in user['groups'] or 'admin:users' in user['groups'] or user['_id'] == iid:
+                return
+        raise JSONAPIError(403, [{'title': 'You are not authorised to access this user'}])
+
+    async def create_get(self: 'JSONAPIItemHandler', iid: str, user: Union[Document, None]) -> Document:
+        """Fetch a CouchDB document for the user."""
+        async with couchdb() as session:
+            db = await session['users']
+            try:
+                doc = await db[iid]
+                return doc
+            except aio_exc.NotFoundError:
+                raise JSONAPIError(404, [{'title': 'This user does not exist'}])
+
     async def allow_put(self: 'UserItemHandler', iid: str, data: dict, user: Union[Document, None]) -> None:
         """Check whether PUT requests are allowed."""
         if user is not None:
             if 'admin' in user['groups'] or 'admin:users' in user['groups'] or user['_id'] == iid:
                 return
-        raise JSONAPIError(403, [{'title': 'You are not authorised to create new items of this type'}])
+        raise JSONAPIError(403, [{'title': 'You are not authorised to update this user'}])
 
     async def validate_put(self: 'UserItemHandler', iid: str, data: dict, user: Union[Document, None]) -> dict:
         """Validate that the PUT data is valid."""
@@ -148,15 +165,18 @@ class UserItemHandler(JSONAPIItemHandler):
 
     async def create_put(self: 'UserItemHandler', iid: str, data: dict, user: Union[Document, None]) -> Document:
         """Update a user CouchDB document for a PUT request."""
-        async with couchdb() as session:
-            db = await session['users']
-            async with Document(db, iid) as doc:
-                doc['email'] = data['attributes']['email']
-                doc['name'] = data['attributes']['name']
-                if 'groups' in data['attributes']:
-                    doc['groups'] = data['attributes']['groups']
-            doc = await db[iid]
-            return doc
+        try:
+            async with couchdb() as session:
+                db = await session['users']
+                async with Document(db, iid) as doc:
+                    doc['email'] = data['attributes']['email']
+                    doc['name'] = data['attributes']['name']
+                    if 'groups' in data['attributes']:
+                        doc['groups'] = data['attributes']['groups']
+                doc = await db[iid]
+                return doc
+        except aio_exc.NotFoundError:
+            raise JSONAPIError(404, [{'title': 'This user does not exist'}])
 
     async def as_jsonapi(self: 'UserItemHandler', doc: Document) -> dict:
         """Return a single user as JSONAPI."""
