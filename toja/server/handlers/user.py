@@ -189,3 +189,20 @@ class UserItemHandler(JSONAPIItemHandler):
                 'groups': doc['groups'],
             }
         }
+
+    async def allow_delete(self: 'JSONAPIItemHandler', iid: str, user: Union[Document, None]) -> None:
+        """Check whether DELETE requests are allowed."""
+        if user is not None:
+            if 'admin' in user['groups'] or 'admin:users' in user['groups'] or user['_id'] == iid:
+                return
+        raise JSONAPIError(403, [{'title': 'You are not authorised to delete this user'}])
+
+    async def create_delete(self: 'JSONAPIItemHandler', iid: str, user: Union[Document, None]) -> None:
+        """Delete the CouchDB document for the user."""
+        try:
+            async with couchdb() as session:
+                db = await session['users']
+                doc = await db[iid]
+                await doc.delete()
+        except aio_exc.NotFoundError:
+            raise JSONAPIError(404, [{'title': 'This user does not exist'}])

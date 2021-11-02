@@ -150,3 +150,18 @@ class JSONAPIItemHandler(JSONAPIHandler):
     async def as_jsonapi(self: 'JSONAPIItemHandler', doc: Document) -> dict:
         """Return a single ``doc`` in JSONAPI format."""
         return {}
+
+    async def allow_delete(self: 'JSONAPIItemHandler', iid: str, user: Union[Document, None]) -> None:
+        """Check whether DELETE requests are allowed."""
+        raise JSONAPIError(403, [{'title': 'You are not authorised to delete this item'}])
+
+    async def create_delete(self: 'JSONAPIItemHandler', iid: str, user: Union[Document, None]) -> None:
+        """Fetch a CouchDB document for a DELETE request."""
+        raise JSONAPIError(500, [{'title': 'Items of this type cannot be deleted'}])
+
+    async def delete(self: 'JSONAPIItemHandler', iid: str) -> None:
+        """Handle DELETE requests."""
+        user = await self.get_user()
+        await self.allow_delete(iid, user)
+        await self.create_delete(iid, user)
+        self.set_status(204)

@@ -89,8 +89,8 @@ async def http_client() -> None:
             params['headers']['X-Toja-Auth'] = token
         return await client.fetch(f'http://localhost:6543{url}', **params)
 
-    async def get(url: str, token: str = None) -> HTTPResponse:
-        return await fetch('GET', url, token=token)
+    async def delete(url: str, token: str = None) -> HTTPResponse:
+        return await fetch('DELETE', url, token=token)
 
     async def post(url: str, body: Union[str, dict], token: str = None) -> HTTPResponse:
         return await fetch('POST', url, body=body, token=token)
@@ -98,7 +98,11 @@ async def http_client() -> None:
     async def put(url: str, body: Union[str, dict], token: str = None) -> HTTPResponse:
         return await fetch('PUT', url, body=body, token=token)
 
+    async def get(url: str, token: str = None) -> HTTPResponse:
+        return await fetch('GET', url, token=token)
+
     return {
+        'delete': delete,
         'get': get,
         'post': post,
         'put': put,
