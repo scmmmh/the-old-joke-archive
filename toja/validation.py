@@ -1,10 +1,15 @@
 """Validation functionality."""
+import logging
+
 from cerberus import Validator
 from cerberus.errors import ValidationError
 from email_validator import validate_email, EmailNotValidError
 from typing import Union, List
 
 from .utils import JSONAPIError
+
+
+logger = logging.getLogger(__name__)
 
 
 class ValidationError(JSONAPIError):
@@ -62,5 +67,6 @@ def validate(schema: dict, data: dict) -> dict:
     """Validate the given ``data`` using the ``schema``."""
     validator = TojaValidator(schema)
     if not validator.validate(data):
+        logger.debug(validator.errors)
         raise ValidationError(validator.errors)
     return validator.document

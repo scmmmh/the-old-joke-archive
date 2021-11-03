@@ -25,8 +25,6 @@ def run_application_server() -> None:
             ('/api/users', UserCollectionHandler),
             ('/api/users/_login', LoginHandler),
             (r'/api/users/([a-z0-9\-]+)', UserItemHandler),
-            # ('/api/jokes', CollectionHandler, {'type': Joke}),
-            # (r'/api/jokes/([a-z0-9\-]+)', ItemHandler, {'type': Joke})
         ],
         debug=config()['debug'],
         xsrf_cookies=True,

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { useNavigate } from 'svelte-navigator';
 
-    import { busy, sendJsonApiRequest, authToken, authUser } from '../stores';
+    import { busy, sendJsonApiRequest, authToken, authUser, getJsonApiObject } from '../stores';
     import { localStoreValue, sessionStoreValue, localDeleteValue, sessionDeleteValue } from '../local-persistence';
     import Input from '../components/Input.svelte';
     import Button from '../components/Button.svelte';
@@ -53,14 +53,21 @@
             busy.endBusy();
             if (response.status === 200) {
                 const obj = await response.json();
-                authUser.set(obj.data);
                 authToken.set(obj.data.id + '$$' + params.get('token'));
                 if (params.get('remember') === 'true') {
                     localStoreValue('auth', {id: obj.data.id, token: params.get('token')});
                 } else {
                     sessionStoreValue('auth', {id: obj.data.id, token: params.get('token')});
                 }
-                navigate('/');
+                try {
+                    const user = await getJsonApiObject('users', obj.data.id as string);
+                    authUser.set(user);
+                    navigate('/');
+                } catch {
+                    authToken.set('');
+                    authUser.set(null);
+                    emailError = 'The e-mail address does not exist or the token is no longer valid';
+                }
             } else {
                 emailError = 'The e-mail address does not exist or the token is no longer valid';
             }

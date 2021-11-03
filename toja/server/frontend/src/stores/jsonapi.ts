@@ -35,7 +35,6 @@ export async function sendJsonApiRequest(method: string, url: string, obj: JsonA
 }
 
 export async function saveJsonApiObject(obj: JsonApiObject) {
-    console.log(obj);
     if (obj.id) {
         const response = await sendJsonApiRequest('PUT', '/api/' + obj.type + '/' + obj.id, obj);
         if (response.status === 201) {

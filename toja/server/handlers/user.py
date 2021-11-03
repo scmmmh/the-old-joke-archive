@@ -8,7 +8,7 @@ from urllib.parse import urlencode
 from toja.utils import couchdb, send_email, config, JSONAPIError
 from toja.validation import validate, ValidationError
 from uuid import uuid1
-from .base import JSONAPICollectionHandler, JSONAPIItemHandler
+from .base import JSONAPIHandler, JSONAPICollectionHandler, JSONAPIItemHandler
 
 
 class UserCollectionHandler(JSONAPICollectionHandler):
@@ -29,6 +29,7 @@ class UserCollectionHandler(JSONAPICollectionHandler):
             },
             'attributes': {
                 'type': 'dict',
+                'required': True,
                 'schema': {
                     'email': {
                         'type': 'string',
@@ -132,6 +133,7 @@ class UserItemHandler(JSONAPIItemHandler):
             },
             'attributes': {
                 'type': 'dict',
+                'required': True,
                 'schema': {
                     'email': {
                         'type': 'string',
@@ -206,3 +208,136 @@ class UserItemHandler(JSONAPIItemHandler):
                 await doc.delete()
         except aio_exc.NotFoundError:
             raise JSONAPIError(404, [{'title': 'This user does not exist'}])
+
+
+class LoginHandler(JSONAPIHandler):
+    """Handler for logging the user in."""
+
+    def validate_post(self: 'LoginHandler', data: dict) -> dict:
+        """Validate that the posted ``data`` is valid."""
+        schema = {
+            'type': {
+                'type': 'string',
+                'required': True,
+                'empty': False,
+                'allowed': ['users']
+            },
+            'attributes': {
+                'type': 'dict',
+                'required': True,
+                'schema': {
+                    'email': {
+                        'type': 'string',
+                        'required': True,
+                        'empty': False,
+                        'check_with': 'validate_email',
+                        'coerce': 'email',
+                    },
+                    'token': {
+                        'type': 'string',
+                        'required': False,
+                        'empty': False,
+                    },
+                    'remember': {
+                        'type': 'boolean',
+                        'required': False,
+                        'empty': False,
+                        'default': False,
+                    },
+                }
+            }
+        }
+        return validate(schema, data)
+
+    async def post(self: 'LoginHandler') -> None:
+        """Handle a login request."""
+        try:
+            async with couchdb() as session:
+                db = await session['users']
+                user = self.validate_post(await self.jsonapi_body())
+                if 'token' in user['attributes']:
+                    db_obj = None
+                    async for tmp in db.find({'email': user['attributes']['email'],
+                                              'token': user['attributes']['token']}):
+                        db_obj = tmp
+                    if db_obj is None:
+                        raise JSONAPIError(403, [{'title': 'This e-mail address is not registered or the token is no longer valid'}])  # noqa: 501
+                    self.set_status(200)
+                    self.write({
+                        'data': {
+                            'type': 'users',
+                            'id': db_obj['_id'],
+                        }
+                    })
+                else:
+                    db_obj = None
+                    async for tmp in db.find({'email': user['attributes']['email']}):
+                        db_obj = tmp
+                    if db_obj is None:
+                        raise JSONAPIError(403, [{'title': 'This e-mail address is not registered or the token is no longer valid'}])  # noqa: 501
+                    else:
+                        db_obj['token'] = token_hex(128)
+                        await db_obj.save()
+                        send_email(db_obj['email'], 'Log in to The Old Joke Archive', f'''Hello {db_obj["name"]},
+
+Please use the following link to log into The Old Joke Archive:
+
+{config()['server']['base']}/app/user/log-in?{urlencode((('email', db_obj['email']), ('token', db_obj['token']), ('remember', user['attributes']['remember'])))}
+
+The Old Joke Automaton.
+''')  # noqa: E501
+                        self.set_status(204)
+        except aio_exc.NotFoundError:
+            raise JSONAPIError(403,
+                               [{'title': 'This e-mail address is not registered or the token is no longer valid'}])
+        '''try:
+            async with couchdb() as session:
+                db = await session['users']
+                obj = User.from_jsonapi(User.validate_login(json.loads(self.request.body)['data']))
+                remember = obj._attributes['remember']
+                if 'token' in obj._attributes:
+                    db_obj = None
+                    async for user in db.find({'email': obj._attributes['email'], 'token': obj._attributes['token']}):
+                        db_obj = user
+                    if db_obj is None:
+                        self.send_error(403, errors=[{
+                            'code': 403,
+                            'title': 'This e-mail address is not registered or the token is no longer valid'
+                        }])
+                    else:
+                        obj = User.from_couchdb(db_obj)
+                        self.write({'data': obj.as_jsonapi()})
+                else:
+                    db_obj = None
+                    async for user in db.find({'email': obj._attributes['email']}):
+                        db_obj = user
+                    if db_obj is None:
+                        self.send_error(403, errors=[{
+                            'code': 403,
+                            'title': 'This e-mail address is not registered or your account has been blocked'
+                        }])
+                    else:
+                        db_obj['token'] = token_hex(128)
+                        await db_obj.save()
+                        obj = User.from_couchdb(db_obj)
+                        await obj.send_login_email(remember='true' if remember else 'false')
+                        self.set_status(204)
+        except ValidationError as ve:
+            self.send_error(400, errors=ve.errors)'''
+
+    async def delete(self: 'LoginHandler') -> None:
+        """Handle a logout request."""
+        if 'X-Toja-Auth' in self.request.headers:
+            try:
+                user_id, token = self.request.headers['X-Toja-Auth'].split('$$')
+                async with couchdb() as session:
+                    db = await session['users']
+                    user = await db[user_id]
+                    if user and user['token'] == token:
+                        user['token'] = None
+                        await user.save()
+            except ValueError:
+                pass
+            except aio_exc.NotFoundError:
+                pass
+        self.set_status(204)
