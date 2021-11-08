@@ -1,6 +1,5 @@
 import { Selector } from 'testcafe';
 import { setupStandardDatabase, getRecord } from '../database';
-import { localLoadValue, sessionLoadValue } from '../local-persistence';
 
 fixture('User Log Out')
     .page `http://localhost:6543/`
