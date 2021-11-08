@@ -45,3 +45,12 @@ export async function setupMinimalDatabase() {
 
     return objs;
 }
+
+export async function setupStandardDatabase() {
+    const objs = await setupMinimalDatabase();
+
+    let response = await createRecord('users', {'email': 'test1@example.com', 'name': 'User One', 'token': 'user1Token', 'groups': []});
+    objs.user1 = response.data;
+
+    return objs;
+}
