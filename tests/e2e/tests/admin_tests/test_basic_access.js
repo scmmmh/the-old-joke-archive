@@ -1,14 +1,16 @@
 import { Selector } from 'testcafe';
 import { setupStandardDatabase, getRecord } from '../database';
+import { sessionStoreValue } from '../local-persistence';
 
-fixture('User Log Out')
+fixture('Administration Access')
     .page `http://localhost:6543/`
 
-test('Log the user out', async t => {
+test('Test admin access', async t => {
     const objs = await setupStandardDatabase();
     const dbUser = await getRecord('users', objs.admin.id);
+    await sessionStoreValue('auth.id', dbUser.email);
+    await sessionStoreValue('auth.token', dbUser.token);
     await t
-        .navigateTo('http://localhost:6543/app/user/log-in?email=' + dbUser.email + '&token=' + dbUser.token + '&remember=true')
         .expect(Selector('a').withText('Admin User').exists).ok()
         .click(Selector('a').withExactText('Admin'))
         .expect(Selector('h1').withText('Admin').exists).ok();

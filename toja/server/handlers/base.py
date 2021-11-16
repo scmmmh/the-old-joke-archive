@@ -3,7 +3,7 @@ import json
 import logging
 import traceback
 
-from aiocouch import Document
+from aiocouch import Document, exception as aio_exc
 from io import StringIO
 from tornado.web import RequestHandler
 from typing import Union
@@ -37,6 +37,8 @@ class JSONAPIHandler(RequestHandler):
                     if user['token'] == token:
                         return user
             except ValueError:
+                pass
+            except aio_exc.NotFoundError:
                 pass
         return None
 

@@ -16,8 +16,23 @@ async def test_create_first_user(empty_database: CouchDB, http_client: dict) -> 
                                                               'name': 'A Tester'}})
     assert response.code == 201
     user = json.load(response.buffer)['data']
-    assert await (await empty_database['users'])[user['id']]
+    assert user
     assert 'admin' in user['attributes']['groups']
+    db_user = await (await empty_database['users'])[user['id']]
+    assert db_user
+    assert db_user['status'] == 'new'
+    assert 'password' not in db_user
+    del user['attributes']['groups']
+    user['attributes']['password'] = 'blabla'
+    response = await http_client['put'](f'/api/users/{user["id"]}',
+                                        token=f'{user["id"]}$${db_user["token"]}',
+                                        body=user)
+    user = json.load(response.buffer)['data']
+    assert user
+    db_user = await (await empty_database['users'])[user['id']]
+    assert db_user
+    assert db_user['status'] == 'active'
+    assert 'password' in db_user
 
 
 @pytest.mark.asyncio
@@ -30,8 +45,23 @@ async def test_create_second_user(minimal_database: Tuple[CouchDB, dict], http_c
                                                               'name': 'A Tester'}})
     assert response.code == 201
     user = json.load(response.buffer)['data']
-    assert await (await session['users'])[user['id']]
+    assert user
     assert 'admin' not in user['attributes']['groups']
+    db_user = await (await session['users'])[user['id']]
+    assert db_user
+    assert db_user['status'] == 'new'
+    assert 'password' not in db_user
+    del user['attributes']['groups']
+    user['attributes']['password'] = 'blabla'
+    response = await http_client['put'](f'/api/users/{user["id"]}',
+                                        token=f'{user["id"]}$${db_user["token"]}',
+                                        body=user)
+    user = json.load(response.buffer)['data']
+    assert user
+    db_user = await (await session['users'])[user['id']]
+    assert db_user
+    assert db_user['status'] == 'active'
+    assert 'password' in db_user
 
 
 @pytest.mark.asyncio

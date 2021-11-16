@@ -11,5 +11,8 @@
   "dependencies": {
     "axios": "^0.22.0",
     "testcafe": "^1.16.1"
+  },
+  "devDependencies": {
+    "bcrypt": "^5.0.1"
   }
 }

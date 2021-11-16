@@ -1,4 +1,5 @@
 """Fixtures for the API tests."""
+import bcrypt
 import json
 import pytest
 
@@ -7,6 +8,10 @@ from secrets import token_hex
 from tornado.httpclient import AsyncHTTPClient, HTTPResponse
 from typing import Union
 from uuid import uuid1
+
+
+ADMIN_PWD = bcrypt.hashpw(b'admin1pwd', bcrypt.gensalt()).decode('utf-8')
+USER1_PWD = bcrypt.hashpw(b'user1pwd', bcrypt.gensalt()).decode('utf-8')
 
 
 @pytest.fixture
@@ -38,27 +43,27 @@ async def minimal_database(empty_database: CouchDB) -> None:
     admin['name'] = 'The Admin'
     admin['groups'] = ['admin']
     admin['token'] = token_hex(128)
+    admin['password'] = ADMIN_PWD
+    admin['status'] = 'active'
     await admin.save()
     yield empty_database, {'admin': admin}
 
 
 @pytest.fixture
-async def standard_database(empty_database: CouchDB) -> None:
+async def standard_database(minimal_database: CouchDB) -> None:
     """Provide a database with a standard set of data."""
-    users = await empty_database['users']
-    admin = await users.create(str(uuid1()))
-    admin['email'] = 'admin@example.com'
-    admin['name'] = 'The Admin'
-    admin['groups'] = ['admin']
-    admin['token'] = token_hex(128)
-    await admin.save()
+    session, objs = minimal_database
+    users = await session['users']
     user1 = await users.create(str(uuid1()))
     user1['email'] = 'user1@example.com'
     user1['name'] = 'User One'
     user1['groups'] = []
     user1['token'] = token_hex(128)
+    user1['password'] = USER1_PWD
+    user1['status'] = 'active'
     await user1.save()
-    yield empty_database, {'admin': admin, 'user1': user1}
+    objs['user1'] = user1
+    yield session, objs
 
 
 @pytest.fixture

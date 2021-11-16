@@ -8,6 +8,7 @@
     import Home from './routes/Home.svelte';
     import Signup from './routes/Signup.svelte';
     import Login from './routes/Login.svelte';
+    import Confirm from './routes/Confirm.svelte';
 
     let Admin = null;
     const location = useLocation();
@@ -34,6 +35,7 @@
 <article class="container mx-auto mb-12">
     <Route path="/"><Home/></Route>
     <Route path="/user/sign-up"><Signup/></Route>
+    <Route path="/user/confirm"><Confirm/></Route>
     <Route path="/user/log-in"><Login/></Route>
     {#if $isGroupAdminUsers}
         <Route path="/admin/*"><svelte:component this={Admin}/></Route>

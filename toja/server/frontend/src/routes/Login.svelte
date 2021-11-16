@@ -8,7 +8,8 @@
 
     let email = '';
     let emailError = '';
-    let success = false;
+    let password = '';
+    let passwordError = '';
     let remember = false;
     const navigate = useNavigate();
 
@@ -18,83 +19,53 @@
         emailError = '';
 
         try {
-            localDeleteValue('auth');
-            sessionDeleteValue('auth');
             const response = await sendJsonApiRequest('POST', '/api/users/_login', {
                 'type': 'users',
                 'attributes': {
                     'email': email,
-                    'remember': remember
-                }
-            });
-            busy.endBusy();
-            if (response.status === 204) {
-                success = true;
-            } else {
-                emailError = 'This e-mail address is not registered or the token is no longer valid';
-            }
-        } catch (error) {
-            busy.endBusy();
-            emailError = error;
-        }
-    }
-
-    async function login_step2(params: URLSearchParams) {
-        email = params.get('email');
-        busy.startBusy();
-        try {
-            const response = await sendJsonApiRequest('POST', '/api/users/_login', {
-                'type': 'users',
-                'attributes': {
-                    'email': email,
-                    'token': params.get('token')
+                    'password': password,
                 }
             });
             busy.endBusy();
             if (response.status === 200) {
+                localDeleteValue('auth');
+                sessionDeleteValue('auth');
                 const obj = await response.json();
-                authToken.set(obj.data.id + '$$' + params.get('token'));
-                if (params.get('remember') === 'true') {
-                    localStoreValue('auth', {id: obj.data.id, token: params.get('token')});
+                authToken.set(obj.data.id + '$$' + obj.data.attributes.token);
+                const user = await getJsonApiObject('users', obj.data.id);
+                authUser.set(user);
+                if (remember) {
+                    localStoreValue('auth', {
+                        id: user.id,
+                        token: obj.data.attributes.token,
+                    });
                 } else {
-                    sessionStoreValue('auth', {id: obj.data.id, token: params.get('token')});
+                    sessionStoreValue('auth', {
+                        id: user.id,
+                        token: obj.data.attributes.token,
+                    });
                 }
-                try {
-                    const user = await getJsonApiObject('users', obj.data.id as string);
-                    authUser.set(user);
-                    navigate('/');
-                } catch {
-                    authToken.set('');
-                    authUser.set(null);
-                    emailError = 'The e-mail address does not exist or the token is no longer valid';
-                }
+                navigate('/');
             } else {
-                emailError = 'The e-mail address does not exist or the token is no longer valid';
+                emailError = 'This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.';
+                passwordError = 'This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.';
             }
         } catch (error) {
             busy.endBusy();
             emailError = error;
+            passwordError = error;
         }
-    }
-
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('token') && params.get('email')) {
-        login_step2(params);
     }
 </script>
 
 <div class="md:max-w-2xl mx-auto">
-    {#if success}
-        <h1 class="font-blackriver-bold text-4xl mb-8">Logged in to <span class="text-primary">The Old Joke Archive</span></h1>
-        <p>You have been sent an e-mail to allow you to log in. The e-mail may have landed <span class="text-primary">in your spam folder</span>.</p>
-    {:else}
-        <h1 class="font-blackriver-bold text-4xl mb-8">Log in to <span class="text-primary">The Old Joke Archive</span></h1>
-        <form on:submit={login}>
-            <Input bind:value={email} type="email" error={emailError} disabled={$busy}>E-Mail Address</Input>
-            <Input bind:value={remember} type="checkbox" disabled={$busy}>Remember me <span class="text-sm">(do not select this on a shared or public system)</span></Input>
-            <div class="mt-8 text-right">
-                <Button disabled={$busy}>{#if $busy}Logging in...{:else}Log in{/if}</Button>
-            </div>
-        </form>
-    {/if}
+    <h1 class="font-blackriver-bold text-4xl mb-8">Log in to <span class="text-primary">The Old Joke Archive</span></h1>
+    <form on:submit={login}>
+        <Input bind:value={email} type="email" error={emailError} disabled={$busy}>E-Mail Address</Input>
+        <Input bind:value={password} type="password" error={passwordError} disabled={$busy}>Password</Input>
+        <Input bind:value={remember} type="checkbox" disabled={$busy}>Remember me <span class="text-sm">(do not select this on a shared or public system)</span></Input>
+        <div class="mt-8 text-right">
+            <Button disabled={$busy}>{#if $busy}Logging in...{:else}Log in{/if}</Button>
+        </div>
+    </form>
 </div>

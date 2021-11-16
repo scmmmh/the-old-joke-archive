@@ -19,7 +19,7 @@ function storeValue(storage, path, value) {
             current = current[element];
         }
     }
-    storage.setItem('toja:storage', JSON.stringify(obj));
+    storage['toja:storage'] = JSON.stringify(obj);
 }
 
 function loadValue(storage, path, defaultValue) {
@@ -67,7 +67,7 @@ function deleteValue(storage, path) {
             current = current[element];
         }
     }
-    storage.setItem('toja:storage', JSON.stringify(obj));
+    storage['toja:storage'] = JSON.stringify(obj);
 }
 
 const sessionStorage = ClientFunction(() => { return window.sessionStorage; });

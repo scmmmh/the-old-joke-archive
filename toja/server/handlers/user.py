@@ -1,4 +1,7 @@
 """User-related request handlers."""
+import bcrypt
+import logging
+
 from aiocouch import Document, exception as aio_exc
 
 from secrets import token_hex
@@ -9,6 +12,9 @@ from toja.utils import couchdb, send_email, config, JSONAPIError
 from toja.validation import validate, ValidationError
 from uuid import uuid1
 from .base import JSONAPIHandler, JSONAPICollectionHandler, JSONAPIItemHandler
+
+
+logger = logging.getLogger(__name__)
 
 
 class UserCollectionHandler(JSONAPICollectionHandler):
@@ -57,20 +63,22 @@ class UserCollectionHandler(JSONAPICollectionHandler):
         async with couchdb() as session:
             uid = str(uuid1())
             db = await session['users']
-            async with Document(db, uid) as doc:
-                doc['name'] = data['attributes']['name']
-                doc['email'] = data['attributes']['email']
-                if (await db.info())['doc_count'] == 0:
-                    doc['groups'] = ['admin']
-                else:
-                    doc['groups'] = []
-                doc['token'] = token_hex(128)
+            doc = await db.create(uid)
+            doc['name'] = data['attributes']['name']
+            doc['email'] = data['attributes']['email']
+            doc['status'] = 'new'
+            if (await db.info())['doc_count'] == 0:
+                doc['groups'] = ['admin']
+            else:
+                doc['groups'] = []
+            doc['token'] = token_hex(128)
+            await doc.save()
             doc = await db[uid]
-            send_email(doc['email'], 'Log in to The Old Joke Archive', f'''Hello {doc["name"]},
+            send_email(doc['email'], 'Sign up to The Old Joke Archive', f'''Hello {doc["name"]},
 
-Please use the following link to log into The Old Joke Archive:
+Please use the following link to confirm signing up to The Old Joke Archive:
 
-{config()['server']['base']}/app/user/log-in?{urlencode((('email', doc["email"]), ('token', doc["token"]), ('remember', False)))}
+{config()['server']['base']}/app/user/confirm?{urlencode((('id', doc["_id"]), ('token', doc["token"])))}
 
 The Old Joke Automaton.
 ''')  # noqa: E501
@@ -137,14 +145,18 @@ class UserItemHandler(JSONAPIItemHandler):
                 'schema': {
                     'email': {
                         'type': 'string',
-                        'required': True,
+                        'required': False,
                         'empty': False,
                         'check_with': 'validate_email',
                         'coerce': 'email',
                     },
                     'name': {
                         'type': 'string',
-                        'required': True,
+                        'required': False,
+                        'empty': False,
+                    },
+                    'password': {
+                        'type': 'string',
                         'empty': False,
                     }
                 }
@@ -158,11 +170,12 @@ class UserItemHandler(JSONAPIItemHandler):
                 }
             }
         obj = validate(schema, data)
-        async with couchdb() as session:
-            db = await session['users']
-            async for user in db.find({'email': obj['attributes']['email']}):
-                if user['_id'] != iid:
-                    raise ValidationError({'attributes.email': 'This e-mail address is already registered'})
+        if 'email' in obj['attributes']:
+            async with couchdb() as session:
+                db = await session['users']
+                async for user in db.find({'email': obj['attributes']['email']}):
+                    if user['_id'] != iid:
+                        raise ValidationError({'attributes.email': 'This e-mail address is already registered'})
         return obj
 
     async def create_put(self: 'UserItemHandler', iid: str, data: dict, user: Union[Document, None]) -> Document:
@@ -170,11 +183,19 @@ class UserItemHandler(JSONAPIItemHandler):
         try:
             async with couchdb() as session:
                 db = await session['users']
-                async with Document(db, iid) as doc:
+                doc = await db[iid]
+                if 'email' in data['attributes']:
                     doc['email'] = data['attributes']['email']
+                if 'name' in data['attributes']:
                     doc['name'] = data['attributes']['name']
-                    if 'groups' in data['attributes']:
-                        doc['groups'] = data['attributes']['groups']
+                if 'groups' in data['attributes']:
+                    doc['groups'] = data['attributes']['groups']
+                if 'password' in data['attributes']:
+                    doc['password'] = bcrypt.hashpw(data['attributes']['password'].encode('utf-8'),
+                                                    bcrypt.gensalt()).decode()
+                if doc['status'] == 'new':
+                    doc['status'] = 'active'
+                await doc.save()
                 doc = await db[iid]
                 return doc
         except aio_exc.NotFoundError:
@@ -233,16 +254,10 @@ class LoginHandler(JSONAPIHandler):
                         'check_with': 'validate_email',
                         'coerce': 'email',
                     },
-                    'token': {
+                    'password': {
                         'type': 'string',
-                        'required': False,
+                        'required': True,
                         'empty': False,
-                    },
-                    'remember': {
-                        'type': 'boolean',
-                        'required': False,
-                        'empty': False,
-                        'default': False,
                     },
                 }
             }
@@ -255,75 +270,72 @@ class LoginHandler(JSONAPIHandler):
             async with couchdb() as session:
                 db = await session['users']
                 user = self.validate_post(await self.jsonapi_body())
-                if 'token' in user['attributes']:
-                    db_obj = None
-                    async for tmp in db.find({'email': user['attributes']['email'],
-                                              'token': user['attributes']['token']}):
+                db_obj = None
+                async for tmp in db.find({'email': user['attributes']['email'],
+                                          'status': 'active'}):
+                    if 'password' in tmp and bcrypt.checkpw(user['attributes']['password'].encode('utf-8'),
+                                                            tmp['password'].encode('utf-8')):
                         db_obj = tmp
-                    if db_obj is None:
-                        raise JSONAPIError(403, [{'title': 'This e-mail address is not registered or the token is no longer valid'}])  # noqa: 501
-                    self.set_status(200)
-                    self.write({
-                        'data': {
-                            'type': 'users',
-                            'id': db_obj['_id'],
+                if db_obj is None:
+                    raise JSONAPIError(403, [{'title': 'This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.',  # noqa: 501
+                                              'password': 'This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.'}])  # noqa: 501
+                db_obj['token'] = token_hex(128)
+                await db_obj.save()
+                self.set_status(200)
+                self.write({
+                    'data': {
+                        'type': 'users',
+                        'id': db_obj['_id'],
+                        'attributes': {
+                            'token': db_obj['token']
                         }
-                    })
-                else:
-                    db_obj = None
-                    async for tmp in db.find({'email': user['attributes']['email']}):
-                        db_obj = tmp
-                    if db_obj is None:
-                        raise JSONAPIError(403, [{'title': 'This e-mail address is not registered or the token is no longer valid'}])  # noqa: 501
-                    else:
-                        db_obj['token'] = token_hex(128)
-                        await db_obj.save()
-                        send_email(db_obj['email'], 'Log in to The Old Joke Archive', f'''Hello {db_obj["name"]},
-
-Please use the following link to log into The Old Joke Archive:
-
-{config()['server']['base']}/app/user/log-in?{urlencode((('email', db_obj['email']), ('token', db_obj['token']), ('remember', user['attributes']['remember'])))}
-
-The Old Joke Automaton.
-''')  # noqa: E501
-                        self.set_status(204)
+                    }
+                })
         except aio_exc.NotFoundError:
-            raise JSONAPIError(403,
-                               [{'title': 'This e-mail address is not registered or the token is no longer valid'}])
-        '''try:
+            raise JSONAPIError(403, [{'title': 'This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.',  # noqa: 501
+                                      'password': 'This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.'}])  # noqa: 501
+
+    def validate_put(self: 'LoginHandler', data: dict) -> dict:
+        """Validate that the putted ``data`` is valid."""
+        schema = {
+            'type': {
+                'type': 'string',
+                'required': True,
+                'empty': False,
+                'allowed': ['users']
+            },
+            'id': {
+                'type': 'string',
+                'required': True,
+                'empty': False,
+            },
+            'attributes': {
+                'type': 'dict',
+                'required': True,
+                'schema': {
+                    'token': {
+                        'type': 'string',
+                        'required': True,
+                        'empty': False,
+                    },
+                }
+            }
+        }
+        return validate(schema, data)
+
+    async def put(self: 'LoginHandler') -> None:
+        """Confirm the user."""
+        try:
             async with couchdb() as session:
                 db = await session['users']
-                obj = User.from_jsonapi(User.validate_login(json.loads(self.request.body)['data']))
-                remember = obj._attributes['remember']
-                if 'token' in obj._attributes:
-                    db_obj = None
-                    async for user in db.find({'email': obj._attributes['email'], 'token': obj._attributes['token']}):
-                        db_obj = user
-                    if db_obj is None:
-                        self.send_error(403, errors=[{
-                            'code': 403,
-                            'title': 'This e-mail address is not registered or the token is no longer valid'
-                        }])
-                    else:
-                        obj = User.from_couchdb(db_obj)
-                        self.write({'data': obj.as_jsonapi()})
+                user = self.validate_put(await self.jsonapi_body())
+                db_obj = db[user['id']]
+                if db_obj['status'] != 'new':
+                    db_obj['status'] = 'active'
                 else:
-                    db_obj = None
-                    async for user in db.find({'email': obj._attributes['email']}):
-                        db_obj = user
-                    if db_obj is None:
-                        self.send_error(403, errors=[{
-                            'code': 403,
-                            'title': 'This e-mail address is not registered or your account has been blocked'
-                        }])
-                    else:
-                        db_obj['token'] = token_hex(128)
-                        await db_obj.save()
-                        obj = User.from_couchdb(db_obj)
-                        await obj.send_login_email(remember='true' if remember else 'false')
-                        self.set_status(204)
-        except ValidationError as ve:
-            self.send_error(400, errors=ve.errors)'''
+                    raise JSONAPIError(403, [{'token': 'This user does not exist, is already confirmed, or the token is no longer valid'}])  # noqa: 501
+        except aio_exc.NotFoundError:
+            raise JSONAPIError(403, [{'token': 'This user does not exist, is already confirmed, or the token is no longer valid'}])  # noqa: 501
 
     async def delete(self: 'LoginHandler') -> None:
         """Handle a logout request."""

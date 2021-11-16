@@ -17,6 +17,7 @@ tesserocr = "^2.5.1"
 PyYAML = "^5.4.1"
 tornado = "^6.1"
 aiocouch = "^2.1.0"
+bcrypt = "^3.2.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.4"

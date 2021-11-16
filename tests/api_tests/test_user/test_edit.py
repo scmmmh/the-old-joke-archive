@@ -55,8 +55,7 @@ async def test_update_user_only_name(standard_database: Tuple[CouchDB, dict], ht
     response = await http_client['put'](f'/api/users/{users["user1"]["_id"]}',
                                         body={'type': 'users',
                                               'id': users['user1']['_id'],
-                                              'attributes': {'email': 'user1@example.com',
-                                                             'name': 'User Eins'}},
+                                              'attributes': {'name': 'User Eins'}},
                                         token=f'{users["user1"]["_id"]}$${users["user1"]["token"]}')
     assert response.code == 200
     user = json.load(response.buffer)['data']
@@ -69,6 +68,22 @@ async def test_update_user_only_name(standard_database: Tuple[CouchDB, dict], ht
 
 
 @pytest.mark.asyncio
+async def test_fail_nonexistent_id(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
+    """Test that updating a non-existent id fails."""
+    session, users = standard_database
+    with pytest.raises(HTTPClientError) as exc_info:
+        await http_client['put']('/api/users/abc',
+                                 body={'type': 'users',
+                                       'id': 'abc',
+                                       'attributes': {'email': 'test@example.com',
+                                                      'name': 'User One'}},
+                                 token=f'{users["admin"]["_id"]}$${users["admin"]["token"]}')
+    assert exc_info.value.code == 404
+    data = json.load(exc_info.value.response.buffer)
+    assert 'errors' in data
+
+
+@pytest.mark.asyncio
 async def test_fail_incorrect_id(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
     """Test that updating with an incorrect id fails."""
     session, users = standard_database
@@ -78,36 +93,6 @@ async def test_fail_incorrect_id(standard_database: Tuple[CouchDB, dict], http_c
                                        'id': 'something',
                                        'attributes': {'email': 'test@example.com',
                                                       'name': 'User One'}},
-                                 token=f'{users["admin"]["_id"]}$${users["admin"]["token"]}')
-    assert exc_info.value.code == 400
-    data = json.load(exc_info.value.response.buffer)
-    assert 'errors' in data
-
-
-@pytest.mark.asyncio
-async def test_fail_update_no_name(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
-    """Test that updating a with no name fails."""
-    session, users = standard_database
-    with pytest.raises(HTTPClientError) as exc_info:
-        await http_client['put'](f'/api/users/{users["admin"]["_id"]}',
-                                 body={'type': 'users',
-                                       'id': users['admin']['_id'],
-                                       'attributes': {'email': 'test@example.com'}},
-                                 token=f'{users["admin"]["_id"]}$${users["admin"]["token"]}')
-    assert exc_info.value.code == 400
-    data = json.load(exc_info.value.response.buffer)
-    assert 'errors' in data
-
-
-@pytest.mark.asyncio
-async def test_fail_update_no_email(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
-    """Test that updating a with no email fails."""
-    session, users = standard_database
-    with pytest.raises(HTTPClientError) as exc_info:
-        await http_client['put'](f'/api/users/{users["admin"]["_id"]}',
-                                 body={'type': 'users',
-                                       'id': users['admin']['_id'],
-                                       'attributes': {'name': 'The Best Admin'}},
                                  token=f'{users["admin"]["_id"]}$${users["admin"]["token"]}')
     assert exc_info.value.code == 400
     data = json.load(exc_info.value.response.buffer)

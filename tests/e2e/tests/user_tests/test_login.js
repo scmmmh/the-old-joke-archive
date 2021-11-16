@@ -5,62 +5,104 @@ import { localLoadValue, sessionLoadValue } from '../local-persistence';
 fixture('User Log In')
     .page `http://localhost:6543/`
 
-test('Login flow (remember)', async t => {
+test('Login user (remember)', async t => {
     const objs = await setupStandardDatabase();
     await t
         .click(Selector('a').withText('Log in'))
         .typeText(Selector('label').withText('E-Mail Address'), 'test1@example.com')
+        .typeText(Selector('label').withText('Password'), 'user1pwd')
         .click(Selector('label').withText('Remember me'))
         .click(Selector('button').withText('Log in'))
-        .expect(Selector('h1').withText('Logged in to').exists).ok();
-    const dbUser = await getRecord('users', objs.user1.id);
+        .expect(Selector('a').withText('User One').exists).ok();
+    const dbUser = await getRecord('users', objs.user1._id);
     await t.
         expect(dbUser.token).notEql(objs.user1.token);
     await t
-        .navigateTo('http://localhost:6543/app/user/log-in?email=' + dbUser.email + '&token=' + dbUser.token + '&remember=true')
-        .expect(Selector('a').withText('User One').exists).ok();
-    await t
         .expect(await localLoadValue('auth.token')).eql(dbUser.token)
-        .expect(await sessionLoadValue('auth.token')).eql(undefined);
+        .expect(await sessionLoadValue('auth.token')).notOk();
 });
 
-test('Login flow (do not remember)', async t => {
+test('Login user (do not remember)', async t => {
     const objs = await setupStandardDatabase();
     await t
         .click(Selector('a').withText('Log in'))
         .typeText(Selector('label').withText('E-Mail Address'), 'test1@example.com')
+        .typeText(Selector('label').withText('Password'), 'user1pwd')
         .click(Selector('button').withText('Log in'))
-        .expect(Selector('h1').withText('Logged in to').exists).ok();
-    const dbUser = await getRecord('users', objs.user1.id);
+        .expect(Selector('a').withText('User One').exists).ok();
+    const dbUser = await getRecord('users', objs.user1._id);
     await t.
         expect(dbUser.token).notEql(objs.user1.token);
     await t
-        .navigateTo('http://localhost:6543/app/user/log-in?email=' + dbUser.email + '&token=' + dbUser.token + '&remember=false')
-        .expect(Selector('a').withText('User One').exists).ok();
-    await t
-        .expect(await localLoadValue('auth.token')).eql(undefined)
+        .expect(await localLoadValue('auth.token')).notOk()
         .expect(await sessionLoadValue('auth.token')).eql(dbUser.token);
 });
 
-test('Login step 1 fail missing e-mail', async t => {
+
+test('Login fail missing e-mail', async t => {
     await setupStandardDatabase();
     await t
         .click(Selector('a').withText('Log in'))
-        .typeText(Selector('label').withText('E-Mail Address'), 'does-not-exist@example.com')
+        .typeText(Selector('label').withText('Password'), 'user1pwd')
         .click(Selector('button').withText('Log in'))
-        .expect(Selector('span').withText('This e-mail address is not registered or the token is no longer valid').exists).ok();
+        .expect(Selector('span').withText('This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.').exists).ok();
 });
 
-test('Login step 2 fail missing e-mail', async t => {
-    const objs = await setupStandardDatabase();
+test('Login fail missing password', async t => {
+    await setupStandardDatabase();
     await t
-        .navigateTo('http://localhost:6543/app/user/log-in?email=does-not-exist@example.com&token=' + objs.user1.token + '&remember=false')
-        .expect(Selector('span').withText('The e-mail address does not exist or the token is no longer valid').exists).ok();
+        .click(Selector('a').withText('Log in'))
+        .typeText(Selector('label').withText('E-Mail Address'), 'test1@example.com')
+        .click(Selector('button').withText('Log in'))
+        .expect(Selector('span').withText('This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.').exists).ok();
 });
 
-test('Login step 2 fail incorrect token', async t => {
-    const objs = await setupStandardDatabase();
+test('Login fail incorrect e-mail', async t => {
+    await setupStandardDatabase();
     await t
-        .navigateTo('http://localhost:6543/app/user/log-in?email=' + objs.user1.id + '&token=incorrect-token&remember=false')
-        .expect(Selector('span').withText('The e-mail address does not exist or the token is no longer valid').exists).ok();
+        .click(Selector('a').withText('Log in'))
+        .typeText(Selector('label').withText('E-Mail Address'), 'incorrect-email@example.com')
+        .typeText(Selector('label').withText('Password'), 'user1pwd')
+        .click(Selector('button').withText('Log in'))
+        .expect(Selector('span').withText('This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.').exists).ok();
+});
+
+test('Login fail incorrect password', async t => {
+    await setupStandardDatabase();
+    await t
+        .click(Selector('a').withText('Log in'))
+        .typeText(Selector('label').withText('E-Mail Address'), 'test1@example.com')
+        .typeText(Selector('label').withText('Password'), 'user2pwd')
+        .click(Selector('button').withText('Log in'))
+        .expect(Selector('span').withText('This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.').exists).ok();
+});
+
+test('Login fail new user', async t => {
+    await setupStandardDatabase();
+    await t
+        .click(Selector('a').withText('Log in'))
+        .typeText(Selector('label').withText('E-Mail Address'), 'test_new@example.com')
+        .typeText(Selector('label').withText('Password'), 'userNewpwd')
+        .click(Selector('button').withText('Log in'))
+        .expect(Selector('span').withText('This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.').exists).ok();
+});
+
+test('Login fail locked user', async t => {
+    await setupStandardDatabase();
+    await t
+        .click(Selector('a').withText('Log in'))
+        .typeText(Selector('label').withText('E-Mail Address'), 'test_locked@example.com')
+        .typeText(Selector('label').withText('Password'), 'userLockedpwd')
+        .click(Selector('button').withText('Log in'))
+        .expect(Selector('span').withText('This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.').exists).ok();
+});
+
+test('Login fail blocked user', async t => {
+    await setupStandardDatabase();
+    await t
+        .click(Selector('a').withText('Log in'))
+        .typeText(Selector('label').withText('E-Mail Address'), 'test_blocked@example.com')
+        .typeText(Selector('label').withText('Password'), 'userBlockedpwd')
+        .click(Selector('button').withText('Log in'))
+        .expect(Selector('span').withText('This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.').exists).ok();
 });
