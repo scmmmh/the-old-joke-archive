@@ -48,7 +48,7 @@ test('Create a second user', async t => {
         .expect(allUsers.total_rows).eql(2);
     let dbUser = null;
     for (const row of allUsers.rows) {
-        if (row.id !== objs.admin.id) {
+        if (row.id !== objs.admin._id) {
             dbUser = await getRecord('users', row.id);
             break;
         }

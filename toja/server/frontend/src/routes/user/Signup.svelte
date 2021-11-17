@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { saveJsonApiObject, sendJsonApiRequest, busy } from '../stores';
-    import Input from '../components/Input.svelte';
-    import Button from '../components/Button.svelte';
+    import { saveJsonApiObject, sendJsonApiRequest, busy } from '../../stores';
+    import Input from '../../components/Input.svelte';
+    import Button from '../../components/Button.svelte';
 
     let email = '';
     let emailError = '';

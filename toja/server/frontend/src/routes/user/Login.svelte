@@ -1,10 +1,10 @@
 <script lang="ts">
     import { useNavigate } from 'svelte-navigator';
 
-    import { busy, sendJsonApiRequest, authToken, authUser, getJsonApiObject } from '../stores';
-    import { localStoreValue, sessionStoreValue, localDeleteValue, sessionDeleteValue } from '../local-persistence';
-    import Input from '../components/Input.svelte';
-    import Button from '../components/Button.svelte';
+    import { busy, sendJsonApiRequest, authToken, authUser, getJsonApiObject } from '../../stores';
+    import { localStoreValue, sessionStoreValue, localDeleteValue, sessionDeleteValue } from '../../local-persistence';
+    import Input from '../../components/Input.svelte';
+    import Button from '../../components/Button.svelte';
 
     let email = '';
     let emailError = '';

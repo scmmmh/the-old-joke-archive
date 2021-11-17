@@ -6,9 +6,12 @@ fixture('User Log Out')
 
 test('Log the user out', async t => {
     const objs = await setupStandardDatabase();
-    const dbUser = await getRecord('users', objs.user1.id);
     await t
-        .navigateTo('http://localhost:6543/app/user/log-in?email=' + dbUser.email + '&token=' + dbUser.token + '&remember=true')
+        .click(Selector('a').withText('Log in'))
+        .typeText(Selector('label').withText('E-Mail Address'), 'test1@example.com')
+        .typeText(Selector('label').withText('Password'), 'user1pwd')
+        .click(Selector('label').withText('Remember me'))
+        .click(Selector('button').withText('Log in'))
         .expect(Selector('a').withText('User One').exists).ok()
         .click(Selector('button').withText('Log out'))
         .expect(Selector('a').withText('User One').exists).notOk();

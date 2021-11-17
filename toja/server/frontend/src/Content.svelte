@@ -6,9 +6,9 @@
     import Header from './components/Header.svelte';
     import Footer from './components/Footer.svelte';
     import Home from './routes/Home.svelte';
-    import Signup from './routes/Signup.svelte';
-    import Login from './routes/Login.svelte';
-    import Confirm from './routes/Confirm.svelte';
+    import Signup from './routes/user/Signup.svelte';
+    import Login from './routes/user/Login.svelte';
+    import Confirm from './routes/user/Confirm.svelte';
 
     let Admin = null;
     const location = useLocation();

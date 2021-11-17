@@ -1,5 +1,5 @@
 import { Selector } from 'testcafe';
-import { setupStandardDatabase, getRecord } from '../database';
+import { setupStandardDatabase } from '../database';
 import { sessionStoreValue } from '../local-persistence';
 
 fixture('Administration Access')
@@ -7,10 +7,10 @@ fixture('Administration Access')
 
 test('Test admin access', async t => {
     const objs = await setupStandardDatabase();
-    const dbUser = await getRecord('users', objs.admin.id);
-    await sessionStoreValue('auth.id', dbUser.email);
-    await sessionStoreValue('auth.token', dbUser.token);
+    await sessionStoreValue('auth.id', objs.admin._id);
+    await sessionStoreValue('auth.token', objs.admin.token);
     await t
+        .navigateTo('http://localhost:6543/app')
         .expect(Selector('a').withText('Admin User').exists).ok()
         .click(Selector('a').withExactText('Admin'))
         .expect(Selector('h1').withText('Admin').exists).ok();

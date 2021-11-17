@@ -1,10 +1,10 @@
 <script lang="ts">
     import { useNavigate } from 'svelte-navigator';
 
-    import { saveJsonApiObject, authToken, busy } from '../stores';
-    import { sessionStoreValue } from '../local-persistence';
-    import Input from '../components/Input.svelte';
-    import Button from '../components/Button.svelte';
+    import { saveJsonApiObject, authToken, busy } from '../../stores';
+    import { sessionStoreValue } from '../../local-persistence';
+    import Input from '../../components/Input.svelte';
+    import Button from '../../components/Button.svelte';
 
     const navigate = useNavigate();
     let step = 1;
