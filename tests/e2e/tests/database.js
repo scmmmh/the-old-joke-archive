@@ -11,6 +11,14 @@ async function hashPassword(password) {
     return passwordCache[password];
 }
 
+function hexString(length) {
+    const characters = []
+    for (let idx = 0; idx < length; idx++) {
+        characters.push(Math.floor(Math.random() * 16).toString(16))
+    }
+    return characters.join('');
+}
+
 export async function dropDatabase(databaseName) {
     try {
         await axios.delete(databaseBaseUrl + '/' + databaseName);
@@ -53,7 +61,12 @@ export async function setupMinimalDatabase() {
     objs.admin = await createRecord('users', {
         'email': 'admin@example.com',
         'name': 'Admin User',
-        'token': 'adminToken',
+        'tokens': [
+            {
+                'token': hexString(128),
+                'timestamp': Date.UTC(),
+            }
+        ],
         'password': await hashPassword('admin1pwd'),
         'groups': ['admin'],
         'status': 'active',
@@ -68,7 +81,12 @@ export async function setupStandardDatabase() {
     objs.user1 = await createRecord('users', {
         'email': 'test1@example.com',
         'name': 'User One',
-        'token': 'user1Token',
+        'tokens': [
+            {
+                'token': hexString(128),
+                'timestamp': Date.UTC(),
+            }
+        ],
         'password': await hashPassword('user1pwd'),
         'groups': [],
         'status': 'active'
@@ -76,7 +94,12 @@ export async function setupStandardDatabase() {
     objs.userNew = await createRecord('users', {
         'email': 'test_new@example.com',
         'name': 'User New',
-        'token': 'userNewToken',
+        'tokens': [
+            {
+                'token': hexString(128),
+                'timestamp': Date.UTC(),
+            }
+        ],
         'password': await hashPassword('userNewpwd'),
         'groups': [],
         'status': 'new'
@@ -84,7 +107,12 @@ export async function setupStandardDatabase() {
     objs.userLocked = await createRecord('users', {
         'email': 'test_locked@example.com',
         'name': 'User Locked',
-        'token': 'userLockedToken',
+        'tokens': [
+            {
+                'token': hexString(128),
+                'timestamp': Date.UTC(),
+            }
+        ],
         'password': await hashPassword('userLockedpwd'),
         'groups': [],
         'status': 'locked'
@@ -92,7 +120,12 @@ export async function setupStandardDatabase() {
     objs.userBlocked = await createRecord('users', {
         'email': 'test_locked@example.com',
         'name': 'User Blocked',
-        'token': 'userBlockedToken',
+        'tokens': [
+            {
+                'token': hexString(128),
+                'timestamp': Date.UTC(),
+            }
+        ],
         'password': await hashPassword('userBlockedpwd'),
         'groups': [],
         'status': 'blocked'

@@ -16,9 +16,9 @@ test('Login user (remember)', async t => {
         .expect(Selector('a').withText('User One').exists).ok();
     const dbUser = await getRecord('users', objs.user1._id);
     await t.
-        expect(dbUser.token).notEql(objs.user1.token);
+        expect(dbUser.tokens[0].token).notEql(objs.user1.tokens[0].token);
     await t
-        .expect(await localLoadValue('auth.token')).eql(dbUser.token)
+        .expect(await localLoadValue('auth.token')).eql(dbUser.tokens[0].token)
         .expect(await sessionLoadValue('auth.token')).notOk();
 });
 
@@ -32,10 +32,10 @@ test('Login user (do not remember)', async t => {
         .expect(Selector('a').withText('User One').exists).ok();
     const dbUser = await getRecord('users', objs.user1._id);
     await t.
-        expect(dbUser.token).notEql(objs.user1.token);
+        expect(dbUser.tokens[0].token).notEql(objs.user1.tokens[0].token);
     await t
         .expect(await localLoadValue('auth.token')).notOk()
-        .expect(await sessionLoadValue('auth.token')).eql(dbUser.token);
+        .expect(await sessionLoadValue('auth.token')).eql(dbUser.tokens[0].token);
 });
 
 

@@ -24,7 +24,7 @@ test('Create a first user', async t => {
         .expect(dbUser.groups).eql(['admin'])
         .expect(dbUser.status).eql('new');
     await t
-        .navigateTo('http://localhost:6543/app/user/confirm?id=' + dbUser._id + '&token=' + dbUser.token)
+        .navigateTo('http://localhost:6543/app/user/confirm?id=' + dbUser._id + '&token=' + dbUser.tokens[0].token)
         .expect(Selector('h1').withText('account confirmed').exists).ok()
         .typeText(Selector('label').withExactText('Password'), 'test')
         .typeText(Selector('label').withText('Confirm Password'), 'test')
@@ -59,7 +59,7 @@ test('Create a second user', async t => {
         .expect(dbUser.groups).eql([])
         .expect(dbUser.status).eql('new');
     await t
-        .navigateTo('http://localhost:6543/app/user/confirm?id=' + dbUser._id + '&token=' + dbUser.token)
+        .navigateTo('http://localhost:6543/app/user/confirm?id=' + dbUser._id + '&token=' + dbUser.tokens[0].token)
         .expect(Selector('h1').withText('account confirmed').exists).ok()
         .typeText(Selector('label').withExactText('Password'), 'test')
         .typeText(Selector('label').withText('Confirm Password'), 'test')
@@ -124,7 +124,7 @@ test('Fail to set mismatching password', async t => {
         .expect(dbUser.groups).eql(['admin'])
         .expect(dbUser.status).eql('new');
     await t
-        .navigateTo('http://localhost:6543/app/user/confirm?id=' + dbUser._id + '&token=' + dbUser.token)
+        .navigateTo('http://localhost:6543/app/user/confirm?id=' + dbUser._id + '&token=' + dbUser.tokens[0].token)
         .expect(Selector('h1').withText('account confirmed').exists).ok()
         .typeText(Selector('label').withExactText('Password'), 'test')
         .typeText(Selector('label').withText('Confirm Password'), 'testing')
@@ -150,7 +150,7 @@ test('Fail to set empty password', async t => {
         .expect(dbUser.groups).eql(['admin'])
         .expect(dbUser.status).eql('new');
     await t
-        .navigateTo('http://localhost:6543/app/user/confirm?id=' + dbUser._id + '&token=' + dbUser.token)
+        .navigateTo('http://localhost:6543/app/user/confirm?id=' + dbUser._id + '&token=' + dbUser.tokens[0].token)
         .expect(Selector('h1').withText('account confirmed').exists).ok()
         .click(Selector('button').withText('Set your password'))
         .expect(Selector('span').withText('Empty values not allowed').exists).ok();

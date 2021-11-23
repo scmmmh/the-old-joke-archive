@@ -4,6 +4,7 @@ import json
 import pytest
 
 from aiocouch import CouchDB, exception
+from datetime import datetime, timedelta
 from secrets import token_hex
 from tornado.httpclient import AsyncHTTPClient, HTTPResponse
 from typing import Union
@@ -42,7 +43,8 @@ async def minimal_database(empty_database: CouchDB) -> None:
     admin['email'] = 'admin@example.com'
     admin['name'] = 'The Admin'
     admin['groups'] = ['admin']
-    admin['token'] = token_hex(128)
+    admin['tokens'] = [{'token': token_hex(128),
+                        'timestamp': (datetime.utcnow() + timedelta(days=30)).timestamp()}]
     admin['password'] = ADMIN_PWD
     admin['status'] = 'active'
     await admin.save()
@@ -58,7 +60,8 @@ async def standard_database(minimal_database: CouchDB) -> None:
     user1['email'] = 'user1@example.com'
     user1['name'] = 'User One'
     user1['groups'] = []
-    user1['token'] = token_hex(128)
+    user1['tokens'] = [{'token': token_hex(128),
+                        'timestamp': (datetime.utcnow() + timedelta(days=30)).timestamp()}]
     user1['password'] = USER1_PWD
     user1['status'] = 'active'
     await user1.save()

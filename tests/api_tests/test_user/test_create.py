@@ -25,7 +25,7 @@ async def test_create_first_user(empty_database: CouchDB, http_client: dict) -> 
     del user['attributes']['groups']
     user['attributes']['password'] = 'blabla'
     response = await http_client['put'](f'/api/users/{user["id"]}',
-                                        token=f'{user["id"]}$${db_user["token"]}',
+                                        token=f'{user["id"]}$${db_user["tokens"][0]["token"]}',
                                         body=user)
     user = json.load(response.buffer)['data']
     assert user
@@ -54,7 +54,7 @@ async def test_create_second_user(minimal_database: Tuple[CouchDB, dict], http_c
     del user['attributes']['groups']
     user['attributes']['password'] = 'blabla'
     response = await http_client['put'](f'/api/users/{user["id"]}',
-                                        token=f'{user["id"]}$${db_user["token"]}',
+                                        token=f'{user["id"]}$${db_user["tokens"][0]["token"]}',
                                         body=user)
     user = json.load(response.buffer)['data']
     assert user

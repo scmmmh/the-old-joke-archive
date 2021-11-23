@@ -12,7 +12,7 @@ async def test_get_self(standard_database: Tuple[CouchDB, dict], http_client: di
     """Test that accessing the user's own data works for admins."""
     db, users = standard_database
     response = await http_client['get'](f'/api/users/{users["admin"]["_id"]}',
-                                        token=f'{users["admin"]["_id"]}$${users["admin"]["token"]}')
+                                        token=f'{users["admin"]["_id"]}$${users["admin"]["tokens"][0]["token"]}')
     assert response.code == 200
     user = json.load(response.buffer)['data']
     users = await db['users']
@@ -33,7 +33,7 @@ async def test_get_self_non_admin(standard_database: Tuple[CouchDB, dict], http_
     """Test that accessing the user's own data works for non-admins."""
     db, users = standard_database
     response = await http_client['get'](f'/api/users/{users["user1"]["_id"]}',
-                                        token=f'{users["user1"]["_id"]}$${users["user1"]["token"]}')
+                                        token=f'{users["user1"]["_id"]}$${users["user1"]["tokens"][0]["token"]}')
     assert response.code == 200
     user = json.load(response.buffer)['data']
     users = await db['users']
@@ -54,7 +54,7 @@ async def test_get_other_by_admin(standard_database: Tuple[CouchDB, dict], http_
     """Test that accessing the another user's data works for admins."""
     db, users = standard_database
     response = await http_client['get'](f'/api/users/{users["user1"]["_id"]}',
-                                        token=f'{users["admin"]["_id"]}$${users["admin"]["token"]}')
+                                        token=f'{users["admin"]["_id"]}$${users["admin"]["tokens"][0]["token"]}')
     assert response.code == 200
     user = json.load(response.buffer)['data']
     users = await db['users']
@@ -76,7 +76,7 @@ async def test_fail_incorrect_id(standard_database: Tuple[CouchDB, dict], http_c
     session, users = standard_database
     with pytest.raises(HTTPClientError) as exc_info:
         await http_client['get']('/api/users/does-not-exist',
-                                 token=f'{users["admin"]["_id"]}$${users["admin"]["token"]}')
+                                 token=f'{users["admin"]["_id"]}$${users["admin"]["tokens"][0]["token"]}')
     assert exc_info.value.code == 404
     data = json.load(exc_info.value.response.buffer)
     assert 'errors' in data
@@ -88,7 +88,7 @@ async def test_fail_get_other_user_by_non_admin(standard_database: Tuple[CouchDB
     session, users = standard_database
     with pytest.raises(HTTPClientError) as exc_info:
         await http_client['get'](f'/api/users/{users["admin"]["_id"]}',
-                                 token=f'{users["user1"]["_id"]}$${users["user1"]["token"]}')
+                                 token=f'{users["user1"]["_id"]}$${users["user1"]["tokens"][0]["token"]}')
     assert exc_info.value.code == 403
     data = json.load(exc_info.value.response.buffer)
     assert 'errors' in data

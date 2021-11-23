@@ -8,7 +8,7 @@ fixture('Administration Access')
 test('Test admin access', async t => {
     const objs = await setupStandardDatabase();
     await sessionStoreValue('auth.id', objs.admin._id);
-    await sessionStoreValue('auth.token', objs.admin.token);
+    await sessionStoreValue('auth.token', objs.admin.tokens[0].token);
     await t
         .navigateTo('http://localhost:6543/app')
         .expect(Selector('a').withText('Admin User').exists).ok()

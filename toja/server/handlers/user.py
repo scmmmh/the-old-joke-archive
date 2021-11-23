@@ -3,7 +3,7 @@ import bcrypt
 import logging
 
 from aiocouch import Document, exception as aio_exc
-
+from datetime import datetime,  timedelta
 from secrets import token_hex
 from typing import Union
 from urllib.parse import urlencode
@@ -71,14 +71,19 @@ class UserCollectionHandler(JSONAPICollectionHandler):
                 doc['groups'] = ['admin']
             else:
                 doc['groups'] = []
-            doc['token'] = token_hex(128)
+            doc['tokens'] = [
+                {
+                    'token': token_hex(128),
+                    'timestamp': (datetime.utcnow() + timedelta(days=30)).timestamp()
+                }
+            ]
             await doc.save()
             doc = await db[uid]
             send_email(doc['email'], 'Sign up to The Old Joke Archive', f'''Hello {doc["name"]},
 
 Please use the following link to confirm signing up to The Old Joke Archive:
 
-{config()['server']['base']}/app/user/confirm?{urlencode((('id', doc["_id"]), ('token', doc["token"]), ('action', 'confirm')))}
+{config()['server']['base']}/app/user/confirm?{urlencode((('id', doc["_id"]), ('token', doc["tokens"][0]["token"]), ('action', 'confirm')))}
 
 The Old Joke Automaton.
 ''')  # noqa: E501
@@ -279,7 +284,10 @@ class LoginHandler(JSONAPIHandler):
                 if db_obj is None:
                     raise JSONAPIError(403, [{'email': 'This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.',  # noqa: 501
                                               'password': 'This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.'}])  # noqa: 501
-                db_obj['token'] = token_hex(128)
+                db_obj['tokens'].insert(0, {
+                    'token': token_hex(128),
+                    'timestamp': (datetime.utcnow() + timedelta(days=30)).timestamp()
+                })
                 await db_obj.save()
                 self.set_status(200)
                 self.write({
@@ -287,7 +295,7 @@ class LoginHandler(JSONAPIHandler):
                         'type': 'users',
                         'id': db_obj['_id'],
                         'attributes': {
-                            'token': db_obj['token']
+                            'token': db_obj['tokens'][0]['token']
                         }
                     }
                 })
@@ -345,9 +353,11 @@ class LoginHandler(JSONAPIHandler):
                 async with couchdb() as session:
                     db = await session['users']
                     user = await db[user_id]
-                    if user and user['token'] == token:
-                        user['token'] = None
-                        await user.save()
+                    if user:
+                        for user_token in user['tokens']:
+                            if user_token['token'] == token:
+                                user['tokens'] = []
+                                await user.save()
             except ValueError:
                 pass
             except aio_exc.NotFoundError:
@@ -393,14 +403,19 @@ class ResetPasswordHandler(JSONAPIHandler):
                 doc = tmp
             if doc is not None:
                 doc['status'] = 'active'
-                doc['token'] = token_hex(128)
+                doc['tokens'] = [
+                    {
+                        'token': token_hex(128),
+                        'timestamp': (datetime.utcnow() + timedelta(days=30)).timestamp(),
+                    }
+                ]
                 await doc.save()
                 doc = await db[doc['_id']]
                 send_email(doc['email'], 'Reset your password to The Old Joke Archive', f'''Hello {doc["name"]},
 
 You can use the following link to reset your password:
 
-{config()['server']['base']}/app/user/confirm?{urlencode((('id', doc["_id"]), ('token', doc["token"]), ('action', 'password-reset')))}
+{config()['server']['base']}/app/user/confirm?{urlencode((('id', doc["_id"]), ('token', doc["tokens"][0]["token"]), ('action', 'password-reset')))}
 
 The Old Joke Automaton.
 ''')  # noqa: E501

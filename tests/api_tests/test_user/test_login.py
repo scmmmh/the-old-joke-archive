@@ -20,14 +20,14 @@ async def test_login(standard_database: Tuple[CouchDB, dict], http_client: dict)
     db, users = standard_database
     users_db = await db['users']
     user = (await async_gen_to_list(users_db.find({'email': 'admin@example.com'})))[0]
-    token = user['token']
+    token = user['tokens'][0]['token']
     response = await http_client['post']('/api/users/_login',
                                          {'type': 'users',
                                           'attributes': {'email': 'admin@example.com',
                                                          'password': 'admin1pwd'}})
     assert response.code == 200
     user = (await async_gen_to_list(users_db.find({'email': 'admin@example.com'})))[0]
-    assert token != user['token']
+    assert token != user['tokens'][0]['token']
 
 
 @pytest.mark.asyncio

@@ -34,8 +34,9 @@ class JSONAPIHandler(RequestHandler):
                 async with couchdb() as session:
                     db = await session['users']
                     user = await db[user_id]
-                    if user['token'] == token:
-                        return user
+                    for user_token in user['tokens']:
+                        if user_token['token'] == token:
+                            return user
             except ValueError:
                 pass
             except aio_exc.NotFoundError:
