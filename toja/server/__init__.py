@@ -4,7 +4,7 @@ import logging
 from tornado.web import Application, RedirectHandler
 from tornado.ioloop import IOLoop
 
-from .handlers import UserCollectionHandler, UserItemHandler, LoginHandler, FrontendHandler
+from .handlers import UserCollectionHandler, UserItemHandler, LoginHandler, ResetPasswordHandler, FrontendHandler
 from ..utils import config
 
 
@@ -24,6 +24,7 @@ def run_application_server() -> None:
             ('/app(.*)', FrontendHandler),
             ('/api/users', UserCollectionHandler),
             ('/api/users/_login', LoginHandler),
+            ('/api/users/_reset-password', ResetPasswordHandler),
             (r'/api/users/([a-z0-9\-]+)', UserItemHandler),
         ],
         debug=config()['debug'],

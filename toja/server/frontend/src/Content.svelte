@@ -8,6 +8,7 @@
     import Home from './routes/Home.svelte';
     import Signup from './routes/user/Signup.svelte';
     import Login from './routes/user/Login.svelte';
+    import ResetPassword from './routes/user/ResetPassword.svelte';
     import Confirm from './routes/user/Confirm.svelte';
 
     let Admin = null;
@@ -37,6 +38,7 @@
     <Route path="/user/sign-up"><Signup/></Route>
     <Route path="/user/confirm"><Confirm/></Route>
     <Route path="/user/log-in"><Login/></Route>
+    <Route path="/user/reset-password"><ResetPassword/></Route>
     {#if $isGroupAdminUsers}
         <Route path="/admin/*"><svelte:component this={Admin}/></Route>
     {/if}

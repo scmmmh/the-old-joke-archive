@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { useNavigate } from 'svelte-navigator';
+    import { Link, useNavigate } from 'svelte-navigator';
 
     import { busy, sendJsonApiRequest, authToken, authUser, getJsonApiObject } from '../../stores';
     import { localStoreValue, sessionStoreValue, localDeleteValue, sessionDeleteValue } from '../../local-persistence';
@@ -65,6 +65,7 @@
         <Input bind:value={password} type="password" error={passwordError} disabled={$busy}>Password</Input>
         <Input bind:value={remember} type="checkbox" disabled={$busy}>Remember me <span class="text-sm">(do not select this on a shared or public system)</span></Input>
         <div class="mt-8 text-right">
+            <Link to="/user/reset-password" class="text-primary mr-8">Reset your password</Link>
             <Button disabled={$busy}>{#if $busy}Logging in...{:else}Log in{/if}</Button>
         </div>
     </form>

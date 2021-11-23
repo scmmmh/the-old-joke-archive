@@ -78,7 +78,7 @@ class UserCollectionHandler(JSONAPICollectionHandler):
 
 Please use the following link to confirm signing up to The Old Joke Archive:
 
-{config()['server']['base']}/app/user/confirm?{urlencode((('id', doc["_id"]), ('token', doc["token"])))}
+{config()['server']['base']}/app/user/confirm?{urlencode((('id', doc["_id"]), ('token', doc["token"]), ('action', 'confirm')))}
 
 The Old Joke Automaton.
 ''')  # noqa: E501
@@ -193,7 +193,7 @@ class UserItemHandler(JSONAPIItemHandler):
                 if 'password' in data['attributes']:
                     doc['password'] = bcrypt.hashpw(data['attributes']['password'].encode('utf-8'),
                                                     bcrypt.gensalt()).decode()
-                if doc['status'] == 'new':
+                if doc['status'] == 'new' or doc['status'] == 'inactive':
                     doc['status'] = 'active'
                 await doc.save()
                 doc = await db[iid]
@@ -277,7 +277,7 @@ class LoginHandler(JSONAPIHandler):
                                                             tmp['password'].encode('utf-8')):
                         db_obj = tmp
                 if db_obj is None:
-                    raise JSONAPIError(403, [{'title': 'This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.',  # noqa: 501
+                    raise JSONAPIError(403, [{'email': 'This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.',  # noqa: 501
                                               'password': 'This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.'}])  # noqa: 501
                 db_obj['token'] = token_hex(128)
                 await db_obj.save()
@@ -292,7 +292,7 @@ class LoginHandler(JSONAPIHandler):
                     }
                 })
         except aio_exc.NotFoundError:
-            raise JSONAPIError(403, [{'title': 'This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.',  # noqa: 501
+            raise JSONAPIError(403, [{'email': 'This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.',  # noqa: 501
                                       'password': 'This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.'}])  # noqa: 501
 
     def validate_put(self: 'LoginHandler', data: dict) -> dict:
@@ -353,3 +353,55 @@ class LoginHandler(JSONAPIHandler):
             except aio_exc.NotFoundError:
                 pass
         self.set_status(204)
+
+
+class ResetPasswordHandler(JSONAPIHandler):
+    """Handler for resetting the user."""
+
+    def validate_post(self: 'LoginHandler', data: dict) -> dict:
+        """Validate that the posted ``data`` is valid."""
+        schema = {
+            'type': {
+                'type': 'string',
+                'required': True,
+                'empty': False,
+                'allowed': ['users']
+            },
+            'attributes': {
+                'type': 'dict',
+                'required': True,
+                'schema': {
+                    'email': {
+                        'type': 'string',
+                        'required': True,
+                        'empty': False,
+                        'check_with': 'validate_email',
+                        'coerce': 'email',
+                    },
+                }
+            }
+        }
+        return validate(schema, data)
+
+    async def post(self: 'ResetPasswordHandler') -> None:
+        """Handle a reset password request."""
+        async with couchdb() as session:
+            db = await session['users']
+            user = self.validate_post(await self.jsonapi_body())
+            doc = None
+            async for tmp in db.find({'email': user['attributes']['email']}):
+                doc = tmp
+            if doc is not None:
+                doc['status'] = 'active'
+                doc['token'] = token_hex(128)
+                await doc.save()
+                doc = await db[doc['_id']]
+                send_email(doc['email'], 'Reset your password to The Old Joke Archive', f'''Hello {doc["name"]},
+
+You can use the following link to reset your password:
+
+{config()['server']['base']}/app/user/confirm?{urlencode((('id', doc["_id"]), ('token', doc["token"]), ('action', 'password-reset')))}
+
+The Old Joke Automaton.
+''')  # noqa: E501
+            self.set_status(204)
