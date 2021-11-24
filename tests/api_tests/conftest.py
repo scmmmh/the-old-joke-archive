@@ -47,6 +47,7 @@ async def minimal_database(empty_database: CouchDB) -> None:
                         'timestamp': (datetime.utcnow() + timedelta(days=30)).timestamp()}]
     admin['password'] = ADMIN_PWD
     admin['status'] = 'active'
+    admin['last_access'] = datetime.utcnow().timestamp()
     await admin.save()
     yield empty_database, {'admin': admin}
 
@@ -64,6 +65,7 @@ async def standard_database(minimal_database: CouchDB) -> None:
                         'timestamp': (datetime.utcnow() + timedelta(days=30)).timestamp()}]
     user1['password'] = USER1_PWD
     user1['status'] = 'active'
+    user1['last_access'] = datetime.utcnow().timestamp()
     await user1.save()
     objs['user1'] = user1
     yield session, objs

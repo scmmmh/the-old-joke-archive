@@ -67,6 +67,7 @@ class UserCollectionHandler(JSONAPICollectionHandler):
             doc['name'] = data['attributes']['name']
             doc['email'] = data['attributes']['email']
             doc['status'] = 'new'
+            doc['last_access'] = datetime.utcnow().timestamp()
             if (await db.info())['doc_count'] == 0:
                 doc['groups'] = ['admin']
             else:

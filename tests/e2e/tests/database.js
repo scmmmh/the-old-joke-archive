@@ -70,6 +70,7 @@ export async function setupMinimalDatabase() {
         'password': await hashPassword('admin1pwd'),
         'groups': ['admin'],
         'status': 'active',
+        'last_access': Date.UTC(),
     });
 
     return objs;
@@ -89,7 +90,8 @@ export async function setupStandardDatabase() {
         ],
         'password': await hashPassword('user1pwd'),
         'groups': [],
-        'status': 'active'
+        'status': 'active',
+        'last_access': Date.UTC(),
     });
     objs.userNew = await createRecord('users', {
         'email': 'test_new@example.com',
@@ -102,7 +104,8 @@ export async function setupStandardDatabase() {
         ],
         'password': await hashPassword('userNewpwd'),
         'groups': [],
-        'status': 'new'
+        'status': 'new',
+        'last_access': Date.UTC() - 432000000,
     });
     objs.userLocked = await createRecord('users', {
         'email': 'test_locked@example.com',
@@ -115,7 +118,8 @@ export async function setupStandardDatabase() {
         ],
         'password': await hashPassword('userLockedpwd'),
         'groups': [],
-        'status': 'locked'
+        'status': 'locked',
+        'last_access': Date.UTC() - 3024000000,
     });
     objs.userBlocked = await createRecord('users', {
         'email': 'test_locked@example.com',
@@ -128,7 +132,8 @@ export async function setupStandardDatabase() {
         ],
         'password': await hashPassword('userBlockedpwd'),
         'groups': [],
-        'status': 'blocked'
+        'status': 'blocked',
+        'last_access': Date.UTC() - 3024000000,
     });
 
     return objs;

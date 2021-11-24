@@ -4,6 +4,7 @@ import logging
 import traceback
 
 from aiocouch import Document, exception as aio_exc
+from datetime import datetime
 from io import StringIO
 from tornado.web import RequestHandler
 from typing import Union
@@ -36,6 +37,8 @@ class JSONAPIHandler(RequestHandler):
                     user = await db[user_id]
                     for user_token in user['tokens']:
                         if user_token['token'] == token:
+                            user['last_access'] = datetime.utcnow().timestamp()
+                            await user.save()
                             return user
             except ValueError:
                 pass
