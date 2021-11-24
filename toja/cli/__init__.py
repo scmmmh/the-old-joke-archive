@@ -10,6 +10,7 @@ from cerberus import Validator
 from aiocouch import exception
 from typing import Union
 
+from .actions import actions
 from ..server import run_application_server
 from ..utils import set_config, couchdb
 
@@ -161,6 +162,7 @@ def background() -> None:
 
 
 main.add_command(background)
+main.add_command(actions)
 
 
 async def async_setup() -> None:
