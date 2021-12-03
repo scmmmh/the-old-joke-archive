@@ -7,12 +7,12 @@ import yaml
 import os
 
 from cerberus import Validator
-from aiocouch import exception
 from typing import Union
 
 from .actions import actions
 from ..server import run_application_server
-from ..utils import set_config, couchdb
+from ..utils import set_config
+from ..setup import async_setup
 
 
 logger = logging.getLogger(__name__)
@@ -163,17 +163,6 @@ def background() -> None:
 
 main.add_command(background)
 main.add_command(actions)
-
-
-async def async_setup() -> None:
-    """Run an asynchronous setup process."""
-    async with couchdb() as session:
-        for dbname in ['_users', '_replicator', 'users']:
-            try:
-                logger.debug(f'Creating database {dbname}')
-                await session.create(dbname)
-            except exception.PreconditionFailedError:
-                pass
 
 
 @click.command()
