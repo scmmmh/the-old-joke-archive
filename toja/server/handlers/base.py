@@ -82,6 +82,23 @@ class JSONAPIHandler(RequestHandler):
 class JSONAPICollectionHandler(JSONAPIHandler):
     """Base class for handling collection-level requests."""
 
+    async def allow_get(self: 'JSONAPICollectionHandler', user: Union[Document, None]) -> None:
+        """Check whether GET requests are allowed."""
+        raise JSONAPIError(403, [{'title': 'You are not authorised to access all items of this type'}])
+
+    async def create_get(self: 'JSONAPICollectionHandler', user: Union[Document, None]) -> Document:
+        """Create a new CouchDB document."""
+        raise JSONAPIError(500, [{'title': 'Items of this type cannot be fetched'}])
+
+    async def get(self: 'JSONAPICollectionHandler') -> None:
+        """Handle GET requests."""
+        user = await self.get_user()
+        await self.allow_get(user)
+        docs = await self.create_get(user)
+        data = [await self.as_jsonapi(doc) for doc in docs]
+        self.set_status(200)
+        self.write({'data': data})
+
     async def allow_post(self: 'JSONAPICollectionHandler', data: dict, user: Union[Document, None]) -> None:
         """Check whether POST requests are allowed."""
         raise JSONAPIError(403, [{'title': 'You are not authorised to create new items of this type'}])

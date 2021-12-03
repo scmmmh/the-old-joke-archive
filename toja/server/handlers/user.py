@@ -20,6 +20,22 @@ logger = logging.getLogger(__name__)
 class UserCollectionHandler(JSONAPICollectionHandler):
     """Handler for collection-level user requests."""
 
+    async def allow_get(self: 'UserCollectionHandler', user: Union[Document, None]) -> None:
+        """Allow users with the admin and admin:users roles to access the full list of users."""
+        if user is not None:
+            if 'admin' in user['groups'] or 'admin:users' in user['groups']:
+                return
+        raise JSONAPIError(403, [{'title': 'You are not authorised to access all items of this type'}])
+
+    async def create_get(self: 'JSONAPICollectionHandler', user: Union[Document, None]) -> Document:
+        """Create a new CouchDB document."""
+        async with couchdb() as session:
+            users_db = await session['users']
+            docs = []
+            async for doc in users_db.find(selector={'name': {'$exists': True}}, sort=[{'email': 'asc'}]):
+                docs.append(doc)
+            return docs
+
     async def allow_post(self: 'UserCollectionHandler', data: dict, user: Union[Document, None]) -> None:
         """Allow all POST requests."""
         pass
