@@ -12,7 +12,7 @@ from typing import Union
 from .actions import actions
 from ..server import run_application_server
 from ..utils import set_config
-from ..setup import async_setup
+from ..setup import setup_backend
 
 
 logger = logging.getLogger(__name__)
@@ -168,7 +168,7 @@ main.add_command(actions)
 @click.command()
 def setup() -> None:
     """Set up the TOJA system."""
-    asyncio.run(async_setup())
+    asyncio.run(setup_backend())
 
 
 main.add_command(setup)

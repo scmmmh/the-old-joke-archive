@@ -24,8 +24,8 @@ DATABASES = [
 ]
 
 
-async def async_setup() -> None:
-    """Run an asynchronous setup process."""
+async def setup_couchdb() -> None:
+    """Create the couchdb databases and indices."""
     async with couchdb() as session:
         for db_config in DATABASES:
             if isinstance(db_config, str):
@@ -50,3 +50,8 @@ async def async_setup() -> None:
                             'name': f'{db_config["name"]}-{idx_name}-idx',
                             'type': 'json'
                         })
+
+
+async def setup_backend() -> None:
+    """Run an asynchronous backend setup process."""
+    await setup_couchdb()
