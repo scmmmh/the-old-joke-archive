@@ -5,6 +5,7 @@ database:
 server:
   host: '0.0.0.0'
 debug: True
+test: True
 logging:
   version: 1
   loggers:

@@ -93,6 +93,10 @@ CONFIG_SCHEMA = {
         'type': 'boolean',
         'default': False,
     },
+    'test': {
+        'type': 'boolean',
+        'default': False,
+    },
     'logging': {
         'type': 'dict'
     }

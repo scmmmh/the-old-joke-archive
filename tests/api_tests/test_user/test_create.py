@@ -22,7 +22,6 @@ async def test_create_first_user(empty_database: CouchDB, http_client: dict) -> 
     assert db_user
     assert db_user['status'] == 'new'
     assert 'password' not in db_user
-    del user['attributes']['groups']
     user['attributes']['password'] = 'blabla'
     response = await http_client['put'](f'/api/users/{user["id"]}',
                                         token=f'{user["id"]}$${db_user["tokens"][0]["token"]}',
@@ -51,7 +50,6 @@ async def test_create_second_user(minimal_database: Tuple[CouchDB, dict], http_c
     assert db_user
     assert db_user['status'] == 'new'
     assert 'password' not in db_user
-    del user['attributes']['groups']
     user['attributes']['password'] = 'blabla'
     response = await http_client['put'](f'/api/users/{user["id"]}',
                                         token=f'{user["id"]}$${db_user["tokens"][0]["token"]}',

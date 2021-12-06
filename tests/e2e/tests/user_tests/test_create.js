@@ -16,8 +16,8 @@ test('Create a first user', async t => {
         .expect(Selector('h1').withText('Signed up to').exists).ok();
     const allUsers = await getAllRecords('users');
     await t
-        .expect(allUsers.total_rows).eql(1);
-    let dbUser = await getRecord('users', allUsers.rows[0].id);
+        .expect(allUsers.obj_rows.length).eql(1);
+    let dbUser = await getRecord('users', allUsers.obj_rows[0].id);
     await t
         .expect(dbUser.email).eql('test@example.com')
         .expect(dbUser.name).eql('A Tester')
@@ -30,7 +30,7 @@ test('Create a first user', async t => {
         .typeText(Selector('label').withText('Confirm Password'), 'test')
         .click(Selector('button').withText('Set your password'))
         .expect(getLocation()).eql('http://localhost:6543/app');
-    dbUser = await getRecord('users', allUsers.rows[0].id);
+    dbUser = await getRecord('users', allUsers.obj_rows[0].id);
         await t
             .expect(dbUser.status).eql('active');
     });
@@ -45,9 +45,9 @@ test('Create a second user', async t => {
         .expect(Selector('h1').withText('Signed up to').exists).ok();
     const allUsers = await getAllRecords('users');
     await t
-        .expect(allUsers.total_rows).eql(2);
+        .expect(allUsers.obj_rows.length).eql(2);
     let dbUser = null;
-    for (const row of allUsers.rows) {
+    for (const row of allUsers.obj_rows) {
         if (row.id !== objs.admin._id) {
             dbUser = await getRecord('users', row.id);
             break;
@@ -116,8 +116,8 @@ test('Fail to set mismatching password', async t => {
         .expect(Selector('h1').withText('Signed up to').exists).ok();
     const allUsers = await getAllRecords('users');
     await t
-        .expect(allUsers.total_rows).eql(1);
-    let dbUser = await getRecord('users', allUsers.rows[0].id);
+        .expect(allUsers.obj_rows.length).eql(1);
+    let dbUser = await getRecord('users', allUsers.obj_rows[0].id);
     await t
         .expect(dbUser.email).eql('test@example.com')
         .expect(dbUser.name).eql('A Tester')
@@ -142,8 +142,8 @@ test('Fail to set empty password', async t => {
         .expect(Selector('h1').withText('Signed up to').exists).ok();
     const allUsers = await getAllRecords('users');
     await t
-        .expect(allUsers.total_rows).eql(1);
-    let dbUser = await getRecord('users', allUsers.rows[0].id);
+        .expect(allUsers.obj_rows.length).eql(1);
+    let dbUser = await getRecord('users', allUsers.obj_rows[0].id);
     await t
         .expect(dbUser.email).eql('test@example.com')
         .expect(dbUser.name).eql('A Tester')

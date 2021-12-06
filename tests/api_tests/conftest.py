@@ -2,13 +2,17 @@
 import bcrypt
 import json
 import pytest
+import yaml
 
-from aiocouch import CouchDB, exception
+from aiocouch import CouchDB
 from datetime import datetime, timedelta
 from secrets import token_hex
 from tornado.httpclient import AsyncHTTPClient, HTTPResponse
 from typing import Union
 from uuid import uuid1
+
+from toja.setup import setup_backend, reset_backend
+from toja.utils import set_config
 
 
 ADMIN_PWD = bcrypt.hashpw(b'admin1pwd', bcrypt.gensalt()).decode('utf-8')
@@ -18,21 +22,13 @@ USER1_PWD = bcrypt.hashpw(b'user1pwd', bcrypt.gensalt()).decode('utf-8')
 @pytest.fixture
 async def empty_database() -> None:
     """Provide an empty database."""
+    with open('config.yml') as in_f:
+        config = yaml.load(in_f, Loader=yaml.FullLoader)
+        set_config(config)
+    await reset_backend()
+    await setup_backend()
     async with CouchDB('http://localhost:5984', 'main', 'aiZiojoh7Eux') as session:
-        try:
-            await session.create('_users')
-            await session.create('_replicator')
-        except exception.PreconditionFailedError:
-            pass
-        try:
-            await session.create('users')
-        except exception.PreconditionFailedError:
-            db = await session['users']
-            await db.delete()
-            await session.create('users')
         yield session
-        db = await session['users']
-        await db.delete()
 
 
 @pytest.fixture

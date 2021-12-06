@@ -19,18 +19,6 @@ function hexString(length) {
     return characters.join('');
 }
 
-export async function dropDatabase(databaseName) {
-    try {
-        await axios.delete(databaseBaseUrl + '/' + databaseName);
-    } catch {}
-}
-
-export async function createDatabase(databaseName) {
-    try {
-        await axios.put(databaseBaseUrl + '/' + databaseName);
-    } catch {}
-}
-
 export async function createRecord(databaseName, record) {
     const response = await axios.post(databaseBaseUrl + '/' + databaseName, record);
     return await getRecord(databaseName, response.data.id);
@@ -38,6 +26,9 @@ export async function createRecord(databaseName, record) {
 
 export async function getAllRecords(databaseName) {
     const response = await axios.get(databaseBaseUrl + '/' + databaseName + '/_all_docs');
+    response.data.obj_rows = response.data.rows.filter((row) => {
+        return !row.id.startsWith('_design');
+    });
     return response.data;
 }
 
@@ -47,11 +38,8 @@ export async function getRecord(databaseName, recordId) {
 }
 
 export async function setupEmptyDatabase() {
-    await createDatabase('_users');
-    await createDatabase('_replicator');
-
-    await dropDatabase('users');
-    await createDatabase('users');
+    await axios.delete('http://localhost:6543/test');
+    await axios.post('http://localhost:6543/test');
 }
 
 export async function setupMinimalDatabase() {
@@ -107,18 +95,18 @@ export async function setupStandardDatabase() {
         'status': 'new',
         'last_access': Date.UTC() - 432000000,
     });
-    objs.userLocked = await createRecord('users', {
+    objs.userInactive = await createRecord('users', {
         'email': 'test_locked@example.com',
-        'name': 'User Locked',
+        'name': 'User Inactive',
         'tokens': [
             {
                 'token': hexString(128),
                 'timestamp': Date.UTC(),
             }
         ],
-        'password': await hashPassword('userLockedpwd'),
+        'password': await hashPassword('userInactivepwd'),
         'groups': [],
-        'status': 'locked',
+        'status': 'inactive',
         'last_access': Date.UTC() - 3024000000,
     });
     objs.userBlocked = await createRecord('users', {

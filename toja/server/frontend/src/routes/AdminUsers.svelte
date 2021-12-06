@@ -6,7 +6,6 @@
 
     getJsonApiObjects('users').then((new_users) => {
         users = new_users;
-        console.log(users);
     });
 </script>
 

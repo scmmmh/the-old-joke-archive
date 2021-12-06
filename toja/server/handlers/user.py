@@ -115,6 +115,7 @@ The Old Joke Automaton.
                 'name': doc['name'],
                 'email': doc['email'],
                 'groups': doc['groups'],
+                'status': doc['status'],
             }
         }
 
@@ -191,7 +192,12 @@ class UserItemHandler(JSONAPIItemHandler):
                     'type': 'string'
                 }
             }
-        obj = validate(schema, data)
+            schema['attributes']['schema']['status'] = {
+                'type': 'string',
+                'required': False,
+                'allowed': ['new', 'active', 'blocked', 'inactive']
+            }
+        obj = validate(schema, data, purge_unknown=True)
         if 'email' in obj['attributes']:
             async with couchdb() as session:
                 db = await session['users']
@@ -232,6 +238,7 @@ class UserItemHandler(JSONAPIItemHandler):
                 'name': doc['name'],
                 'email': doc['email'],
                 'groups': doc['groups'],
+                'status': doc['status'],
             }
         }
 

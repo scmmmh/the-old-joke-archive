@@ -4,7 +4,8 @@ import logging
 from tornado.web import Application, RedirectHandler
 from tornado.ioloop import IOLoop
 
-from .handlers import UserCollectionHandler, UserItemHandler, LoginHandler, ResetPasswordHandler, FrontendHandler
+from .handlers import (UserCollectionHandler, UserItemHandler, LoginHandler, ResetPasswordHandler, FrontendHandler,
+                       TestHandler)
 from ..utils import config
 
 
@@ -18,15 +19,18 @@ def run_application_server() -> None:
     :type config: dict
     """
     logger.debug('Application server starting up...')
+    routes = [
+        ('/', RedirectHandler, {'permanent': False, 'url': '/app'}),
+        ('/app(.*)', FrontendHandler),
+        ('/api/users', UserCollectionHandler),
+        ('/api/users/_login', LoginHandler),
+        ('/api/users/_reset-password', ResetPasswordHandler),
+        (r'/api/users/([a-z0-9\-]+)', UserItemHandler),
+    ]
+    if config()['test']:
+        routes.append(('/test', TestHandler))
     app = Application(
-        [
-            ('/', RedirectHandler, {'permanent': False, 'url': '/app'}),
-            ('/app(.*)', FrontendHandler),
-            ('/api/users', UserCollectionHandler),
-            ('/api/users/_login', LoginHandler),
-            ('/api/users/_reset-password', ResetPasswordHandler),
-            (r'/api/users/([a-z0-9\-]+)', UserItemHandler),
-        ],
+        routes,
         debug=config()['debug'],
         xsrf_cookies=True,
         cookie_secret='ohqu6aegezie9uuChiaf9shuisahsiegiej4Quo9aiK3Ohhe8eisoimig4Bee9Eb')

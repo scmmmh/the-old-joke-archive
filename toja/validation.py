@@ -63,9 +63,9 @@ class TojaValidator(Validator):
             return value
 
 
-def validate(schema: dict, data: dict) -> dict:
+def validate(schema: dict, data: dict, purge_unknown: bool = False) -> dict:
     """Validate the given ``data`` using the ``schema``."""
-    validator = TojaValidator(schema)
+    validator = TojaValidator(schema, purge_unknown=purge_unknown)
     if not validator.validate(data):
         logger.debug(validator.errors)
         raise ValidationError(validator.errors)

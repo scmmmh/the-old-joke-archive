@@ -57,7 +57,7 @@
     </td>
     <td class="text-left border-b border-accent py-4">
         {#if editing}
-            <Input type="select" bind:value={user.attributes.status} values={[['active', 'Active'], ['blocked', 'Blocked']]}><span class="sr-only">Status</span></Input>
+            <Input type="select" bind:value={user.attributes.status} values={[['active', 'Active'], ['blocked', 'Blocked'], ['inactive', 'Inactive'], ['new', 'New']]}><span class="sr-only">Status</span></Input>
         {:else}
             {user.attributes.status}
         {/if}

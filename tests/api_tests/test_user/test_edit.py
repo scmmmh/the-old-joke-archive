@@ -103,17 +103,17 @@ async def test_fail_incorrect_id(standard_database: Tuple[CouchDB, dict], http_c
 async def test_fail_non_admin_update_groups(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
     """Test that updating the groups of a user does not work for non-admins."""
     session, users = standard_database
-    with pytest.raises(HTTPClientError) as exc_info:
-        await http_client['put'](f'/api/users/{users["user1"]["_id"]}',
-                                 body={'type': 'users',
-                                       'id': users['user1']['_id'],
-                                       'attributes': {'email': 'user@example.com',
-                                                      'name': 'User One',
-                                                      'groups': ['admin']}},
-                                 token=f'{users["user1"]["_id"]}$${users["user1"]["tokens"][0]["token"]}')
-    assert exc_info.value.code == 400
-    data = json.load(exc_info.value.response.buffer)
-    assert 'errors' in data
+    response = await http_client['put'](f'/api/users/{users["user1"]["_id"]}',
+                                        body={'type': 'users',
+                                              'id': users['user1']['_id'],
+                                              'attributes': {'email': 'user@example.com',
+                                                             'name': 'User One',
+                                                             'groups': ['admin']}},
+                                        token=f'{users["user1"]["_id"]}$${users["user1"]["tokens"][0]["token"]}')
+    user = json.load(response.buffer)['data']
+    users = await session['users']
+    db_user = await users[user['id']]
+    assert db_user['groups'] == []
 
 
 @pytest.mark.asyncio
