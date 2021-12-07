@@ -48,8 +48,8 @@
     <td class="text-left border-b border-accent py-4">
         {#if editing}
             <ul>
-                <li><label class="mx-2 my-1"><input type="checkbox" checked={user.attributes.groups.indexOf('admin') >= 0}/> Superuser</label>
-                <li><label class="mx-2 my-1"><input type="checkbox" checked={user.attributes.groups.indexOf('admin:user') >= 0}/> Admin: User</label>
+                <li><label class="mx-2 my-1"><input type="checkbox" bind:group={user.attributes.groups} value="admin"/> Superuser</label>
+                <li><label class="mx-2 my-1"><input type="checkbox" bind:group={user.attributes.groups} value="admin:user"/> Admin: User</label>
             </ul>
         {:else}
             {user.attributes.groups.join(', ')}

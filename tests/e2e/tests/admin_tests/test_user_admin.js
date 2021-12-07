@@ -16,10 +16,17 @@ test('Test edit user', async t => {
         .expect(Selector('table td').withText('user1@example.com').exists).ok();
     await t
         .click(Selector('table td').withText('user1@example.com').parent('tr').find('button[aria-label="Edit this user"]'))
-        .typeText(Selector('table td label').withText('E-Mail Address').parent('tr').find('input'), 'user2@example.com', {replace: true})
+        .typeText(Selector('table td label').withText('E-Mail Address').parent('td').find('input'), 'user2@example.com', {replace: true})
+        .typeText(Selector('table td label').withText('Name').parent('td').find('input'), 'Updated', {replace: true})
+        .click(Selector('table td label').withText('Superuser'))
+        .click(Selector('table td label').withText('Status'))
+        .click(Selector('option[value="inactive"]'))
         .click(Selector('table td label').withText('E-Mail Address').parent('tr').find('button[aria-label="Save changes"]'))
         .expect(Selector('table td').withText('user2@example.com').exists).ok();
     const user1 = await getRecord('users', objs.users.user1._id);
     await t
-        .expect(user1.email).eql('user2@example.com');
+        .expect(user1.email).eql('user2@example.com')
+        .expect(user1.name).eql('Updated')
+        .expect(user1.groups).eql(['admin'])
+        .expect(user1.status).eql('inactive');
 });

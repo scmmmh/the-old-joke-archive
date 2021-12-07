@@ -223,6 +223,8 @@ class UserItemHandler(JSONAPIItemHandler):
                                                     bcrypt.gensalt()).decode()
                 if doc['status'] == 'new' or doc['status'] == 'inactive':
                     doc['status'] = 'active'
+                if 'status' in data['attributes']:
+                    doc['status'] = data['attributes']['status']
                 await doc.save()
                 doc = await db[iid]
                 return doc
