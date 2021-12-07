@@ -1,11 +1,12 @@
 <script lang="ts">
-    import { tick } from 'svelte';
+    import { tick, createEventDispatcher } from 'svelte';
 
-    import { saveJsonApiObject } from '../stores';
+    import { saveJsonApiObject, deleteJsonApiObject } from '../stores';
     import Input from './Input.svelte';
 
     export let user;
 
+    const dispatch = createEventDispatcher();
     let editing = false;
     let firstCell = null;
 
@@ -27,6 +28,13 @@
     function cancelEdit(ev: Event) {
         ev.preventDefault();
         editing = false;
+    }
+
+    async function deleteUser(ev: Event) {
+        ev.preventDefault();
+        if (await deleteJsonApiObject('users', user.id)) {
+            dispatch('delete');
+        }
     }
 </script>
 
@@ -88,7 +96,7 @@
                     </button>
                 </li>
                 <li role="presentation">
-                    <button aria-label="Delete this user">
+                    <button on:click={deleteUser} aria-label="Delete this user">
                         <svg viewBox="0 0 24 24" class="w-6 h-6 text-accent hover:text-primary transition-colors">
                             <path fill="currentColor" d="M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z" />
                         </svg>

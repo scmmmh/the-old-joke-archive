@@ -98,6 +98,15 @@ export async function getJsonApiObjects(type: string): Promise<JsonApiObject[]> 
     }
 }
 
+export async function deleteJsonApiObject(type: string, id: string): Promise<boolean> {
+    const response = await sendJsonApiRequest('DELETE', '/api/' + type + '/' + id, null);
+    if (response.status === 204) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 export async function attemptAuthentication() {
     let auth = sessionLoadValue('auth', null) as NestedStorage;
     if (!auth) {

@@ -7,6 +7,10 @@
     getJsonApiObjects('users').then((new_users) => {
         users = new_users;
     });
+
+    async function reloadUsers() {
+        users = await getJsonApiObjects('users');
+    }
 </script>
 
 <h2 class="sr-only">User Administration</h2>
@@ -23,7 +27,7 @@
     </thead>
     <tbody>
         {#each users as user}
-            <UserAdminEntry user={user}/>
+            <UserAdminEntry user={user} on:delete={reloadUsers}/>
         {/each}
     </tbody>
 </table>
