@@ -2,7 +2,7 @@
     import { Route, Link, useLocation } from 'svelte-navigator';
 
     import { isGroupAdminUsers } from '../stores';
-    import AdminUsers from './AdminUsers.svelte';
+    import AdminUsers from './admin/AdminUsers.svelte';
 
     const location = useLocation();
 </script>

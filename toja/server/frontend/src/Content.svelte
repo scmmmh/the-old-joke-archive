@@ -14,7 +14,7 @@
     let Admin = null;
     const location = useLocation();
     const unsubscribeLocation = location.subscribe((location) => {
-        if (location.pathname === '/admin') {
+        if (location.pathname.startsWith('/admin')) {
             if (Admin === null) {
                 import('./routes/Admin.svelte').then((mod) => {
                     Admin = mod.default;

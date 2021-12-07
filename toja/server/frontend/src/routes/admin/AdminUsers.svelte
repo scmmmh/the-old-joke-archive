@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { getJsonApiObjects } from '../stores';
-    import UserAdminEntry from '../components/UserAdminEntry.svelte';
+    import { getJsonApiObjects } from '../../stores';
+    import UserAdminEntry from '../../components/UserAdminEntry.svelte';
 
     let users = [];
 
