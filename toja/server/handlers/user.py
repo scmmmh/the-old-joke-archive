@@ -221,10 +221,10 @@ class UserItemHandler(JSONAPIItemHandler):
                 if 'password' in data['attributes']:
                     doc['password'] = bcrypt.hashpw(data['attributes']['password'].encode('utf-8'),
                                                     bcrypt.gensalt()).decode()
-                if doc['status'] == 'new' or doc['status'] == 'inactive':
-                    doc['status'] = 'active'
                 if 'status' in data['attributes']:
                     doc['status'] = data['attributes']['status']
+                if doc['status'] == 'new' or doc['status'] == 'inactive':
+                    doc['status'] = 'active'
                 await doc.save()
                 doc = await db[iid]
                 return doc
