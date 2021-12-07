@@ -34,12 +34,12 @@ async def test_handle_create_empty_data_object(empty_database: CouchDB, http_cli
 async def test_access_time_updated(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
     """Test that accessing the api updates the last_access timestamp."""
     db, objs = standard_database
-    response = await http_client['get'](f'/api/users/{objs["admin"]["_id"]}',
-                                        token=f'{objs["admin"]["_id"]}$${objs["admin"]["tokens"][0]["token"]}')
+    response = await http_client['get'](f'/api/users/{objs["users"]["admin"]["_id"]}',
+                                        token=f'{objs["users"]["admin"]["_id"]}$${objs["users"]["admin"]["tokens"][0]["token"]}')  # noqa: E501
     assert response.code == 200
     users_db = await db['users']
-    db_user = await users_db[objs['admin']['_id']]
+    db_user = await users_db[objs['users']['admin']['_id']]
     assert db_user is not None
     assert 'last_access' in db_user
     assert db_user['last_access'] > 0
-    assert db_user['last_access'] != objs['admin']['last_access']
+    assert db_user['last_access'] != objs['users']['admin']['last_access']

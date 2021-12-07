@@ -1,32 +1,46 @@
 """Fixtures for the API tests."""
-import bcrypt
+import aiohttp
 import json
 import pytest
-import yaml
 
 from aiocouch import CouchDB
-from datetime import datetime, timedelta
-from secrets import token_hex
+from itertools import chain
 from tornado.httpclient import AsyncHTTPClient, HTTPResponse
 from typing import Union
-from uuid import uuid1
-
-from toja.setup import setup_backend, reset_backend
-from toja.utils import set_config
 
 
-ADMIN_PWD = bcrypt.hashpw(b'admin1pwd', bcrypt.gensalt()).decode('utf-8')
-USER1_PWD = bcrypt.hashpw(b'user1pwd', bcrypt.gensalt()).decode('utf-8')
+async def create_objects(names: list[str], dbsession: CouchDB) -> dict:
+    """Create the objects in the backend with the given names."""
+    async with aiohttp.ClientSession() as http_session:
+        query = '&'.join([f'obj={name}' for name in names])
+        async with http_session.put(f'http://localhost:6543/test?{query}') as response:
+            objs = await response.json()
+            for dbname, items in objs.items():
+                db = await dbsession[dbname]
+                for obj_name, obj_id in list(items.items()):
+                    items[obj_name] = await db[obj_id]
+    return objs
+
+
+def merge_objects(a: dict, b: dict) -> dict:
+    """Merge the two test objects together."""
+    result = {}
+    for obj_key, obj_value in chain(a.items(), b.items()):
+        if obj_key not in result:
+            result[obj_key] = {}
+        for item_key, item_value in obj_value.items():
+            result[obj_key][item_key] = item_value
+    return result
 
 
 @pytest.fixture
 async def empty_database() -> None:
     """Provide an empty database."""
-    with open('config.yml') as in_f:
-        config = yaml.load(in_f, Loader=yaml.FullLoader)
-        set_config(config)
-    await reset_backend()
-    await setup_backend()
+    async with aiohttp.ClientSession() as http_session:
+        async with http_session.delete('http://localhost:6543/test'):
+            pass
+        async with http_session.post('http://localhost:6543/test'):
+            pass
     async with CouchDB('http://localhost:5984', 'main', 'aiZiojoh7Eux') as session:
         yield session
 
@@ -34,36 +48,15 @@ async def empty_database() -> None:
 @pytest.fixture
 async def minimal_database(empty_database: CouchDB) -> None:
     """Provide a database with a minimal set of data."""
-    users = await empty_database['users']
-    admin = await users.create(str(uuid1()))
-    admin['email'] = 'admin@example.com'
-    admin['name'] = 'The Admin'
-    admin['groups'] = ['admin']
-    admin['tokens'] = [{'token': token_hex(128),
-                        'timestamp': (datetime.utcnow() + timedelta(days=30)).timestamp()}]
-    admin['password'] = ADMIN_PWD
-    admin['status'] = 'active'
-    admin['last_access'] = datetime.utcnow().timestamp()
-    await admin.save()
-    yield empty_database, {'admin': admin}
+    objs = await create_objects(['admin'], empty_database)
+    yield empty_database, objs
 
 
 @pytest.fixture
 async def standard_database(minimal_database: CouchDB) -> None:
     """Provide a database with a standard set of data."""
     session, objs = minimal_database
-    users = await session['users']
-    user1 = await users.create(str(uuid1()))
-    user1['email'] = 'user1@example.com'
-    user1['name'] = 'User One'
-    user1['groups'] = []
-    user1['tokens'] = [{'token': token_hex(128),
-                        'timestamp': (datetime.utcnow() + timedelta(days=30)).timestamp()}]
-    user1['password'] = USER1_PWD
-    user1['status'] = 'active'
-    user1['last_access'] = datetime.utcnow().timestamp()
-    await user1.save()
-    objs['user1'] = user1
+    objs = merge_objects(objs, await create_objects(['user1'], session))
     yield session, objs
 
 

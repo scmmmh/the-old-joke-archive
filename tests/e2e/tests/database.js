@@ -1,23 +1,6 @@
 import axios from 'axios';
-import bcrypt from 'bcrypt';
 
 const databaseBaseUrl = 'http://main:aiZiojoh7Eux@localhost:5984';
-const passwordCache = {};
-
-async function hashPassword(password) {
-    if (!passwordCache[password]) {
-        passwordCache[password] = await bcrypt.hash(password, 12);
-    }
-    return passwordCache[password];
-}
-
-function hexString(length) {
-    const characters = []
-    for (let idx = 0; idx < length; idx++) {
-        characters.push(Math.floor(Math.random() * 16).toString(16))
-    }
-    return characters.join('');
-}
 
 export async function createRecord(databaseName, record) {
     const response = await axios.post(databaseBaseUrl + '/' + databaseName, record);
@@ -37,6 +20,32 @@ export async function getRecord(databaseName, recordId) {
     return response.data;
 }
 
+export async function createTestRecords(names) {
+    const response = await axios.put('http://localhost:6543/test?' + names.map((name) => { return 'obj=' + name; }).join('&'));
+    const data = response.data;
+    for (let db_key of Object.keys(data)) {
+        for (let [item_key, item_id] of Object.entries(data[db_key])) {
+            data[db_key][item_key] = await getRecord(db_key, item_id);
+        }
+    }
+    return data
+}
+
+export function mergeTestRecords(a, b) {
+    const result = {};
+    for (let [obj_key, obj_values] of Object.entries(a)) {
+        result[obj_key] = {...obj_values}
+    }
+    for (let [obj_key, obj_values] of Object.entries(b)) {
+        if (result[obj_key]) {
+            result[obj_key] = {...result[obj_key], ...obj_values}
+        } else {
+            result[obj_key] = {...obj_values}
+        }
+    }
+    return result;
+}
+
 export async function setupEmptyDatabase() {
     await axios.delete('http://localhost:6543/test');
     await axios.post('http://localhost:6543/test');
@@ -44,85 +53,12 @@ export async function setupEmptyDatabase() {
 
 export async function setupMinimalDatabase() {
     await setupEmptyDatabase();
-
-    const objs = {};
-    objs.admin = await createRecord('users', {
-        'email': 'admin@example.com',
-        'name': 'Admin User',
-        'tokens': [
-            {
-                'token': hexString(128),
-                'timestamp': Date.UTC(),
-            }
-        ],
-        'password': await hashPassword('admin1pwd'),
-        'groups': ['admin'],
-        'status': 'active',
-        'last_access': Date.UTC(),
-    });
-
+    const objs = createTestRecords(['admin']);
     return objs;
 }
 
 export async function setupStandardDatabase() {
-    const objs = await setupMinimalDatabase();
-
-    objs.user1 = await createRecord('users', {
-        'email': 'test1@example.com',
-        'name': 'User One',
-        'tokens': [
-            {
-                'token': hexString(128),
-                'timestamp': Date.UTC(),
-            }
-        ],
-        'password': await hashPassword('user1pwd'),
-        'groups': [],
-        'status': 'active',
-        'last_access': Date.UTC(),
-    });
-    objs.userNew = await createRecord('users', {
-        'email': 'test_new@example.com',
-        'name': 'User New',
-        'tokens': [
-            {
-                'token': hexString(128),
-                'timestamp': Date.UTC(),
-            }
-        ],
-        'password': await hashPassword('userNewpwd'),
-        'groups': [],
-        'status': 'new',
-        'last_access': Date.UTC() - 432000000,
-    });
-    objs.userInactive = await createRecord('users', {
-        'email': 'test_locked@example.com',
-        'name': 'User Inactive',
-        'tokens': [
-            {
-                'token': hexString(128),
-                'timestamp': Date.UTC(),
-            }
-        ],
-        'password': await hashPassword('userInactivepwd'),
-        'groups': [],
-        'status': 'inactive',
-        'last_access': Date.UTC() - 3024000000,
-    });
-    objs.userBlocked = await createRecord('users', {
-        'email': 'test_locked@example.com',
-        'name': 'User Blocked',
-        'tokens': [
-            {
-                'token': hexString(128),
-                'timestamp': Date.UTC(),
-            }
-        ],
-        'password': await hashPassword('userBlockedpwd'),
-        'groups': [],
-        'status': 'blocked',
-        'last_access': Date.UTC() - 3024000000,
-    });
-
+    let objs = await setupMinimalDatabase();
+    objs = mergeTestRecords(objs, await createTestRecords(['user1', 'userNew', 'userInactive', 'userBlocked']))
     return objs;
 }

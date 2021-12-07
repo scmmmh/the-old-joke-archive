@@ -13,6 +13,5 @@
     "testcafe": "^1.16.1"
   },
   "devDependencies": {
-    "bcrypt": "^5.0.1"
   }
 }

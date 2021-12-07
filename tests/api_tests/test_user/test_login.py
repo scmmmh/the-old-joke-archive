@@ -16,15 +16,15 @@ async def async_gen_to_list(generator: AsyncGenerator) -> list:
 
 @pytest.mark.asyncio
 async def test_login(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
-    """Test that the login step 1 works."""
-    db, users = standard_database
-    users_db = await db['users']
+    """Test that the login works."""
+    session, objs = standard_database
+    users_db = await session['users']
     user = (await async_gen_to_list(users_db.find({'email': 'admin@example.com'})))[0]
     token = user['tokens'][0]['token']
     response = await http_client['post']('/api/users/_login',
                                          {'type': 'users',
                                           'attributes': {'email': 'admin@example.com',
-                                                         'password': 'admin1pwd'}})
+                                                         'password': 'adminpwd'}})
     assert response.code == 200
     user = (await async_gen_to_list(users_db.find({'email': 'admin@example.com'})))[0]
     assert token != user['tokens'][0]['token']

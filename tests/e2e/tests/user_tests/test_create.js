@@ -48,7 +48,7 @@ test('Create a second user', async t => {
         .expect(allUsers.obj_rows.length).eql(2);
     let dbUser = null;
     for (const row of allUsers.obj_rows) {
-        if (row.id !== objs.admin._id) {
+        if (row.id !== objs.users.admin._id) {
             dbUser = await getRecord('users', row.id);
             break;
         }
@@ -65,8 +65,8 @@ test('Create a second user', async t => {
         .typeText(Selector('label').withText('Confirm Password'), 'test')
         .click(Selector('button').withText('Set your password'))
         .expect(getLocation()).eql('http://localhost:6543/app');
-    for (const row of allUsers.rows) {
-        if (row.id !== objs.admin.id) {
+    for (const row of allUsers.obj_rows) {
+        if (row.id !== objs.users.admin.id) {
             dbUser = await getRecord('users', row.id);
             break;
         }
