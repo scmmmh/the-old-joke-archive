@@ -2,18 +2,14 @@
 import json
 import pytest
 
-from aiocouch import CouchDB, Document
+from aiocouch import CouchDB
 from base64 import b64encode
 from importlib import resources
 from tornado.httpclient import HTTPClientError
 from typing import Tuple
 
 from .. import test_source
-
-
-def auth_token(user: Document) -> str:
-    """Return the authentication token for the given user."""
-    return f'{user["_id"]}$${user["tokens"][0]["token"]}'
+from ..util import auth_token
 
 
 @pytest.mark.asyncio
