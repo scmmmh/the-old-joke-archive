@@ -14,6 +14,7 @@ ADMIN_PWD = bcrypt.hashpw(b'adminpwd', bcrypt.gensalt()).decode('utf-8')
 USER1_PWD = bcrypt.hashpw(b'user1pwd', bcrypt.gensalt()).decode('utf-8')
 USERBLOCKED_PWD = bcrypt.hashpw(b'userBlockedpwd', bcrypt.gensalt()).decode('utf-8')
 USERINACTIVE_PWD = bcrypt.hashpw(b'userInactivepwd', bcrypt.gensalt()).decode('utf-8')
+PROVIDER_PWD = bcrypt.hashpw(b'providerpwd', bcrypt.gensalt()).decode('utf-8')
 
 
 async def create_user_admin(objs: dict) -> None:
@@ -106,6 +107,24 @@ async def create_user_inactive(objs: dict) -> None:
         return user
 
 
+async def create_user_provider(objs: dict) -> None:
+    """Create the first normal test user."""
+    async with couchdb() as dbsession:
+        users = await dbsession['users']
+        user = await users.create(str(uuid1()))
+        user['email'] = 'provider@example.com'
+        user['name'] = 'Data Provider'
+        user['groups'] = ['provider']
+        user['tokens'] = [{'token': token_hex(128),
+                           'timestamp': (datetime.utcnow() + timedelta(days=30)).timestamp()}]
+        user['password'] = PROVIDER_PWD
+        user['status'] = 'active'
+        user['last_access'] = datetime.utcnow().timestamp()
+        await user.save()
+        objs['users']['provider'] = user['_id']
+        return user
+
+
 class TestHandler(RequestHandler):
     """Handler to create and delete the backend storage."""
 
@@ -127,6 +146,8 @@ class TestHandler(RequestHandler):
                 await create_user_blocked(objs)
             elif key == 'userInactive':
                 await create_user_inactive(objs)
+            elif key == 'provider':
+                await create_user_provider(objs)
         self.write(objs)
 
     async def delete(self: 'TestHandler') -> None:

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { Link } from 'svelte-navigator';
 
-    import { isAuthenticated, authUser, isGroupEditor } from '../../stores';
+    import { isAuthenticated, authUser, isGroupEditor, isGroupDataProvider } from '../../stores';
 </script>
 
 <h1 class="font-blackriver-bold text-2xl md:text-3xl lg:text-4xl mb-8">Contribute to <span class="text-primary">The Old Joke Archive</span></h1>
@@ -22,6 +22,17 @@
                     <p>The workbench allows you to undertake the complete find, transcribe, annotate workflow in a single, integrated interface.</p>
                     <div class="flex flex-row">
                         <span class="inline-block px-3 py-1 border border-primary rounded-lg text-sm">Medium - Long</span>
+                        <span class="flex-auto"></span>
+                        <Link to="/contribute/workbench" class="inline-block px-3 py-1 text-accent">Start &rarr;</Link>
+                    </div>
+                </li>
+            {/if}
+            {#if $isGroupDataProvider}
+                <li class="md:w-1/2 xl:w-1/3 md:pr-8 md:pb-8">
+                    <h2 class="font-merriweather-bold text-lg"><Link to="/contribute/data" class="text-accent">Provide Data</Link></h2>
+                    <p>Provide source data for the archive. This involves uploading the source image data and providing appropriate metadata.</p>
+                    <div class="flex flex-row">
+                        <span class="inline-block px-3 py-1 border border-primary rounded-lg text-sm">Medium</span>
                         <span class="flex-auto"></span>
                         <Link to="/contribute/workbench" class="inline-block px-3 py-1 text-accent">Start &rarr;</Link>
                     </div>

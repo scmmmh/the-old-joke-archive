@@ -20,6 +20,9 @@ DATABASES = [
                 {'name': 'asc'},
             ]
         }
+    },
+    {
+        'name': 'sources',
     }
 ]
 
