@@ -18,3 +18,23 @@ export const isGroupAdminUsers = derived([authUser, isGroupAdmin], ([authUser, i
     }
     return false;
 });
+
+export const isGroupDataProvider = derived([authUser, isGroupAdmin], ([authUser, isGroupAdmin]) => {
+    if (isGroupAdmin) {
+        return true;
+    }
+    if (authUser && (authUser.attributes.groups as string[]).indexOf('data-provider') >= 0) {
+        return true;
+    }
+    return false;
+});
+
+export const isGroupEditor = derived([authUser, isGroupAdmin], ([authUser, isGroupAdmin]) => {
+    if (isGroupAdmin) {
+        return true;
+    }
+    if (authUser && (authUser.attributes.groups as string[]).indexOf('editor') >= 0) {
+        return true;
+    }
+    return false;
+});

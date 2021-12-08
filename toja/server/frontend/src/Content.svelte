@@ -10,6 +10,7 @@
     import Login from './routes/user/Login.svelte';
     import ResetPassword from './routes/user/ResetPassword.svelte';
     import Confirm from './routes/user/Confirm.svelte';
+    import Contribute from "./routes/contribute/Contribute.svelte";
 
     let Admin = null;
     const location = useLocation();
@@ -42,5 +43,6 @@
     {#if $isGroupAdminUsers}
         <Route path="/admin/*"><svelte:component this={Admin}/></Route>
     {/if}
+    <Route path="/contribute"><Contribute/></Route>
 </article>
 <Footer/>

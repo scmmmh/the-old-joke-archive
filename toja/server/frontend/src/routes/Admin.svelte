@@ -7,7 +7,7 @@
     const location = useLocation();
 </script>
 
-<h1 class="font-blackriver-bold text-4xl mb-8">Administrative Functions</h1>
+<h1 class="font-blackriver-bold text-2xl md:text-3xl lg:text-4xl mb-8">Administrative Functions</h1>
 
 <div class="flex flex-row">
     <nav class="flex-none w-full lg:w-auto">

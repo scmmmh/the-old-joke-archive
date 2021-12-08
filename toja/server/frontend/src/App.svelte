@@ -49,4 +49,8 @@
 	a {
 		@apply rounded focus:outline-primary;
 	}
+
+	p {
+		@apply mb-2;
+	}
 </style>

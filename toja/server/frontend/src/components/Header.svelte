@@ -62,7 +62,7 @@
         {#if $breakpoint <= 1}
             <ul class="flex flex-row">
                 <li class="flex-none" role="presentation"><Link to="/search" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Search</Link></li>
-                <li class="flex-none" role="presentation"><Link to="/contribute" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Contribute</Link></li>
+                <li class="flex-none" role="presentation"><Link to="/contribute" class="block px-8 py-1 font-blackriver-bold {$location.pathname.startsWith('/contribute') ? 'text-primary' : 'text-accent'} text-center">Contribute</Link></li>
                 <li class="flex-1" role="presentation"></li>
                 <li class="flex-none" role="presentation">
                     <button bind:this={showMenuButton} on:click={showMenu} class="block text-accent py-1 rounded focus:outline-primary" aria-label="Show the full menu">
@@ -76,10 +76,10 @@
                 <div on:keyup={popupKeyUp} class="absolute left-0 top-0 w-full flex flex-row bg-white z-1 shadow-md">
                     <ul bind:this={popupList} class="flex-auto">
                         <li role="presentation"><Link to="/search" class="block px-8 py-2 font-blackriver-bold text-accent">Search</Link></li>
-                        <li role="presentation"><Link to="/contribute" class="block px-8 py-2 font-blackriver-bold text-accent">Contribute</Link></li>
+                        <li role="presentation"><Link to="/contribute" class="block px-8 py-2 font-blackriver-bold {$location.pathname.startsWith('/contribute') ? 'text-primary' : 'text-accent'}">Contribute</Link></li>
                         <li role="presentation"><Link to="/about" class="block px-8 py-2 font-blackriver-bold text-accent">About</Link></li>
                         {#if $isGroupAdminUsers}
-                            <li class="flex-none" role="presentation"><Link to="/admin" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Admin</Link></li>
+                            <li class="flex-none" role="presentation"><Link to="/admin" class="block px-8 py-1 font-blackriver-bold text-accent">Admin</Link></li>
                         {/if}
                         {#if $isAuthenticated}
                             <li class="flex-none" role="presentation"><Link to="/user/{$authUser.id}" class="block px-8 py-1 font-blackriver-bold text-accent">{$authUser.attributes.name}</Link></li>
@@ -89,7 +89,7 @@
                             <li class="flex-none" role="presentation"><Link to="/user/log-in" class="block px-8 py-1 font-blackriver-bold text-accent">Log in</Link></li>
                         {/if}
                     </ul>
-                    <button on:click={hideMenu} class="block text-accent py-1 rounded focus:outline-primary" aria-label="Hide the full menu">
+                    <button on:click={hideMenu} class="block text-accent py-1 rounded focus:outline-primary self-start" aria-label="Hide the full menu">
                         <svg viewBox="0 0 24 24" class="w-6 h-6">
                             <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
                         </svg>
@@ -99,7 +99,7 @@
         {:else if $breakpoint <= 3}
             <ul class="flex flex-row">
                 <li class="flex-none" role="presentation"><Link to="/search" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Search</Link></li>
-                <li class="flex-none" role="presentation"><Link to="/contribute" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Contribute</Link></li>
+                <li class="flex-none" role="presentation"><Link to="/contribute" class="block px-8 py-1 font-blackriver-bold {$location.pathname.startsWith('/contribute') ? 'text-primary' : 'text-accent'} text-center">Contribute</Link></li>
                 <li class="flex-none" role="presentation"><Link to="/about" class="block px-8 py-1 font-blackriver-bold text-accent text-center">About</Link></li>
                 {#if $isGroupAdminUsers}
                     <li class="flex-none" role="presentation"><Link to="/admin" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Admin</Link></li>
@@ -126,7 +126,7 @@
                 <li class="flex-1 flex-basis-full" role="presentation"></li>
                 <li class="flex-auto w-px" role="presentation"></li>
                 <li class="flex-none" role="presentation"><Link to="/search" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Search</Link></li>
-                <li class="flex-none" role="presentation"><Link to="/contribute" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Contribute</Link></li>
+                <li class="flex-none" role="presentation"><Link to="/contribute" class="block px-8 py-1 font-blackriver-bold {$location.pathname.startsWith('/contribute') ? 'text-primary' : 'text-accent'} text-center">Contribute</Link></li>
                 <li class="flex-none" role="presentation"><Link to="/about" class="block px-8 py-1 font-blackriver-bold text-accent text-center">About</Link></li>
                 {#if $isGroupAdminUsers}
                     <li class="flex-none" role="presentation"><Link to="/admin" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Admin</Link></li>
@@ -135,7 +135,7 @@
         {:else}
             <ul class="flex flex-row flex-wrap">
                 <li class="flex-none" role="presentation"><Link to="/search" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Search</Link></li>
-                <li class="flex-none" role="presentation"><Link to="/contribute" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Contribute</Link></li>
+                <li class="flex-none" role="presentation"><Link to="/contribute" class="block px-8 py-1 font-blackriver-bold {$location.pathname.startsWith('/contribute') ? 'text-primary' : 'text-accent'} text-center">Contribute</Link></li>
                 <li class="flex-none" role="presentation"><Link to="/about" class="block px-8 py-1 font-blackriver-bold text-accent text-center">About</Link></li>
                 {#if $isGroupAdminUsers}
                     <li class="flex-none" role="presentation"><Link to="/admin" class="block px-8 py-1 font-blackriver-bold text-accent text-center">Admin</Link></li>
