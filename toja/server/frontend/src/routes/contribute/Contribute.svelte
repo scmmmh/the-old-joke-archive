@@ -29,12 +29,12 @@
             {/if}
             {#if $isGroupDataProvider}
                 <li class="md:w-1/2 xl:w-1/3 md:pr-8 md:pb-8">
-                    <h2 class="font-merriweather-bold text-lg"><Link to="/contribute/data" class="text-accent">Provide Data</Link></h2>
+                    <h2 class="font-merriweather-bold text-lg"><Link to="/contribute/data" class="text-accent">Contribute Source Data</Link></h2>
                     <p>Provide source data for the archive. This involves uploading the source image data and providing appropriate metadata.</p>
                     <div class="flex flex-row">
                         <span class="inline-block px-3 py-1 border border-primary rounded-lg text-sm">Medium</span>
                         <span class="flex-auto"></span>
-                        <Link to="/contribute/workbench" class="inline-block px-3 py-1 text-accent">Start &rarr;</Link>
+                        <Link to="/contribute/data" class="inline-block px-3 py-1 text-accent">Start &rarr;</Link>
                     </div>
                 </li>
             {/if}
