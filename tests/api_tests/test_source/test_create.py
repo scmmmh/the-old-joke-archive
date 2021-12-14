@@ -8,7 +8,8 @@ from importlib import resources
 from tornado.httpclient import HTTPClientError
 from typing import Tuple
 
-from .. import test_source
+from toja.server.handlers import test
+
 from ..util import auth_token
 
 
@@ -17,7 +18,7 @@ async def test_create_source(standard_database: Tuple[CouchDB, dict], http_clien
     """Test that creating a source from a png image works."""
     session, objs = standard_database
 
-    image_data = f'data:image/png;base64,{b64encode(resources.open_binary(test_source, "example-source1.png").read()).decode("utf-8")}'  # noqa: E501
+    image_data = f'data:image/png;base64,{b64encode(resources.open_binary(test, "example-source1.png").read()).decode("utf-8")}'  # noqa: E501
     response = await http_client['post']('/api/sources',
                                          body={'type': 'sources',
                                                'attributes': {'type': 'book',
@@ -39,6 +40,7 @@ async def test_create_source(standard_database: Tuple[CouchDB, dict], http_clien
     assert source['attributes']['location'] == 'London, UK'
     assert source['attributes']['publisher'] == 'Groan Publishing'
     assert source['attributes']['page_numbers'] == '75'
+    assert source['attributes']['creator'] == objs['users']['provider']['_id']
     assert source['attributes']['data'].startswith('data:image/png;base64,')
 
 
@@ -47,7 +49,7 @@ async def test_create_minimal_source(standard_database: Tuple[CouchDB, dict], ht
     """Test that creating a source with minimal metadata works."""
     session, objs = standard_database
 
-    image_data = f'data:image/png;base64,{b64encode(resources.open_binary(test_source, "example-source1.png").read()).decode("utf-8")}'  # noqa: E501
+    image_data = f'data:image/png;base64,{b64encode(resources.open_binary(test, "example-source1.png").read()).decode("utf-8")}'  # noqa: E501
     response = await http_client['post']('/api/sources',
                                          body={'type': 'sources',
                                                'attributes': {'type': 'book',
@@ -69,6 +71,7 @@ async def test_create_minimal_source(standard_database: Tuple[CouchDB, dict], ht
     assert source['attributes']['location'] == ''
     assert source['attributes']['publisher'] == ''
     assert source['attributes']['page_numbers'] == ''
+    assert source['attributes']['creator'] == objs['users']['provider']['_id']
     assert source['attributes']['data'].startswith('data:image/png;base64,')
 
 
@@ -77,7 +80,7 @@ async def test_create_jpeg_source(standard_database: Tuple[CouchDB, dict], http_
     """Test that creating a source with JPEG image data works."""
     session, objs = standard_database
 
-    image_data = f'data:image/jpeg;base64,{b64encode(resources.open_binary(test_source, "example-source2.jpeg").read()).decode("utf-8")}'  # noqa: E501
+    image_data = f'data:image/jpeg;base64,{b64encode(resources.open_binary(test, "example-source2.jpeg").read()).decode("utf-8")}'  # noqa: E501
     response = await http_client['post']('/api/sources',
                                          body={'type': 'sources',
                                                'attributes': {'type': 'newspaper',
@@ -99,6 +102,7 @@ async def test_create_jpeg_source(standard_database: Tuple[CouchDB, dict], http_
     assert source['attributes']['location'] == ''
     assert source['attributes']['publisher'] == ''
     assert source['attributes']['page_numbers'] == ''
+    assert source['attributes']['creator'] == objs['users']['provider']['_id']
     assert source['attributes']['data'].startswith('data:image/png;base64,')
 
 
@@ -107,7 +111,7 @@ async def test_create_fail_invalid_type(standard_database: Tuple[CouchDB, dict],
     """Test that creating a source with an invalid type fails."""
     session, objs = standard_database
 
-    image_data = f'data:image/png;base64,{b64encode(resources.open_binary(test_source, "example-source1.png").read()).decode("utf-8")}'  # noqa: E501
+    image_data = f'data:image/png;base64,{b64encode(resources.open_binary(test, "example-source1.png").read()).decode("utf-8")}'  # noqa: E501
     with pytest.raises(HTTPClientError) as exc_info:
         await http_client['post']('/api/sources',
                                   body={'type': 'sources',
@@ -130,7 +134,7 @@ async def test_create_fail_no_title(standard_database: Tuple[CouchDB, dict], htt
     """Test that creating a source with no title fails."""
     session, objs = standard_database
 
-    image_data = f'data:image/png;base64,{b64encode(resources.open_binary(test_source, "example-source1.png").read()).decode("utf-8")}'  # noqa: E501
+    image_data = f'data:image/png;base64,{b64encode(resources.open_binary(test, "example-source1.png").read()).decode("utf-8")}'  # noqa: E501
     with pytest.raises(HTTPClientError) as exc_info:
         await http_client['post']('/api/sources',
                                   body={'type': 'sources',
@@ -153,7 +157,7 @@ async def test_create_fail_no_date(standard_database: Tuple[CouchDB, dict], http
     """Test that creating a source with no date fails."""
     session, objs = standard_database
 
-    image_data = f'data:image/png;base64,{b64encode(resources.open_binary(test_source, "example-source1.png").read()).decode("utf-8")}'  # noqa: E501
+    image_data = f'data:image/png;base64,{b64encode(resources.open_binary(test, "example-source1.png").read()).decode("utf-8")}'  # noqa: E501
     with pytest.raises(HTTPClientError) as exc_info:
         await http_client['post']('/api/sources',
                                   body={'type': 'sources',

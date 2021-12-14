@@ -23,6 +23,15 @@ module.exports = {
             },
             outline: {
                 primary: '2px solid #814158',
+            },
+            maxWidth: {
+                '9/10': '90%',
+            },
+            maxHeight: {
+                '9/10': '90%',
+            },
+            zIndex: {
+                'dialog': '1000',
             }
         },
     },

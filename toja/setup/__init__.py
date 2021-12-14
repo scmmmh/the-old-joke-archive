@@ -17,12 +17,22 @@ DATABASES = [
         'indices': {
             'email': [
                 {'email': 'asc'},
+            ],
+            'name': [
                 {'name': 'asc'},
             ]
         }
     },
     {
         'name': 'sources',
+        'indices': {
+            'title': [
+                {'title': 'asc'},
+            ],
+            'created': [
+                {'created': 'asc'},
+            ],
+        }
     }
 ]
 

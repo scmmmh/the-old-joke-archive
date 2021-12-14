@@ -6,13 +6,13 @@
     import Header from './components/Header.svelte';
     import Footer from './components/Footer.svelte';
     import Loading from './components/Loading.svelte';
+    import Dialog from './components/Dialog.svelte';
     import Home from './routes/Home.svelte';
     import Signup from './routes/user/Signup.svelte';
     import Login from './routes/user/Login.svelte';
     import ResetPassword from './routes/user/ResetPassword.svelte';
     import Confirm from './routes/user/Confirm.svelte';
     import Contribute from './routes/contribute/Contribute.svelte';
-    import DataProvision from "./routes/contribute/DataProvision.svelte";
 
     const location = useLocation();
     let Admin = null;
@@ -67,5 +67,6 @@
     {#if $isGroupDataProvider}
         <Route path="/contribute/data">{#if DataProvision}<svelte:component this={DataProvision}/>{:else}<Loading/>{/if}</Route>
     {/if}
+    <Dialog/>
 </article>
 <Footer/>

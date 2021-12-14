@@ -23,7 +23,7 @@ export const isGroupDataProvider = derived([authUser, isGroupAdmin], ([authUser,
     if (isGroupAdmin) {
         return true;
     }
-    if (authUser && (authUser.attributes.groups as string[]).indexOf('data-provider') >= 0) {
+    if (authUser && (authUser.attributes.groups as string[]).indexOf('provider') >= 0) {
         return true;
     }
     return false;
