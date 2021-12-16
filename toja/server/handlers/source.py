@@ -314,7 +314,7 @@ class SourceItemHandler(JSONAPIItemHandler):
         except aio_exc.NotFoundError:
             raise JSONAPIError(404, [{'title': 'This source does not exist'}])
 
-    async def as_jsonapi(self: 'SourceItemHandler', doc: Document) -> dict:
+    async def as_jsonapi(self: 'SourceItemHandler', doc: Document, user: Union[Document, None]) -> dict:
         """Return a single source as JSONAPI."""
         async with couchdb() as session:
             db = await session['sources']

@@ -21,6 +21,7 @@ USER1_PWD = bcrypt.hashpw(b'user1pwd', bcrypt.gensalt()).decode('utf-8')
 USERBLOCKED_PWD = bcrypt.hashpw(b'userBlockedpwd', bcrypt.gensalt()).decode('utf-8')
 USERINACTIVE_PWD = bcrypt.hashpw(b'userInactivepwd', bcrypt.gensalt()).decode('utf-8')
 PROVIDER_PWD = bcrypt.hashpw(b'providerpwd', bcrypt.gensalt()).decode('utf-8')
+EDITOR_PWD = bcrypt.hashpw(b'editorpwd', bcrypt.gensalt()).decode('utf-8')
 
 
 async def create_singleton_object(dbsession: CouchDB, dbname: str, obj: dict) -> Document:
@@ -125,7 +126,7 @@ async def create_user_inactive(objs: dict) -> None:
 
 
 async def create_user_provider(objs: dict) -> None:
-    """Create the first normal test user."""
+    """Create the test provider user."""
     if 'provider' not in objs['users']:
         async with couchdb() as dbsession:
             users = await dbsession['users']
@@ -140,6 +141,23 @@ async def create_user_provider(objs: dict) -> None:
             user['last_access'] = datetime.utcnow().timestamp()
             await user.save()
             objs['users']['provider'] = user['_id']
+
+
+async def create_user_editor(objs: dict) -> None:
+    """Create the test editor user."""
+    async with couchdb() as dbsession:
+        user = await create_singleton_object(dbsession, 'users', {
+            'test_name_': 'editor',
+            'email': 'editor@example.com',
+            'name': 'An Editor',
+            'groups': ['editor'],
+            'tokens': [{'token': token_hex(128),
+                        'timestamp': (datetime.utcnow() + timedelta(days=30)).timestamp()}],
+            'password': EDITOR_PWD,
+            'status': 'active',
+            'last_access': datetime.utcnow().timestamp(),
+        })
+        objs['users']['editor'] = user['_id']
 
 
 async def create_source1(objs: dict) -> None:
@@ -189,6 +207,65 @@ async def create_source2(objs: dict) -> None:
             objs['sources']['source2'] = source['_id']
 
 
+async def create_joke1(objs: dict) -> None:
+    """Create the test auto-transcribed joke user."""
+    async with couchdb() as dbsession:
+        await create_user_user1(objs)
+        await create_source1(objs)
+        joke = await create_singleton_object(dbsession, 'jokes', {
+            'test_name_': 'joke1',
+            'title': '[Untitled]',
+            'status': 'auto-transcribed',
+            'coordinates': [20, 20, 200, 60],
+            'transcriptions': {
+                'auto': {
+                    'content': {
+                        'type': 'doc',
+                        'content': [
+                            {
+                                'type': 'paragraph',
+                                'content': [
+                                    {
+                                        'type': 'text',
+                                        'text': 'Why should a sallor always be a good pugilist?'
+                                    }
+                                ]
+                            },
+                            {
+                                'type': 'paragraph',
+                                'content': [
+                                    {
+                                        'type': 'text',
+                                        'text': 'Because he is always boxing the compass'
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            },
+            'activity': {
+                'extracted': {
+                    'user': objs['users']['user1'],
+                    'created': datetime.utcnow().timestamp(),
+                },
+                'extraction-verified': None,
+                'transcribed': [],
+                'transcription-verified': None,
+                'category-verified': None,
+                'annotated': None,
+                'annotation-verified': None,
+            },
+            'source_id': objs['sources']['source1'],
+        })
+        image = Attachment(joke, 'image')
+        img = Image.open(BytesIO(resources.open_binary(test, "example-joke1.png").read()))
+        buffer = BytesIO()
+        img.save(buffer, format='png')
+        await image.save(buffer.getvalue(), 'image/png')
+        objs['jokes']['joke1'] = joke['_id']
+
+
 class TestHandler(RequestHandler):
     """Handler to create and delete the backend storage."""
 
@@ -199,7 +276,8 @@ class TestHandler(RequestHandler):
     async def put(self: 'TestHandler') -> None:
         """Create test objects in the couchdb."""
         objs = {'users': {},
-                'sources': {}}
+                'sources': {},
+                'jokes': {}}
         for key in self.get_arguments('obj'):
             if key == 'admin':
                 await create_user_admin(objs)
@@ -213,10 +291,14 @@ class TestHandler(RequestHandler):
                 await create_user_inactive(objs)
             elif key == 'provider':
                 await create_user_provider(objs)
+            elif key == 'editor':
+                await create_user_editor(objs)
             elif key == 'source1':
                 await create_source1(objs)
             elif key == 'source2':
                 await create_source2(objs)
+            elif key == 'joke1':
+                await create_joke1(objs)
         self.write(objs)
 
     async def delete(self: 'TestHandler') -> None:

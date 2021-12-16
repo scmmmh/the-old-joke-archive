@@ -143,7 +143,7 @@ class JSONAPIItemHandler(JSONAPIHandler):
         user = await self.get_user()
         await self.allow_get(iid, user)
         doc = await self.create_get(iid, user)
-        data = await self.as_jsonapi(doc)
+        data = await self.as_jsonapi(doc, user)
         self.set_status(200)
         self.write({'data': data})
 
@@ -166,7 +166,7 @@ class JSONAPIItemHandler(JSONAPIHandler):
         await self.allow_put(iid, data, user)
         obj = await self.validate_put(iid, data, user)
         doc = await self.create_put(iid, obj, user)
-        data = await self.as_jsonapi(doc)
+        data = await self.as_jsonapi(doc, user)
         self.set_status(200)
         self.write({'data': data})
 

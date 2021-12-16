@@ -70,3 +70,50 @@ def validate(schema: dict, data: dict, purge_unknown: bool = False) -> dict:
         logger.debug(validator.errors)
         raise ValidationError(validator.errors)
     return validator.document
+
+
+def type_schema(type_name: str) -> dict:
+    """Return a cerberus schema for JSONAPI type entries."""
+    return {
+        'type': 'string',
+        'required': True,
+        'empty': False,
+        'allowed': [type_name],
+    }
+
+
+def id_schema(value: Union[str, None] = None) -> dict:
+    """Return a cerberus schema for JSONAPI id entries."""
+    if value:
+        return {
+            'type': 'string',
+            'required': True,
+            'empty': False,
+            'allowed': [value]
+        }
+    else:
+        return {
+            'type': 'string',
+            'required': True,
+            'empty': False,
+        }
+
+
+def one_to_one_relationship_schema(type_name: str, value: Union[str, None] = None) -> dict:
+    """Return a cerberus schema for a one-to-one JSONAPI relationship."""
+    return {
+        'type': 'dict',
+        'required': True,
+        'empty': False,
+        'schema': {
+            'data': {
+                'type': 'dict',
+                'required': True,
+                'empty': False,
+                'schema': {
+                    'type': type_schema(type_name),
+                    'id': id_schema(value),
+                }
+            }
+        }
+    }

@@ -33,6 +33,17 @@ DATABASES = [
                 {'created': 'asc'},
             ],
         }
+    },
+    {
+        'name': 'jokes',
+        'indices': {
+            'title': [
+                {'title': 'asc'},
+            ],
+            'status': [
+                {'status': 'asc'},
+            ]
+        }
     }
 ]
 

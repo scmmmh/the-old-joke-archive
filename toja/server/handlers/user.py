@@ -233,7 +233,7 @@ class UserItemHandler(JSONAPIItemHandler):
         except aio_exc.NotFoundError:
             raise JSONAPIError(404, [{'title': 'This user does not exist'}])
 
-    async def as_jsonapi(self: 'UserItemHandler', doc: Document) -> dict:
+    async def as_jsonapi(self: 'UserItemHandler', doc: Document, user: Union[Document, None]) -> dict:
         """Return a single user as JSONAPI."""
         return {
             'id': doc['_id'],

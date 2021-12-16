@@ -3,15 +3,10 @@ import pytest
 
 from aiocouch import CouchDB
 from tornado.httpclient import HTTPClientError
-from typing import AsyncGenerator, Tuple
+from typing import Tuple
 
 
-async def async_gen_to_list(generator: AsyncGenerator) -> list:
-    """Transform the values of an async generator into a list."""
-    items = []
-    async for item in generator:
-        items.append(item)
-    return items
+from ..util import async_gen_to_list
 
 
 @pytest.mark.asyncio
