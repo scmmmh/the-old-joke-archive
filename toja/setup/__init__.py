@@ -10,8 +10,6 @@ from ..utils import couchdb
 logger = logging.getLogger(__name__)
 
 DATABASES = [
-    '_users',
-    '_replicator',
     {
         'name': 'users',
         'indices': {
