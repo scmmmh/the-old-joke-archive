@@ -54,6 +54,7 @@ jobs:
     - name: Login to DockerHub
       uses: docker/login-action@v1
       with:
+        registry: registry.room3b.eu
         username: mhall
         password: ${{ secrets.REGISTRYACCESSTOKEN }}
 
