@@ -2,7 +2,6 @@ module.exports = {
     content: [
         './src/**/*.svelte',
     ],
-    darkMode: 'media', // or 'media' or 'class'
     theme: {
         extend: {
             padding: {
@@ -31,6 +30,12 @@ module.exports = {
             },
             maxHeight: {
                 '9/10': '90%',
+            },
+            width: {
+                '9/10-screen': '90vw',
+            },
+            height: {
+                '9/10-screen': '90vh',
             },
             zIndex: {
                 'dialog': '1000',
