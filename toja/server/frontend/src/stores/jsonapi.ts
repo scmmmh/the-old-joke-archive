@@ -1,7 +1,8 @@
 import { get } from 'svelte/store';
 
 import { authToken, authUser } from './auth';
-import { localLoadValue, sessionLoadValue, NestedStorage } from '../local-persistence';
+import { localLoadValue, sessionLoadValue } from '../local-persistence';
+import type { NestedStorage } from '../local-persistence';
 
 export class JsonApiException extends Error {
     public errors = [] as JsonApiError[];

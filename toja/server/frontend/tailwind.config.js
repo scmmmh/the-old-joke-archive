@@ -1,5 +1,7 @@
 module.exports = {
-    purge: [],
+    content: [
+        './src/**/*.svelte',
+    ],
     darkMode: 'media', // or 'media' or 'class'
     theme: {
         extend: {
@@ -34,9 +36,6 @@ module.exports = {
                 'dialog': '1000',
             }
         },
-    },
-    variants: {
-        extend: {},
     },
     plugins: [],
 }

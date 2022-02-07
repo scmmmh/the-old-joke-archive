@@ -24,16 +24,14 @@
 	@tailwind utilities;
 
 	@layer utilities {
-		@variants responsive {
-			.border-brand {
-			    border-image: url('/app/img/body-border-brand.svg') 5 75 75 fill stretch;
-    			border-width: 5px 75px 75px;
-    			border-style: solid;
-			}
+		.border-brand {
+			border-image: url('/app/img/body-border-brand.svg') 5 75 75 fill stretch;
+			border-width: 5px 75px 75px;
+    		border-style: solid;
+		}
 
-			.flex-basis-full {
-				flex-basis: 100%;
-			}
+		.flex-basis-full {
+			flex-basis: 100%;
 		}
 	}
 
