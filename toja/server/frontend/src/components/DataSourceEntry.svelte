@@ -123,7 +123,9 @@
                 </div>
                 <time class="flex-none block w-24">
                     <p class="font-blackriver-bold text-2xl md:text-4xl text-center">{yearFromDate(source.attributes.date)}</p>
-                    <p class="text-center">{monthDayFromDate(source.attributes.date)}</p>
+                    {#if monthDayFromDate(source.attributes.date)}
+                        <p class="text-center">{monthDayFromDate(source.attributes.date)}</p>
+                    {/if}
                 </time>
             {/if}
         </div>

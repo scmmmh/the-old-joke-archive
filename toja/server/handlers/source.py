@@ -9,7 +9,7 @@ from typing import Union
 from uuid import uuid1
 
 from .base import JSONAPICollectionHandler, JSONAPIItemHandler, JSONAPIError
-from toja.utils import couchdb
+from toja.utils import async_gen_to_list, couchdb
 from toja.validation import validate, ValidationError
 
 
@@ -137,6 +137,10 @@ class SourceCollectionHandler(JSONAPICollectionHandler):
             doc = await db[doc['_id']]
             image = Attachment(doc, 'image')
             image_data = f'data:image/png;base64,{b64encode(await image.fetch()).decode("utf-8")}'
+            db = await session['jokes']
+            jokes = db.find({'source_id': doc['_id']})
+            joke_ids = list(map(lambda joke: {'type': 'jokes', 'id': joke['_id']},
+                                await async_gen_to_list(jokes)))
         return {
             'id': doc['_id'],
             'type': 'sources',
@@ -149,9 +153,19 @@ class SourceCollectionHandler(JSONAPICollectionHandler):
                 'publisher': doc['publisher'],
                 'page_numbers': doc['page_numbers'],
                 'data': image_data,
-                'creator': doc['creator'],
                 'created': doc['created'],
-            }
+            },
+            'relationships': {
+                'creator': {
+                    'data': {
+                        'type': 'users',
+                        'id': doc['creator'],
+                    },
+                },
+                'jokes': {
+                    'data': joke_ids,
+                },
+            },
         }
 
 
@@ -333,7 +347,17 @@ class SourceItemHandler(JSONAPIItemHandler):
                 'publisher': doc['publisher'],
                 'page_numbers': doc['page_numbers'],
                 'data': image_data,
-                'creator': doc['creator'],
                 'created': doc['created'],
-            }
+            },
+            'relationships': {
+                'creator': {
+                    'data': {
+                        'type': 'users',
+                        'id': doc['creator'],
+                    },
+                },
+                'jokes': {
+                    'data': [],
+                },
+            },
         }

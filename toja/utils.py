@@ -1,5 +1,6 @@
 """Utility functions."""
 import logging
+from typing import AsyncGenerator
 
 from aiocouch import CouchDB
 from email.message import EmailMessage
@@ -47,6 +48,14 @@ def send_email(recipient: str, subject: str, body: str) -> None:
             email['From'] = config()['email']['sender']
             email['Date'] = formatdate()
             smtp.send_message(email)
+
+
+async def async_gen_to_list(gen: AsyncGenerator) -> list:
+    """Convert an async generator to a list."""
+    result = []
+    async for item in gen:
+        result.append(item)
+    return result
 
 
 class JSONAPIError(HTTPError):

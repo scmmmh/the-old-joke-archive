@@ -83,8 +83,12 @@ export async function getJsonApiObject(type: string, id: string): Promise<JsonAp
     }
 }
 
-export async function getJsonApiObjects(type: string): Promise<JsonApiObject[]> {
-    const response = await sendJsonApiRequest('GET', '/api/' + type, null);
+export async function getJsonApiObjects(type: string, queryParams?: string): Promise<JsonApiObject[]> {
+    let url = '/api/' + type;
+    if (queryParams) {
+        url = url + '?' + queryParams;
+    }
+    const response = await sendJsonApiRequest('GET', url, null);
     if (response.status === 200) {
         const data = await response.json() as JsonApiResponse;
         return data.data as JsonApiObject[];

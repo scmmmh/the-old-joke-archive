@@ -12,6 +12,8 @@ The joke status workflow is as follows:
 * Annotation-verified
 * Published
 """
+import math
+
 from aiocouch import Document, exception as aio_exc
 from aiocouch.attachment import Attachment
 from base64 import b64decode, b64encode
@@ -30,7 +32,7 @@ class JokeCollectionHandler(JSONAPICollectionHandler):
     """Handler for collection-level joke requests."""
 
     async def allow_get(self: 'JokeCollectionHandler', user: Union[Document, None]) -> None:
-        """Allow users with the admin role to access the full list of jokes."""
+        """Allow all logged-in users to access the full list of jokes."""
         if user is not None:
             return
         raise JSONAPIError(403, [{'title': 'You are not authorised to access all jokes'}])
@@ -52,6 +54,14 @@ class JokeCollectionHandler(JSONAPICollectionHandler):
                     {'activity.annotated.user': user['_id']},
                     {'activity.annotation-verified.user': user['_id']},
                 ]}
+            filter_ids = self.get_argument('filter[id]', default=None)
+            if filter_ids:
+                selector = {
+                    '$and': [
+                        selector,
+                        {'$or': [{'_id': id_value} for id_value in filter_ids.split(',')]}
+                    ]
+                }
             async for doc in jokes_db.find(selector=selector, sort=[{'status': 'asc'}]):
                 docs.append(doc)
             return docs
@@ -109,7 +119,12 @@ class JokeCollectionHandler(JSONAPICollectionHandler):
             db = await session['jokes']
             doc = await db.create(uid)
             doc['title'] = '[Untitled]'
-            doc['coordinates'] = data['attributes']['coordinates']
+            doc['coordinates'] = [
+                math.floor(data['attributes']['coordinates'][0]),
+                math.floor(data['attributes']['coordinates'][1]),
+                math.ceil(data['attributes']['coordinates'][2]),
+                math.ceil(data['attributes']['coordinates'][3]),
+            ]
             doc['source_id'] = data['relationships']['source']['data']['id']
             doc['activity'] = {
                 'extracted': {
@@ -124,12 +139,20 @@ class JokeCollectionHandler(JSONAPICollectionHandler):
                 'annotation-verified': None,
             }
             if 'editor' in user['groups'] or 'admin' in user['groups']:
+                doc['activity']['extracted'] = {
+                    'user': user['_id'],
+                    'timestamp': datetime.utcnow().timestamp(),
+                }
                 doc['activity']['extraction-verified'] = {
                     'user': user['_id'],
                     'timestamp': datetime.utcnow().timestamp(),
                 }
                 doc['status'] = 'extraction-verified'
             else:
+                doc['activity']['extracted'] = {
+                    'user': user['_id'],
+                    'timestamp': datetime.utcnow().timestamp(),
+                }
                 doc['status'] = 'extracted'
             doc['transcriptions'] = {}
             await doc.save()
@@ -242,32 +265,6 @@ class JokeItemHandler(JSONAPIItemHandler):
                         'empty': False,
                         'allowed': ['newspaper', 'book']
                     },
-                    'title': {
-                        'type': 'string',
-                        'required': False,
-                        'empty': False,
-                    },
-                    'subtitle': {
-                        'type': 'string',
-                        'required': False,
-                    },
-                    'date': {
-                        'type': 'string',
-                        'required': False,
-                        'empty': False,
-                    },
-                    'location': {
-                        'type': 'string',
-                        'required': False,
-                    },
-                    'publisher': {
-                        'type': 'string',
-                        'required': False,
-                    },
-                    'page_numbers': {
-                        'type': 'string',
-                        'required': False,
-                    },
                     'data': {
                         'type': 'string',
                         'required': False,
@@ -277,6 +274,20 @@ class JokeItemHandler(JSONAPIItemHandler):
                 }
             }
         }
+        async with couchdb() as session:
+            db = await session['jokes']
+            doc = await db[iid]
+            if doc['status'] in ['extracted', 'extraction-verified']:
+                schema['attributes']['schema']['coordinates'] = {
+                    'type': 'list',
+                    'required': True,
+                    'empty': False,
+                    'minlength': 4,
+                    'maxlength': 4,
+                    'schema': {
+                        'type': 'number',
+                    },
+                }
         obj = validate(schema, data, purge_unknown=True)
         if 'data' in data['attributes']:
             image_data = data['attributes']['data'][data['attributes']['data'].find(',') + 1:]
@@ -297,27 +308,15 @@ class JokeItemHandler(JSONAPIItemHandler):
                 doc = await db[iid]
                 if 'type' in data['attributes']:
                     doc['type'] = data['attributes']['type']
-                if 'title' in data['attributes']:
-                    doc['title'] = data['attributes']['title']
-                if 'subtitle' in data['attributes']:
-                    doc['subtitle'] = data['attributes']['subtitle']
-                if 'date' in data['attributes']:
-                    doc['date'] = data['attributes']['date']
-                if 'publisher' in data['attributes']:
-                    doc['publisher'] = data['attributes']['publisher']
-                if 'location' in data['attributes']:
-                    doc['location'] = data['attributes']['location']
-                if 'page_numbers' in data['attributes']:
-                    doc['page_numbers'] = data['attributes']['page_numbers']
-                if 'data' in data['attributes']:
-                    pass
+                if 'coordinates' in data['attributes']:
+                    doc['coordinates'] = [
+                        math.floor(data['attributes']['coordinates'][0]),
+                        math.floor(data['attributes']['coordinates'][1]),
+                        math.ceil(data['attributes']['coordinates'][2]),
+                        math.ceil(data['attributes']['coordinates'][3]),
+                    ]
                 doc['updated'] = datetime.utcnow().timestamp()
                 await doc.save()
-                if 'data' in data['attributes']:
-                    image = Attachment(doc, 'image')
-                    buffer = BytesIO()
-                    data['attributes']['data'].save(buffer, format='png')
-                    await image.save(buffer.getvalue(), 'image/png')
                 doc = await db[iid]
                 return doc
         except aio_exc.NotFoundError:

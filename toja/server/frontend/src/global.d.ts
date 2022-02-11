@@ -1,24 +1,101 @@
 /// <reference types="svelte" />
 
-interface JsonApiResponse {
-    data?: JsonApiObject | JsonApiObject[];
-    errors?: JsonApiError[];
+type JsonApiResponse = {
+    data?: JsonApiObject | JsonApiObject[],
+    errors?: JsonApiError[],
+};
+
+type JsonApiObject = {
+    type: string,
+    id?: string,
+    attributes?: JsonApiAttributeDict,
+    relationships?: {[key: string]: JsonApiObjectRelationship}
+};
+
+type JsonApiAttributeDict = {
+    [key: string]: string | string[] | boolean | boolean[] | number | number[] | JsonApiAttributeDict,
+};
+
+type JsonApiObjectRelationship = {
+    data: JsonApiObjectReference | JsonApiObjectReference[];
 }
 
-interface JsonApiObject {
+type JsonApiObjectReference = {
     type: string;
-    id?: string;
-    attributes?: {[key: string]: string | string[] | boolean | number};
+    id: string;
 }
 
-interface JsonApiError {
-    status: string;
-    code?: string;
+type JsonApiError = {
+    status: string,
+    code?: string,
+    title: string,
+    detail?: string,
+    source?: JsonApiErrorSource,
+};
+
+type JsonApiErrorSource = {
+    pointer: string,
+};
+
+/**
+ * Types for user documents.
+ */
+type UserDocumentReference = {
+    type: 'users';
+    id: string;
+};
+
+/**
+ * Types for source documents.
+ */
+type SourceDocumentReference = {
+    type: 'sources',
+    id: string,
+};
+
+type SourceDocument = {
+    type: 'sources';
+    id?: string,
+    attributes: SourceDocumentAttributes;
+    relationships: SourceDocumentRelationships;
+};
+
+type SourceDocumentAttributes = {
+    type: 'book' | 'newspaper';
     title: string;
-    detail?: string;
-    source?: JsonApiErrorSource;
-}
+    subtitle: string;
+    date: string;
+    location: string;
+    publisher: string;
+    page_numbers: string;
+    data: string;
+    created: number;
+};
 
-interface JsonApiErrorSource {
-    pointer: string;
+type SourceDocumentRelationships = {
+    creator: {data: UserDocumentReference},
+    jokes: {data: JokeDocumentReference[]},
+};
+
+/**
+ * Types for joke documents.
+ */
+type JokeDocumentReference = {
+    type: 'jokes',
+    id: string,
+};
+
+type JokeDocument = {
+    type: 'jokes',
+    id?: string,
+    attributes: JokeDocumentAttributes,
+    relationships: JokeDocumentRelationships,
+};
+
+type JokeDocumentAttributes = {
+    coordinates: number[],
+};
+
+type JokeDocumentRelationships = {
+    source: {data: SourceDocumentReference},
 }
