@@ -16,10 +16,10 @@ import math
 
 from aiocouch import Document, exception as aio_exc
 from aiocouch.attachment import Attachment
-from base64 import b64decode, b64encode
+from base64 import b64encode
 from datetime import datetime
 from io import BytesIO
-from PIL import Image, UnidentifiedImageError
+from PIL import Image
 from typing import Union
 from uuid import uuid1
 
@@ -242,6 +242,10 @@ class JokeItemHandler(JSONAPIItemHandler):
 
     async def validate_put(self: 'JokeItemHandler', iid: str, data: dict, user: Union[Document, None]) -> dict:
         """Validate that the PUT data is valid."""
+        async with couchdb() as session:
+            db = await session['jokes']
+            doc = await db[iid]
+            source_id = doc['source_id']
         schema = {
             'type': {
                 'type': 'string',
@@ -272,6 +276,13 @@ class JokeItemHandler(JSONAPIItemHandler):
                         'regex': r'data:image/(png|jpeg);base64,[a-zA-Z0-9+/=]+'
                     }
                 }
+            },
+            'relationships': {
+                'type': 'dict',
+                'required': True,
+                'schema': {
+                    'source': one_to_one_relationship_schema('sources', value=source_id)
+                }
             }
         }
         async with couchdb() as session:
@@ -289,15 +300,16 @@ class JokeItemHandler(JSONAPIItemHandler):
                     },
                 }
         obj = validate(schema, data, purge_unknown=True)
-        if 'data' in data['attributes']:
-            image_data = data['attributes']['data'][data['attributes']['data'].find(',') + 1:]
-            format = data['attributes']['data'][data['attributes']['data'].find('/') + 1:data['attributes']['data'].find(';')]  # noqa: E501
-            try:
-                with Image.open(BytesIO(b64decode(image_data)), formats=[format]) as img:
-                    img.load()
-                    obj['attributes']['data'] = img
-            except UnidentifiedImageError:
-                raise ValidationError({'attributes.data': 'This is not a supported image format'})
+        if 'coordinates' in obj['attributes']:
+            async with couchdb() as session:
+                db = await session['sources']
+                try:
+                    source = await db[obj['relationships']['source']['data']['id']]
+                except aio_exc.NotFoundError:
+                    raise ValidationError({'relationships.source': 'This source does not exist'})
+                source_attachment = Attachment(source, 'image')
+                with Image.open(BytesIO(await source_attachment.fetch())) as img:
+                    obj['attributes']['data'] = img.crop(obj['attributes']['coordinates'])
         return obj
 
     async def create_put(self: 'JokeItemHandler', iid: str, data: dict, user: Union[Document, None]) -> Document:
@@ -317,6 +329,11 @@ class JokeItemHandler(JSONAPIItemHandler):
                     ]
                 doc['updated'] = datetime.utcnow().timestamp()
                 await doc.save()
+                if 'data' in data['attributes']:
+                    image = Attachment(doc, 'image')
+                    buffer = BytesIO()
+                    data['attributes']['data'].save(buffer, format='png')
+                    await image.save(buffer.getvalue(), 'image/png')
                 doc = await db[iid]
                 return doc
         except aio_exc.NotFoundError:

@@ -3,13 +3,26 @@
     import Loading from '../../components/Loading.svelte';
     import Button from '../../components/Button.svelte';
     import { yearFromDate, monthDayFromDate } from '../../util';
-    import { getJsonApiObjects } from '../../stores';
+    import { getJsonApiObjects, getJsonApiObject } from '../../stores';
+    import Transcription from '../../components/Transcription.svelte';
 
     let sources = null as SourceDocument[];
     let selectedSource = null;
+    let updateTrigger = false;
 
     async function loadSources() {
         sources = await getJsonApiObjects('sources') as SourceDocument[];
+    }
+
+    async function updateSelectedSource() {
+        selectedSource = await getJsonApiObject('sources', selectedSource.id) as SourceDocument;
+        sources = sources.map((source) => {
+            if (source.id === selectedSource.id) {
+                return selectedSource;
+            } else {
+                return source;
+            }
+        })
     }
 
     loadSources();
@@ -25,10 +38,9 @@
         {/if}
     </div>
     {#if selectedSource}
-        <div class="flex-1 flex flex-row overflow-hidden">
-            <div class="w-1/3 h-full"><ImageEditor source={selectedSource}/></div>
-            <div class="w-1/3"></div>
-            <div class="w-1/3"></div>
+        <div class="flex-1 flex flex-row overflow-hidden space-x-4">
+            <div class="w-1/3 h-full"><ImageEditor source={selectedSource} on:changed={updateSelectedSource} on:deleted={updateSelectedSource} /></div>
+            <div class="w-2/3 h-full"><Transcription source={selectedSource}/></div>
         </div>
     {:else}
         <div class="flex-1 overflow-auto">

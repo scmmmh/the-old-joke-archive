@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { onMount, onDestroy, createEventDispatcher } from 'svelte';
+    import { onMount, onDestroy, createEventDispatcher, tick } from 'svelte';
     import { Application, Sprite, Graphics, Point } from 'pixi.js';
+    import deepcopy from 'deepcopy';
 
     import { getJsonApiObjects, saveJsonApiObject, deleteJsonApiObject } from '../stores';
 
@@ -26,7 +27,9 @@
     const DRAG_MODE_RIGHT_BOTTOM_CORNER = 7;
     const DRAG_MODE_LEFT_BOTTOM_CORNER = 8;
     const DRAG_MODE_WHOLE = 9;
+    const DRAG_MODE_OTHER = 10;
 
+    let oldSourceId  = null;
     let containerElement = null as HTMLElement;
     let editMenuElement = null as HTMLElement;
     let app = null as Application;
@@ -53,8 +56,8 @@
     }
 
     function render() {
-        image[0] = offsetX;
-        image[1] = offsetY;
+        image.x = offsetX;
+        image.y = offsetY;
         image.scale.set(scale);
         for (let element of elements) {
             if (element.joke.attributes.coordinates[0] !== null && element.joke.attributes.coordinates[1] !== null) {
@@ -104,7 +107,7 @@
                 editMenuElement.classList.add('hidden');
             }
             if (dragging) {
-                if (selectedElement) {
+                if (selectedElement && dragMode !== DRAG_MODE_OTHER) {
                     deltaX = deltaX / scale;
                     deltaY = deltaY / scale;
                     if (dragMode === DRAG_MODE_WHOLE) {
@@ -181,11 +184,14 @@
                         app.view.style.cursor = 'move';
                         dragMode = DRAG_MODE_WHOLE;
                     }
+                } else {
+                    dragMode = DRAG_MODE_OTHER;
                 }
             } else if (mode === MODE_NEW) {
                 app.view.style.cursor = 'copy';
             } else {
                 app.view.style.cursor = 'move';
+                dragMode = DRAG_MODE_OTHER;
             }
         }
     }
@@ -205,8 +211,11 @@
                         if (element.graphics === target) {
                             element.selected = true;
                             selectedElement = element;
-                            originalElement = {...selectedElement};
+                            originalElement = deepcopy(selectedElement);
                             editMenuElement.classList.remove('hidden');
+                            tick().then(() => {
+                                render();
+                            });
                         } else {
                             element.selected = false;
                         }
@@ -232,7 +241,8 @@
     }
 
     async function loadData(source: SourceDocument) {
-        if (app && source) {
+        if (app && source && source.id !== oldSourceId) {
+            oldSourceId = source.id;
             app.stage.removeChildren();
             image = Sprite.from(source.attributes.data as string);
             app.stage.addChild(image);
@@ -367,7 +377,7 @@
         try {
             await deleteJsonApiObject('jokes', selectedElement.joke.id);
             dispatch('deleted', selectedElement.joke);
-            elements = elements.filter((element) => { return element === selectedElement});
+            elements = elements.filter((element) => { return element !== selectedElement});
             app.stage.removeChild(selectedElement.graphics);
             mode = MODE_SELECT;
             editMenuElement.classList.add('hidden');
