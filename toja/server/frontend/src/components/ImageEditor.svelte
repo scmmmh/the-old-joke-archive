@@ -95,6 +95,7 @@
             dragging = true;
             app.view.style.cursor = 'nwse-resize';
             mode = MODE_EDIT;
+            dragMode = DRAG_MODE_RIGHT_BOTTOM_CORNER;
         }
     }
 
@@ -291,7 +292,7 @@
     onMount(() => {
         app = new Application({
             resizeTo: containerElement,
-            backgroundColor: 0xffffff,
+            backgroundColor: 0xd1d5db,
         });
         containerElement.appendChild(app.view);
         app.resize();
