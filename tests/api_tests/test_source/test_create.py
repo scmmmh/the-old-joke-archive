@@ -40,8 +40,9 @@ async def test_create_source(standard_database: Tuple[CouchDB, dict], http_clien
     assert source['attributes']['location'] == 'London, UK'
     assert source['attributes']['publisher'] == 'Groan Publishing'
     assert source['attributes']['page_numbers'] == '75'
-    assert source['attributes']['creator'] == objs['users']['provider']['_id']
     assert source['attributes']['data'].startswith('data:image/png;base64,')
+    assert source['relationships']['creator']['data']['type'] == 'users'
+    assert source['relationships']['creator']['data']['id'] == objs['users']['provider']['_id']
 
 
 @pytest.mark.asyncio
@@ -71,8 +72,9 @@ async def test_create_minimal_source(standard_database: Tuple[CouchDB, dict], ht
     assert source['attributes']['location'] == ''
     assert source['attributes']['publisher'] == ''
     assert source['attributes']['page_numbers'] == ''
-    assert source['attributes']['creator'] == objs['users']['provider']['_id']
     assert source['attributes']['data'].startswith('data:image/png;base64,')
+    assert source['relationships']['creator']['data']['type'] == 'users'
+    assert source['relationships']['creator']['data']['id'] == objs['users']['provider']['_id']
 
 
 @pytest.mark.asyncio
@@ -102,8 +104,9 @@ async def test_create_jpeg_source(standard_database: Tuple[CouchDB, dict], http_
     assert source['attributes']['location'] == ''
     assert source['attributes']['publisher'] == ''
     assert source['attributes']['page_numbers'] == ''
-    assert source['attributes']['creator'] == objs['users']['provider']['_id']
     assert source['attributes']['data'].startswith('data:image/png;base64,')
+    assert source['relationships']['creator']['data']['type'] == 'users'
+    assert source['relationships']['creator']['data']['id'] == objs['users']['provider']['_id']
 
 
 @pytest.mark.asyncio

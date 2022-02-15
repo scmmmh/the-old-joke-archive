@@ -4,6 +4,8 @@ database:
   password: aiZiojoh7Eux
 server:
   host: '0.0.0.0'
+mosquitto:
+  host: localhost
 debug: True
 test: True
 logging:
