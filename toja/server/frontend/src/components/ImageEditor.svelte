@@ -68,7 +68,7 @@
                     if (element.selected) {
                         element.graphics.lineStyle(3, 0xDF95B6).beginFill(0xffffff, 0.1);
                         element.graphics.zIndex = 20;
-                        editMenuElement.style.left = (element.joke.attributes.coordinates[2] * scale + offsetX - editMenuElement.offsetWidth + 2) + 'px';
+                        editMenuElement.style.left = Math.min(containerElement.clientWidth - editMenuElement.offsetWidth, element.joke.attributes.coordinates[2] * scale + offsetX - editMenuElement.offsetWidth + 2) + 'px';
                         editMenuElement.style.top = (element.joke.attributes.coordinates[3] * scale + offsetY + 2) + 'px';
                     } else {
                         element.graphics.lineStyle(3, 0x2D8095).beginFill(0xffffff, 0.1);

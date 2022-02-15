@@ -10,6 +10,7 @@ from cerberus import Validator
 from typing import Union
 
 from .actions import actions
+from ..background import run_background_app
 from ..server import run_application_server
 from ..utils import set_config
 from ..setup import setup_backend
@@ -53,6 +54,16 @@ CONFIG_SCHEMA = {
             },
             'password': {
                 'type': 'string'
+            }
+        }
+    },
+    'mosquitto': {
+        'type': 'dict',
+        'required': True,
+        'schema': {
+            'host': {
+                'type': 'string',
+                'default': 'localhost'
             }
         }
     },
@@ -162,7 +173,7 @@ main.add_command(server)
 @click.command()
 def background() -> None:
     """Run the TOJA background processing application."""
-    pass
+    run_background_app()
 
 
 main.add_command(background)

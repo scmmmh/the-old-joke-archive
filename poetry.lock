@@ -60,6 +60,17 @@ python-versions = ">=3.6"
 typing-extensions = ">=3.6.5"
 
 [[package]]
+name = "asyncio-mqtt"
+version = "0.12.1"
+description = "Idomatic asyncio wrapper around paho-mqtt."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+paho-mqtt = ">=1.6.0"
+
+[[package]]
 name = "atomicwrites"
 version = "1.4.0"
 description = "Atomic file writes."
@@ -347,6 +358,17 @@ python-versions = ">=3.6"
 pyparsing = ">=2.0.2"
 
 [[package]]
+name = "paho-mqtt"
+version = "1.6.1"
+description = "MQTT version 5.0/3.1.1 client class"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+proxy = ["pysocks"]
+
+[[package]]
 name = "pillow"
 version = "8.4.0"
 description = "Python Imaging Library (Fork)"
@@ -606,7 +628,7 @@ postgresql = []
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "2aeb6872cc4531652732afca8028466b2f4ba16f3b4a19ac8fe0fe6c3633bee1"
+content-hash = "67ef125be6eda7ff93ec75d9bd43f48f0b88249f03f9ef07bf032604de67f658"
 
 [metadata.files]
 aiocouch = [
@@ -694,6 +716,10 @@ aiosignal = [
 async-timeout = [
     {file = "async-timeout-4.0.1.tar.gz", hash = "sha256:b930cb161a39042f9222f6efb7301399c87eeab394727ec5437924a36d6eef51"},
     {file = "async_timeout-4.0.1-py3-none-any.whl", hash = "sha256:a22c0b311af23337eb05fcf05a8b51c3ea53729d46fb5460af62bee033cec690"},
+]
+asyncio-mqtt = [
+    {file = "asyncio_mqtt-0.12.1-py3-none-any.whl", hash = "sha256:cfa32fbd3a2d727ac74fa17ccafd30830a2a66f9e5e6ac7eee5458a9c7a6a832"},
+    {file = "asyncio_mqtt-0.12.1.tar.gz", hash = "sha256:6dbf85a45f94d26e7465411680ada3947b50546e98208d5d52e7a0a7ed7a7c38"},
 ]
 atomicwrites = [
     {file = "atomicwrites-1.4.0-py2.py3-none-any.whl", hash = "sha256:6d1784dea7c0c8d4a5172b6c620f40b6e4cbfdf96d783691f2e1302a7b88e197"},
@@ -993,6 +1019,9 @@ nodeenv = [
 packaging = [
     {file = "packaging-21.0-py3-none-any.whl", hash = "sha256:c86254f9220d55e31cc94d69bade760f0847da8000def4dfe1c6b872fd14ff14"},
     {file = "packaging-21.0.tar.gz", hash = "sha256:7dc96269f53a4ccec5c0670940a4281106dd0bb343f47b7471f779df49c2fbe7"},
+]
+paho-mqtt = [
+    {file = "paho-mqtt-1.6.1.tar.gz", hash = "sha256:2a8291c81623aec00372b5a85558a372c747cbca8e9934dfe218638b8eefc26f"},
 ]
 pillow = [
     {file = "Pillow-8.4.0-cp310-cp310-macosx_10_10_universal2.whl", hash = "sha256:81f8d5c81e483a9442d72d182e1fb6dcb9723f289a57e8030811bac9ea3fef8d"},

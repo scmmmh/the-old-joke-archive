@@ -24,7 +24,7 @@ from typing import Union
 from uuid import uuid1
 
 from .base import JSONAPICollectionHandler, JSONAPIItemHandler, JSONAPIError
-from toja.utils import couchdb
+from toja.utils import couchdb, mosquitto
 from toja.validation import validate, ValidationError, type_schema, one_to_one_relationship_schema
 
 
@@ -334,6 +334,8 @@ class JokeItemHandler(JSONAPIItemHandler):
                     buffer = BytesIO()
                     data['attributes']['data'].save(buffer, format='png')
                     await image.save(buffer.getvalue(), 'image/png')
+                async with mosquitto() as client:
+                    await client.publish(f'jokes/{iid}/ocr')
                 doc = await db[iid]
                 return doc
         except aio_exc.NotFoundError:

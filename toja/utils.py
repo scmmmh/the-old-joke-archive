@@ -3,6 +3,7 @@ import logging
 from typing import AsyncGenerator
 
 from aiocouch import CouchDB
+from asyncio_mqtt import Client
 from email.message import EmailMessage
 from email.utils import formatdate
 from smtplib import SMTP
@@ -28,6 +29,11 @@ def couchdb() -> CouchDB:
     return CouchDB(config()['database']['server'],
                    config()['database']['user'],
                    config()['database']['password'])
+
+
+def mosquitto() -> Client:
+    """Get a mosquitto client."""
+    return Client(config()['mosquitto']['host'])
 
 
 def send_email(recipient: str, subject: str, body: str) -> None:
