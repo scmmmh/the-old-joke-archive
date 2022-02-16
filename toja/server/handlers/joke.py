@@ -28,6 +28,50 @@ from toja.utils import couchdb, mosquitto
 from toja.validation import validate, ValidationError, type_schema, one_to_one_relationship_schema
 
 
+def coerce_coordinates(value: list) -> list:
+    """Coerce the coordinates into an integer bounding box."""
+    if len(value) == 4:
+        return [
+            int(math.floor(value[0])),
+            int(math.floor(value[1])),
+            int(math.ceil(value[2])),
+            int(math.ceil(value[3])),
+        ]
+    else:
+        return []
+
+
+async def as_jsonapi(doc: Document, user: Union[Document, None]) -> dict:
+    """Return a single joke as JSONAPI."""
+    async with couchdb() as session:
+        db = await session['jokes']
+        doc = await db[doc['_id']]
+        image = Attachment(doc, 'image')
+        image_data = f'data:image/png;base64,{b64encode(await image.fetch()).decode("utf-8")}'
+    return {
+        'id': doc['_id'],
+        'type': 'jokes',
+        'attributes': {
+            'title': doc['title'],
+            'coordinates': doc['coordinates'],
+            'transcriptions': dict([(key, value)
+                                    for key, value in doc['transcriptions'].items()
+                                    if key in ['auto', 'final', user['_id'] if user else None]]),
+            'data': image_data,
+            'status': doc['status'],
+            'activity': doc['activity'],
+        },
+        'relationships': {
+            'source': {
+                'data': {
+                    'type': 'sources',
+                    'id': doc['source_id'],
+                }
+            }
+        }
+    }
+
+
 class JokeCollectionHandler(JSONAPICollectionHandler):
     """Handler for collection-level joke requests."""
 
@@ -89,6 +133,7 @@ class JokeCollectionHandler(JSONAPICollectionHandler):
                         'schema': {
                             'type': 'number',
                         },
+                        'coerce': coerce_coordinates,
                     }
                 }
             },
@@ -119,12 +164,7 @@ class JokeCollectionHandler(JSONAPICollectionHandler):
             db = await session['jokes']
             doc = await db.create(uid)
             doc['title'] = '[Untitled]'
-            doc['coordinates'] = [
-                math.floor(data['attributes']['coordinates'][0]),
-                math.floor(data['attributes']['coordinates'][1]),
-                math.ceil(data['attributes']['coordinates'][2]),
-                math.ceil(data['attributes']['coordinates'][3]),
-            ]
+            doc['coordinates'] = data['attributes']['coordinates']
             doc['source_id'] = data['relationships']['source']['data']['id']
             doc['activity'] = {
                 'extracted': {
@@ -160,36 +200,15 @@ class JokeCollectionHandler(JSONAPICollectionHandler):
             buffer = BytesIO()
             data['attributes']['data'].save(buffer, format='png')
             await image.save(buffer.getvalue(), 'image/png')
+            if doc['status'] == 'extraction-verified':
+                async with mosquitto() as client:
+                    await client.publish(f'jokes/{uid}/ocr')
             doc = await db[uid]
             return doc
 
-    async def as_jsonapi(self: 'JokeCollectionHandler', doc: Document) -> dict:
+    async def as_jsonapi(self: 'JokeCollectionHandler', doc: Document, user: Union[Document, None]) -> dict:
         """Return a single joke as JSONAPI."""
-        async with couchdb() as session:
-            db = await session['jokes']
-            doc = await db[doc['_id']]
-            image = Attachment(doc, 'image')
-            image_data = f'data:image/png;base64,{b64encode(await image.fetch()).decode("utf-8")}'
-        return {
-            'id': doc['_id'],
-            'type': 'jokes',
-            'attributes': {
-                'title': doc['title'],
-                'coordinates': doc['coordinates'],
-                'transcriptions': doc['transcriptions'],
-                'data': image_data,
-                'status': doc['status'],
-                'activity': doc['activity'],
-            },
-            'relationships': {
-                'source': {
-                    'data': {
-                        'type': 'sources',
-                        'id': doc['source_id'],
-                    }
-                }
-            }
-        }
+        return await as_jsonapi(doc, user)
 
 
 class JokeItemHandler(JSONAPIItemHandler):
@@ -288,16 +307,29 @@ class JokeItemHandler(JSONAPIItemHandler):
         async with couchdb() as session:
             db = await session['jokes']
             doc = await db[iid]
-            if doc['status'] in ['extracted', 'extraction-verified']:
+            if doc['status'] in ['extracted', 'extraction-verified'] or \
+                    'admin' in user['groups'] or 'editor' in user['groups']:
                 schema['attributes']['schema']['coordinates'] = {
                     'type': 'list',
-                    'required': True,
+                    'required': False,
                     'empty': False,
                     'minlength': 4,
                     'maxlength': 4,
                     'schema': {
                         'type': 'number',
                     },
+                    'coerce': coerce_coordinates,
+                }
+            if doc['status'] == 'auto-transcribed' or 'admin' in user['groups'] or 'editor' in user['groups']:
+                schema['attributes']['schema']['transcriptions'] = {
+                    'type': 'dict',
+                    'required': False,
+                    'empty': False,
+                    'schema': {
+                        user['_id']: {
+                            'type': 'dict'
+                        }
+                    }
                 }
         obj = validate(schema, data, purge_unknown=True)
         if 'coordinates' in obj['attributes']:
@@ -318,24 +350,48 @@ class JokeItemHandler(JSONAPIItemHandler):
             async with couchdb() as session:
                 db = await session['jokes']
                 doc = await db[iid]
+                coords_changed = False
                 if 'type' in data['attributes']:
                     doc['type'] = data['attributes']['type']
-                if 'coordinates' in data['attributes']:
-                    doc['coordinates'] = [
-                        math.floor(data['attributes']['coordinates'][0]),
-                        math.floor(data['attributes']['coordinates'][1]),
-                        math.ceil(data['attributes']['coordinates'][2]),
-                        math.ceil(data['attributes']['coordinates'][3]),
-                    ]
+                if 'coordinates' in data['attributes'] and doc['coordinates'] != data['attributes']['coordinates']:
+                    doc['coordinates'] = data['attributes']['coordinates']
+                    coords_changed = True
+                if coords_changed and 'transcriptions' in doc and 'auto' in doc['transcriptions']:
+                    del doc['transcriptions']['auto']
+                if 'transcriptions' in data['attributes'] and user['_id'] in data['attributes']['transcriptions']:
+                    doc['transcriptions'][user['_id']] = data['attributes']['transcriptions'][user['_id']]
+                if 'admin' in user['groups'] or 'editor' in user['groups']:
+                    # Changes to save if the user is an editor or admin
+                    if 'transcriptions' in data['attributes'] and user['_id'] in data['attributes']['transcriptions']:
+                        doc['transcriptions']['final'] = data['attributes']['transcriptions'][user['_id']]
+                        found = False
+                        for activity in doc['activity']['transcribed']:
+                            if activity['user'] == user['_id']:
+                                found = True
+                                activity['timestamp'] = datetime.utcnow().timestamp()
+                                break
+                        if not found:
+                            doc['activity']['transcribed'].append({
+                                'user': user['_id'],
+                                'timestamp': datetime.utcnow().timestamp(),
+                            })
+                        doc['activity']['transcription-verified'] = {
+                            'user': user['_id'],
+                            'timestamp': datetime.utcnow().timestamp(),
+                        }
+                        doc['status'] = 'transcription-verified'
                 doc['updated'] = datetime.utcnow().timestamp()
                 await doc.save()
-                if 'data' in data['attributes']:
+                if coords_changed and 'data' in data['attributes']:
                     image = Attachment(doc, 'image')
                     buffer = BytesIO()
                     data['attributes']['data'].save(buffer, format='png')
                     await image.save(buffer.getvalue(), 'image/png')
-                async with mosquitto() as client:
-                    await client.publish(f'jokes/{iid}/ocr')
+                    async with mosquitto() as client:
+                        await client.publish(f'jokes/{iid}/ocr')
+                if doc['status'] == 'transcription-verified':
+                    async with mosquitto() as client:
+                        await client.publish(f'jokes/{iid}/categorise')
                 doc = await db[iid]
                 return doc
         except aio_exc.NotFoundError:
@@ -365,30 +421,4 @@ class JokeItemHandler(JSONAPIItemHandler):
 
     async def as_jsonapi(self: 'JokeItemHandler', doc: Document, user: Union[Document, None]) -> dict:
         """Return a single joke as JSONAPI."""
-        async with couchdb() as session:
-            db = await session['jokes']
-            doc = await db[doc['_id']]
-            image = Attachment(doc, 'image')
-            image_data = f'data:image/png;base64,{b64encode(await image.fetch()).decode("utf-8")}'
-        return {
-            'id': doc['_id'],
-            'type': 'jokes',
-            'attributes': {
-                'title': doc['title'],
-                'coordinates': doc['coordinates'],
-                'transcriptions': dict([(key, value)
-                                        for key, value in doc['transcriptions'].items()
-                                        if key in ['auto', 'final', user['_id'] if user else None]]),
-                'data': image_data,
-                'status': doc['status'],
-                'activity': doc['activity'],
-            },
-            'relationships': {
-                'source': {
-                    'data': {
-                        'type': 'sources',
-                        'id': doc['source_id'],
-                    }
-                }
-            }
-        }
+        return await as_jsonapi(doc, user)

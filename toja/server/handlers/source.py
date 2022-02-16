@@ -13,6 +13,45 @@ from toja.utils import async_gen_to_list, couchdb
 from toja.validation import validate, ValidationError
 
 
+async def as_jsonapi(doc: Document, user: Union[Document, None]) -> dict:
+    """Return a single source as JSONAPI."""
+    async with couchdb() as session:
+        db = await session['sources']
+        doc = await db[doc['_id']]
+        image = Attachment(doc, 'image')
+        image_data = f'data:image/png;base64,{b64encode(await image.fetch()).decode("utf-8")}'
+        db = await session['jokes']
+        jokes = await async_gen_to_list(db.find({'source_id': doc['_id']}))
+        jokes.sort(key=lambda j: j['coordinates'][1])
+        joke_ids = list(map(lambda joke: {'type': 'jokes', 'id': joke['_id']}, jokes))
+    return {
+        'id': doc['_id'],
+        'type': 'sources',
+        'attributes': {
+            'type': doc['type'],
+            'title': doc['title'],
+            'subtitle': doc['subtitle'],
+            'date': doc['date'],
+            'location': doc['location'],
+            'publisher': doc['publisher'],
+            'page_numbers': doc['page_numbers'],
+            'data': image_data,
+            'created': doc['created'],
+        },
+        'relationships': {
+            'creator': {
+                'data': {
+                    'type': 'users',
+                    'id': doc['creator'],
+                },
+            },
+            'jokes': {
+                'data': joke_ids,
+            },
+        },
+    }
+
+
 class SourceCollectionHandler(JSONAPICollectionHandler):
     """Handler for collection-level source requests."""
 
@@ -130,43 +169,9 @@ class SourceCollectionHandler(JSONAPICollectionHandler):
             doc = await db[uid]
             return doc
 
-    async def as_jsonapi(self: 'SourceCollectionHandler', doc: Document) -> dict:
+    async def as_jsonapi(self: 'SourceCollectionHandler', doc: Document, user: Union[Document, None]) -> dict:
         """Return a single source as JSONAPI."""
-        async with couchdb() as session:
-            db = await session['sources']
-            doc = await db[doc['_id']]
-            image = Attachment(doc, 'image')
-            image_data = f'data:image/png;base64,{b64encode(await image.fetch()).decode("utf-8")}'
-            db = await session['jokes']
-            jokes = db.find({'source_id': doc['_id']})
-            joke_ids = list(map(lambda joke: {'type': 'jokes', 'id': joke['_id']},
-                                await async_gen_to_list(jokes)))
-        return {
-            'id': doc['_id'],
-            'type': 'sources',
-            'attributes': {
-                'type': doc['type'],
-                'title': doc['title'],
-                'subtitle': doc['subtitle'],
-                'date': doc['date'],
-                'location': doc['location'],
-                'publisher': doc['publisher'],
-                'page_numbers': doc['page_numbers'],
-                'data': image_data,
-                'created': doc['created'],
-            },
-            'relationships': {
-                'creator': {
-                    'data': {
-                        'type': 'users',
-                        'id': doc['creator'],
-                    },
-                },
-                'jokes': {
-                    'data': joke_ids,
-                },
-            },
-        }
+        return await as_jsonapi(doc, user)
 
 
 class SourceItemHandler(JSONAPIItemHandler):
@@ -330,34 +335,4 @@ class SourceItemHandler(JSONAPIItemHandler):
 
     async def as_jsonapi(self: 'SourceItemHandler', doc: Document, user: Union[Document, None]) -> dict:
         """Return a single source as JSONAPI."""
-        async with couchdb() as session:
-            db = await session['sources']
-            doc = await db[doc['_id']]
-            image = Attachment(doc, 'image')
-            image_data = f'data:image/png;base64,{b64encode(await image.fetch()).decode("utf-8")}'
-        return {
-            'id': doc['_id'],
-            'type': 'sources',
-            'attributes': {
-                'type': doc['type'],
-                'title': doc['title'],
-                'subtitle': doc['subtitle'],
-                'date': doc['date'],
-                'location': doc['location'],
-                'publisher': doc['publisher'],
-                'page_numbers': doc['page_numbers'],
-                'data': image_data,
-                'created': doc['created'],
-            },
-            'relationships': {
-                'creator': {
-                    'data': {
-                        'type': 'users',
-                        'id': doc['creator'],
-                    },
-                },
-                'jokes': {
-                    'data': [],
-                },
-            },
-        }
+        return await as_jsonapi(doc, user)

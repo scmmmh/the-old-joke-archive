@@ -152,7 +152,7 @@
             if (target) {
                 if (mode === MODE_SELECT) {
                     app.view.style.cursor = 'pointer';
-                } else if (mode === MODE_EDIT && target === selectedElement.graphics) {
+                } else if (mode === MODE_EDIT && selectedElement && target === selectedElement.graphics) {
                     const leftDelta = Math.abs(target.x - point.x);
                     const rightDelta = Math.abs(target.x + target.width - point.x);
                     const topDelta = Math.abs(target.y - point.y);
@@ -215,6 +215,7 @@
                             originalElement = deepcopy(selectedElement);
                             editMenuElement.classList.remove('hidden');
                             tick().then(() => {
+                                (editMenuElement.querySelector('[aria-label="Save changes"]') as HTMLElement).focus();
                                 render();
                             });
                         } else {
@@ -227,7 +228,10 @@
         }
         if (mode === MODE_EDIT) {
             editMenuElement.classList.remove('hidden');
-            render();
+            tick().then(() => {
+                (editMenuElement.querySelector('[aria-label="Save changes"]') as HTMLElement).focus();
+                render();
+            });
         }
     }
 

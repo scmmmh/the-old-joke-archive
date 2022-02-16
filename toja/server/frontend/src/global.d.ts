@@ -1,5 +1,8 @@
 /// <reference types="svelte" />
 
+/**
+ * Generic JSONAPI types.
+ */
 type JsonApiResponse = {
     data?: JsonApiObject | JsonApiObject[],
     errors?: JsonApiError[],
@@ -13,7 +16,7 @@ type JsonApiObject = {
 };
 
 type JsonApiAttributeDict = {
-    [key: string]: string | string[] | boolean | boolean[] | number | number[] | JsonApiAttributeDict,
+    [key: string]: any,
 };
 
 type JsonApiObjectRelationship = {
@@ -93,9 +96,23 @@ type JokeDocument = {
 };
 
 type JokeDocumentAttributes = {
+    title: string,
     coordinates: number[],
+    transcriptions: JokeDocumentTranscriptions,
+};
+
+type JokeDocumentTranscriptions = {
+    auto?: TiptapNode,
+    final?: TiptapNode,
+    [x: string]: TiptapNode,
+};
+
+type TiptapNode = {
+    type: 'doc' | 'paragraph' | 'text',
+    content?: TiptapNode[],
+    text?: '',
 };
 
 type JokeDocumentRelationships = {
     source: {data: SourceDocumentReference},
-}
+};

@@ -95,7 +95,7 @@ class JSONAPICollectionHandler(JSONAPIHandler):
         user = await self.get_user()
         await self.allow_get(user)
         docs = await self.create_get(user)
-        data = [await self.as_jsonapi(doc) for doc in docs]
+        data = [await self.as_jsonapi(doc, user) for doc in docs]
         self.set_status(200)
         self.write({'data': data})
 
@@ -111,7 +111,7 @@ class JSONAPICollectionHandler(JSONAPIHandler):
         """Create a new CouchDB document."""
         raise JSONAPIError(500, [{'title': 'New items of this type cannot be created'}])
 
-    async def as_jsonapi(self: 'JSONAPICollectionHandler', doc: Document) -> dict:
+    async def as_jsonapi(self: 'JSONAPICollectionHandler', doc: Document, user: Union[Document, None]) -> dict:
         """Return a single ``doc`` in JSONAPI format."""
         return {}
 
@@ -122,7 +122,7 @@ class JSONAPICollectionHandler(JSONAPIHandler):
         await self.allow_post(data, user)
         obj = await self.validate_post(data, user)
         doc = await self.create_post(obj, user)
-        data = await self.as_jsonapi(doc)
+        data = await self.as_jsonapi(doc, user)
         self.set_status(201)
         self.write({'data': data})
 

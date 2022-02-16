@@ -106,7 +106,7 @@ The Old Joke Automaton.
 ''')  # noqa: E501
             return doc
 
-    async def as_jsonapi(self: 'UserCollectionHandler', doc: Document) -> dict:
+    async def as_jsonapi(self: 'UserCollectionHandler', doc: Document, user: Union[Document, None]) -> dict:
         """Return a single user as JSONAPI."""
         return {
             'id': doc['_id'],
