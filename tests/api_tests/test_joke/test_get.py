@@ -61,7 +61,7 @@ async def test_get_all_jokes_general_user(standard_database: Tuple[CouchDB, dict
                                         token=auth_token(objs['users']['user1']))
     assert response.code == 200
     jokes = json.load(response.buffer)['data']
-    assert len(jokes) == 1
+    assert len(jokes) == 3
     for joke in jokes:
         assert 'attributes' in joke
         assert 'title' in joke['attributes']

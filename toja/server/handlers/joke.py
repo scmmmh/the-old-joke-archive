@@ -398,14 +398,20 @@ class JokeItemHandler(JSONAPIItemHandler):
             raise JSONAPIError(404, [{'title': 'This joke does not exist'}])
 
     async def allow_delete(self: 'JSONAPIItemHandler', iid: str, user: Union[Document, None]) -> None:
-        """Check whether DELETE requests are allowed."""
+        """Check whether DELETE requests are allowed.
+
+        * Admins and editors are allowed to delete a joke at any stage.
+        * The user who extracted the joke can delete it as long as it has not been confirmed.
+        """
         if user is not None:
-            if 'admin' in user['groups']:
+            if 'admin' in user['groups'] or 'editor' in user['groups']:
                 return
-            elif 'provider' in user['groups']:
+            else:
                 async with couchdb() as session:
                     db = await session['jokes']
-                    async for joke in db.find({'_id': iid, 'creator': user['_id']}):
+                    async for joke in db.find({'_id': iid,
+                                               'status': 'extracted',
+                                               'activity.extracted.user': user['_id']}):
                         return
         raise JSONAPIError(403, [{'title': 'You are not authorised to delete this joke'}])
 

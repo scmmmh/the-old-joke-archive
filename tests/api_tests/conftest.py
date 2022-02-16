@@ -65,6 +65,8 @@ async def standard_database(minimal_database: CouchDB) -> None:
                                                      'source1',
                                                      'source2',
                                                      'joke1',
+                                                     'joke2',
+                                                     'joke3',
                                                      ],
                                                     session))
     yield session, objs

@@ -266,6 +266,75 @@ async def create_joke1(objs: dict) -> None:
         objs['jokes']['joke1'] = joke['_id']
 
 
+async def create_joke2(objs: dict) -> None:
+    """Create the test extracted joke."""
+    async with couchdb() as dbsession:
+        await create_user_user1(objs)
+        await create_source1(objs)
+        joke = await create_singleton_object(dbsession, 'jokes', {
+            'test_name_': 'joke2',
+            'title': '[Untitled]',
+            'status': 'extracted',
+            'coordinates': [20, 20, 200, 60],
+            'transcriptions': {},
+            'activity': {
+                'extracted': {
+                    'user': objs['users']['user1'],
+                    'created': datetime.utcnow().timestamp(),
+                },
+                'extraction-verified': None,
+                'transcribed': [],
+                'transcription-verified': None,
+                'category-verified': None,
+                'annotated': None,
+                'annotation-verified': None,
+            },
+            'source_id': objs['sources']['source1'],
+        })
+        image = Attachment(joke, 'image')
+        img = Image.open(BytesIO(resources.open_binary(test, "example-joke1.png").read()))
+        buffer = BytesIO()
+        img.save(buffer, format='png')
+        await image.save(buffer.getvalue(), 'image/png')
+        objs['jokes']['joke2'] = joke['_id']
+
+
+async def create_joke3(objs: dict) -> None:
+    """Create the test extracted joke."""
+    async with couchdb() as dbsession:
+        await create_user_user1(objs)
+        await create_source1(objs)
+        joke = await create_singleton_object(dbsession, 'jokes', {
+            'test_name_': 'joke3',
+            'title': '[Untitled]',
+            'status': 'extraction-verified',
+            'coordinates': [20, 20, 200, 60],
+            'transcriptions': {},
+            'activity': {
+                'extracted': {
+                    'user': objs['users']['user1'],
+                    'created': datetime.utcnow().timestamp(),
+                },
+                'extraction-verified': {
+                    'user': objs['users']['editor'],
+                    'created': datetime.utcnow().timestamp(),
+                },
+                'transcribed': [],
+                'transcription-verified': None,
+                'category-verified': None,
+                'annotated': None,
+                'annotation-verified': None,
+            },
+            'source_id': objs['sources']['source1'],
+        })
+        image = Attachment(joke, 'image')
+        img = Image.open(BytesIO(resources.open_binary(test, "example-joke1.png").read()))
+        buffer = BytesIO()
+        img.save(buffer, format='png')
+        await image.save(buffer.getvalue(), 'image/png')
+        objs['jokes']['joke3'] = joke['_id']
+
+
 class TestHandler(RequestHandler):
     """Handler to create and delete the backend storage."""
 
@@ -299,6 +368,10 @@ class TestHandler(RequestHandler):
                 await create_source2(objs)
             elif key == 'joke1':
                 await create_joke1(objs)
+            elif key == 'joke2':
+                await create_joke2(objs)
+            elif key == 'joke3':
+                await create_joke3(objs)
         self.write(objs)
 
     async def delete(self: 'TestHandler') -> None:
