@@ -178,7 +178,7 @@ async def create_source1(objs: dict) -> None:
             source['created'] = datetime.utcnow().timestamp()
             await source.save()
             image = Attachment(source, 'image')
-            await image.save(resources.open_binary(test, "example-source1.png").read(), 'image/png')
+            await image.save(resources.open_binary(test, 'example-source1.png').read(), 'image/png')
             objs['sources']['source1'] = source['_id']
 
 
@@ -200,7 +200,7 @@ async def create_source2(objs: dict) -> None:
             source['created'] = datetime.utcnow().timestamp()
             await source.save()
             image = Attachment(source, 'image')
-            img = Image.open(BytesIO(resources.open_binary(test, "example-source2.jpeg").read()))
+            img = Image.open(BytesIO(resources.open_binary(test, 'example-source2.jpeg').read()))
             buffer = BytesIO()
             img.save(buffer, format='png')
             await image.save(buffer.getvalue(), 'image/png')

@@ -129,7 +129,7 @@
                 </time>
             {/if}
         </div>
-        {#if $isGroupAdmin || ($isGroupDataProvider && source.attributes.creator === $authUser.id)}
+        {#if $isGroupAdmin || ($isGroupDataProvider && source.relationships.creator.data.id === $authUser.id)}
             <ul class="flex flex-row justify-end">
                 {#if editing}
                     <li role="presentation" class="px-4 mr-4 border-r border-solid border-gray-300">
