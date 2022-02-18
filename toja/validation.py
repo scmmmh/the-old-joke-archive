@@ -72,6 +72,28 @@ def validate(schema: dict, data: dict, purge_unknown: bool = False) -> dict:
     return validator.document
 
 
+def object_schema(type_name: str, id_value: Union[str, None] = None,
+                  attributes: Union[dict, None] = None, relationships: Union[dict, None] = None) -> dict:
+    """Create a full object schema."""
+    obj = {
+        'type': type_schema(type_name),
+        'id': id_schema(id_value),
+    }
+    if attributes is not None:
+        obj['attributes'] = {
+            'type': 'dict',
+            'required': True,
+            'schema': attributes,
+        }
+    if relationships is not None:
+        obj['relationships'] = {
+            'type': 'dict',
+            'required': True,
+            'schema': relationships,
+        }
+    return obj
+
+
 def type_schema(type_name: str) -> dict:
     """Return a cerberus schema for JSONAPI type entries."""
     return {

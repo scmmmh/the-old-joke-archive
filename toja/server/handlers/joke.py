@@ -7,7 +7,8 @@ The joke status workflow is as follows:
 * Auto-transcribed
 * Transcribed
 * Transcription-verified
-* Category-verified
+* Auto-categorised
+* Categories-verified
 * Annotated
 * Annotation-verified
 * Published
@@ -25,7 +26,7 @@ from uuid import uuid1
 
 from .base import JSONAPICollectionHandler, JSONAPIItemHandler, JSONAPIError
 from toja.utils import couchdb, mosquitto
-from toja.validation import validate, ValidationError, type_schema, one_to_one_relationship_schema
+from toja.validation import validate, ValidationError, object_schema, type_schema, one_to_one_relationship_schema
 
 
 def coerce_coordinates(value: list) -> list:
@@ -111,7 +112,10 @@ class JokeCollectionHandler(JSONAPICollectionHandler):
             return docs
 
     async def allow_post(self: 'JokeCollectionHandler', data: dict, user: Union[Document, None]) -> None:
-        """Allow POST requests for admins and providers."""
+        """Check whether the user is allowed to create a new joke.
+
+        * All logged-in users are allowed to create new jokes.
+        """
         if user is not None:
             return
         raise JSONAPIError(403, [{'title': 'You are not authorised to add joke data.'}])
@@ -215,26 +219,12 @@ class JokeItemHandler(JSONAPIItemHandler):
     """Handler for item-level joke requests."""
 
     async def allow_get(self: 'JSONAPIItemHandler', iid: str, user: Union[Document, None]) -> None:
-        """Check whether GET a joke is allowed."""
+        """Check whether GET a joke is allowed.
+
+        * Any logged-in user can access any joke.
+        """
         if user is not None:
-            if 'admin' in user['groups'] or 'editor' in user['groups']:
-                return
-        async with couchdb() as session:
-            db = await session['jokes']
-            try:
-                doc = await db[iid]
-                if doc['status'] == 'published':
-                    return
-            except aio_exc.NotFoundError:
-                pass
-            if user is not None:
-                for activity in ['extracted', 'extraction-verified', 'transcription-verified', 'category-verified',
-                                 'annotated', 'annotation-verified']:
-                    if doc['activity'][activity] and doc['activity'][activity]['user'] == user['_id']:
-                        return
-                for transcriber in doc['activity']['transcribed']:
-                    if transcriber['user'] == user[':id']:
-                        return
+            return
         raise JSONAPIError(403, [{'title': 'You are not authorised to access this joke'}])
 
     async def create_get(self: 'JSONAPIItemHandler', iid: str, user: Union[Document, None]) -> Document:
@@ -248,24 +238,98 @@ class JokeItemHandler(JSONAPIItemHandler):
                 raise JSONAPIError(404, [{'title': 'This joke does not exist'}])
 
     async def allow_put(self: 'JokeItemHandler', iid: str, data: dict, user: Union[Document, None]) -> None:
-        """Check whether PUT requests are allowed."""
+        """Check whether updating a joke is allowed.
+
+        * Admins and editors are allowed to update all jokes.
+        * Logged-in users are allowed to update a joke if:
+
+          * They have not undertaken a previous step in the joke pipeline.
+          * They are the user who undertook the current step in the joke pipeline and no further steps have been
+            completed.
+        """
         if user is not None:
-            if 'admin' in user['groups']:
+            if 'admin' in user['groups'] or 'editor' in user['groups']:
                 return
-            elif 'provider' in user['groups']:
+            else:
                 async with couchdb() as session:
                     db = await session['jokes']
-                    async for joke in db.find({'_id': iid, 'creator': user['_id']}):
+                    joke = await db[iid]
+                    if joke['status'] in joke['activity'] and joke['activity'][joke['status']] is not None \
+                            and joke['activity'][joke['status']]['user'] == user['_id']:
+                        return
+                    found = False
+                    for activity in ['extracted', 'extraction-verified', 'transcribed', 'transcription-verified',
+                                     'categories-verified', 'annotated', 'annotation-verified']:
+                        if joke['activity'][activity] is not None and joke['activity'][activity]['user'] == user['_id']:
+                            found = True
+                            break
+                    if not found:
                         return
         raise JSONAPIError(403, [{'title': 'You are not authorised to update this joke'}])
 
     async def validate_put(self: 'JokeItemHandler', iid: str, data: dict, user: Union[Document, None]) -> dict:
         """Validate that the PUT data is valid."""
+        allow_everything = 'admin' in user['groups'] or 'editor' in user['groups']
         async with couchdb() as session:
             db = await session['jokes']
-            doc = await db[iid]
-            source_id = doc['source_id']
-        schema = {
+            joke = await db[iid]
+            relationships = {
+                'type': 'dict',
+                'required': True,
+                'schema': {
+                    'source': one_to_one_relationship_schema('sources', value=joke['source_id'])
+                }
+            }
+            attributes = {}
+            if joke['status'] == 'extracted' or allow_everything:
+                # Validation for coordinate changes
+                attributes['coordinates'] = {
+                    'type': 'list',
+                    'required': False,
+                    'empty': False,
+                    'minlength': 4,
+                    'maxlength': 4,
+                    'schema': {
+                        'type': 'number',
+                    },
+                    'coerce': coerce_coordinates,
+                }
+            if (joke['status'] == 'extracted' and user['_id'] != joke['activity']['extracted']['user']):
+                attributes['status'] = {
+                    'type': 'string',
+                    'required': False,
+                    'empty': False,
+                    'allowed': ['extraction-verified']
+                }
+            if joke['status'] == 'transcribed' or allow_everything:
+                attributes['transcriptions'] = {
+                    'type': 'dict',
+                    'required': False,
+                    'schema': {
+                        user['_id']: {
+                            'type': 'dict',
+                        }
+                    }
+                }
+            if joke['status'] == 'auto-categorised' or allow_everything:
+                attributes['categories'] = {
+                    'type': 'list',
+                    'required': False,
+                    'schema': {
+                        'type': 'string'
+                    }
+                }
+                attributes['status'] = {
+                    'type': 'string',
+                    'required': False,
+                    'empty': False,
+                    'allowed': ['categories-verified'] if not allow_everything else ['extraction-verified',
+                                                                                     'categories-verified']
+                }
+            schema = object_schema('jokes', iid, attributes, relationships)
+            obj = validate(schema, data, purge_unknown=True)
+            return obj
+        """schema = {
             'type': {
                 'type': 'string',
                 'required': True,
@@ -282,12 +346,6 @@ class JokeItemHandler(JSONAPIItemHandler):
                 'type': 'dict',
                 'required': True,
                 'schema': {
-                    'type': {
-                        'type': 'string',
-                        'required': False,
-                        'empty': False,
-                        'allowed': ['newspaper', 'book']
-                    },
                     'data': {
                         'type': 'string',
                         'required': False,
@@ -342,7 +400,7 @@ class JokeItemHandler(JSONAPIItemHandler):
                 source_attachment = Attachment(source, 'image')
                 with Image.open(BytesIO(await source_attachment.fetch())) as img:
                     obj['attributes']['data'] = img.crop(obj['attributes']['coordinates'])
-        return obj
+        return obj"""
 
     async def create_put(self: 'JokeItemHandler', iid: str, data: dict, user: Union[Document, None]) -> Document:
         """Update a joke CouchDB document for a PUT request."""
@@ -409,9 +467,8 @@ class JokeItemHandler(JSONAPIItemHandler):
             else:
                 async with couchdb() as session:
                     db = await session['jokes']
-                    async for joke in db.find({'_id': iid,
-                                               'status': 'extracted',
-                                               'activity.extracted.user': user['_id']}):
+                    joke = await db[iid]
+                    if joke['status'] == 'extracted' and joke['activity']['extracted']['user'] == user['_id']:
                         return
         raise JSONAPIError(403, [{'title': 'You are not authorised to delete this joke'}])
 

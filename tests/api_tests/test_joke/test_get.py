@@ -61,7 +61,9 @@ async def test_get_all_jokes_general_user(standard_database: Tuple[CouchDB, dict
                                         token=auth_token(objs['users']['user1']))
     assert response.code == 200
     jokes = json.load(response.buffer)['data']
-    assert len(jokes) == 3
+    jokes_db = await session['jokes']
+    db_jokes = await async_gen_to_list(jokes_db.docs())
+    assert len(jokes) == len(db_jokes)
     for joke in jokes:
         assert 'attributes' in joke
         assert 'title' in joke['attributes']
@@ -125,7 +127,7 @@ async def test_get_joke_contributor(standard_database: Tuple[CouchDB, dict], htt
     """Test that getting a single joke works for a user contributing to the joke."""
     session, objs = standard_database
     response = await http_client['get'](f'/api/jokes/{objs["jokes"]["joke1"]["_id"]}',
-                                        token=auth_token(objs['users']['user1']))
+                                        token=auth_token(objs['users']['provider']))
     assert response.code == 200
     joke = json.load(response.buffer)['data']
     assert 'attributes' in joke
@@ -136,15 +138,3 @@ async def test_get_joke_contributor(standard_database: Tuple[CouchDB, dict], htt
     assert 'activity' in joke['attributes']
     assert 'relationships' in joke
     assert 'source' in joke['relationships']
-
-
-@pytest.mark.asyncio
-async def test_get_fail_joke_other_user(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
-    """Test that getting a single joke fails for a user not contributing to the joke."""
-    session, objs = standard_database
-    with pytest.raises(HTTPClientError) as exc_info:
-        await http_client['get'](f'/api/jokes/{objs["jokes"]["joke1"]["_id"]}',
-                                 token=auth_token(objs['users']['provider']))
-    assert exc_info.value.code == 403
-    data = json.load(exc_info.value.response.buffer)
-    assert 'errors' in data
