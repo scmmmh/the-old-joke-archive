@@ -11,7 +11,7 @@ from ..util import auth_token, async_gen_to_list
 
 @pytest.mark.asyncio
 async def test_get_all_jokes_admin(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
-    """Test that creating a joke from a source works for an editor."""
+    """Test that getting all jokes works for an admin."""
     session, objs = standard_database
     response = await http_client['get']('/api/jokes',
                                         token=auth_token(objs['users']['admin']))
@@ -33,7 +33,7 @@ async def test_get_all_jokes_admin(standard_database: Tuple[CouchDB, dict], http
 
 @pytest.mark.asyncio
 async def test_get_all_jokes_editor(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
-    """Test that creating a joke from a source works for an editor."""
+    """Test that getting all jokes works for an editor."""
     session, objs = standard_database
     response = await http_client['get']('/api/jokes',
                                         token=auth_token(objs['users']['editor']))
@@ -55,7 +55,7 @@ async def test_get_all_jokes_editor(standard_database: Tuple[CouchDB, dict], htt
 
 @pytest.mark.asyncio
 async def test_get_all_jokes_general_user(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
-    """Test that getting all jokes for a non-admin/non-editor only returns the jokes they contributed to."""
+    """Test that getting all jokes works for a logged-in user."""
     session, objs = standard_database
     response = await http_client['get']('/api/jokes',
                                         token=auth_token(objs['users']['user1']))
@@ -77,7 +77,7 @@ async def test_get_all_jokes_general_user(standard_database: Tuple[CouchDB, dict
 
 @pytest.mark.asyncio
 async def test_fail_get_all_jokes_non_logged_in(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
-    """Test that creating a joke without a logged-in user fails."""
+    """Test that getting all jokes fails if the user is logged out."""
     session, objs = standard_database
     with pytest.raises(HTTPClientError) as exc_info:
         await http_client['get']('/api/jokes')
@@ -124,10 +124,44 @@ async def test_get_joke_editor(standard_database: Tuple[CouchDB, dict], http_cli
 
 @pytest.mark.asyncio
 async def test_get_joke_contributor(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
-    """Test that getting a single joke works for a user contributing to the joke."""
+    """Test that getting a single joke works for a logged-in user."""
     session, objs = standard_database
     response = await http_client['get'](f'/api/jokes/{objs["jokes"]["joke1"]["_id"]}',
                                         token=auth_token(objs['users']['provider']))
+    assert response.code == 200
+    joke = json.load(response.buffer)['data']
+    assert 'attributes' in joke
+    assert 'title' in joke['attributes']
+    assert 'data' in joke['attributes']
+    assert 'transcriptions' in joke['attributes']
+    assert 'status' in joke['attributes']
+    assert 'activity' in joke['attributes']
+    assert 'relationships' in joke
+    assert 'source' in joke['relationships']
+
+
+@pytest.mark.asyncio
+async def test_get_published_joke_anonymous(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
+    """Test that getting a published joke works for a logged-in user."""
+    session, objs = standard_database
+    response = await http_client['get'](f'/api/jokes/{objs["jokes"]["joke1"]["_id"]}')
+    assert response.code == 200
+    joke = json.load(response.buffer)['data']
+    assert 'attributes' in joke
+    assert 'title' in joke['attributes']
+    assert 'data' in joke['attributes']
+    assert 'transcriptions' in joke['attributes']
+    assert 'status' in joke['attributes']
+    assert 'activity' in joke['attributes']
+    assert 'relationships' in joke
+    assert 'source' in joke['relationships']
+
+
+@pytest.mark.asyncio
+async def test_get_unpublished_joke_anonymous_fail(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
+    """Test that getting a published joke works for a logged-in user."""
+    session, objs = standard_database
+    response = await http_client['get'](f'/api/jokes/{objs["jokes"]["joke2"]["_id"]}')
     assert response.code == 200
     joke = json.load(response.buffer)['data']
     assert 'attributes' in joke
