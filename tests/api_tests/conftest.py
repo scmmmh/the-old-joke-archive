@@ -48,7 +48,7 @@ async def empty_database() -> None:
 @pytest.fixture
 async def minimal_database(empty_database: CouchDB) -> None:
     """Provide a database with a minimal set of data."""
-    objs = await create_objects(['admin'], empty_database)
+    objs = await create_objects(['users/admin'], empty_database)
     yield empty_database, objs
 
 

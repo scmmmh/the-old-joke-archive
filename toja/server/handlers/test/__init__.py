@@ -1,11 +1,13 @@
 """Handler for test setup requests."""
 import bcrypt
+import json
 
 from aiocouch import CouchDB, Document
 from aiocouch.attachment import Attachment
 from datetime import datetime, timedelta
-from importlib import resources
+from importlib import resources, import_module
 from io import BytesIO
+from jinja2 import Environment
 from PIL import Image
 from secrets import token_hex
 from tornado.web import RequestHandler
@@ -16,7 +18,6 @@ from toja.utils import couchdb
 from .. import test
 
 
-ADMIN_PWD = bcrypt.hashpw(b'adminpwd', bcrypt.gensalt()).decode('utf-8')
 USER1_PWD = bcrypt.hashpw(b'user1pwd', bcrypt.gensalt()).decode('utf-8')
 USERBLOCKED_PWD = bcrypt.hashpw(b'userBlockedpwd', bcrypt.gensalt()).decode('utf-8')
 USERINACTIVE_PWD = bcrypt.hashpw(b'userInactivepwd', bcrypt.gensalt()).decode('utf-8')
@@ -34,23 +35,6 @@ async def create_singleton_object(dbsession: CouchDB, dbname: str, obj: dict) ->
         db_obj[key] = value
     await db_obj.save()
     return db_obj
-
-
-async def create_user_admin(objs: dict) -> None:
-    """Create the test admin user."""
-    async with couchdb() as dbsession:
-        user = await create_singleton_object(dbsession, 'users', {
-            'test_name_': 'admin',
-            'email': 'admin@example.com',
-            'name': 'The Admin',
-            'groups': ['admin'],
-            'tokens': [{'token': token_hex(128),
-                        'timestamp': (datetime.utcnow() + timedelta(days=30)).timestamp()}],
-            'password': ADMIN_PWD,
-            'status': 'active',
-            'last_access': datetime.utcnow().timestamp(),
-        })
-        objs['users']['admin'] = user['_id']
 
 
 async def create_user_user1(objs: dict) -> None:
@@ -163,7 +147,7 @@ async def create_user_editor(objs: dict) -> None:
 async def create_source1(objs: dict) -> None:
     """Create the first source."""
     if 'source1' not in objs['sources']:
-        await create_user_admin(objs)
+        await create_object('users', 'admin', objs)
         async with couchdb() as dbsession:
             sources = await dbsession['sources']
             source = await sources.create(str(uuid1()))
@@ -335,6 +319,36 @@ async def create_joke3(objs: dict) -> None:
         objs['jokes']['joke3'] = joke['_id']
 
 
+async def create_object(obj_type: str, obj_name: str, objs: dict) -> Document:
+    """Create a new database object."""
+    def get_db_id(path: str) -> str:
+        """Get the database id of the given object path."""
+        return 'hm'
+
+    def timestamp(dt: datetime) -> float:
+        """Return a datetime's timestamp."""
+        return dt.timestamp()
+
+    def timedelta_add(dt: datetime, days: int) -> datetime:
+        """Add a timedelta to a datetime."""
+        return dt + timedelta(days=days)
+
+    mdl = import_module(f'toja.server.handlers.test.fixtures.{obj_type}')
+    obj_data = resources.open_text(mdl, f'{obj_name}.json')
+    env = Environment()
+    env.filters['db_id'] = get_db_id
+    env.filters['timestamp'] = timestamp
+    env.filters['timedelta_add'] = timedelta_add
+    env.globals['utcnow'] = datetime.utcnow()
+    tmpl = env.from_string(obj_data.read())
+    obj = json.loads(tmpl.render())
+    obj['test_name_'] = f'{obj_type}/{obj_name}'
+    async with couchdb() as dbsession:
+        db_obj = await create_singleton_object(dbsession, obj_type, obj)
+        objs[obj_type][obj_name] = db_obj['_id']
+        return db_obj
+
+
 class TestHandler(RequestHandler):
     """Handler to create and delete the backend storage."""
 
@@ -348,9 +362,7 @@ class TestHandler(RequestHandler):
                 'sources': {},
                 'jokes': {}}
         for key in self.get_arguments('obj'):
-            if key == 'admin':
-                await create_user_admin(objs)
-            elif key == 'user1':
+            if key == 'user1':
                 await create_user_user1(objs)
             elif key == 'userNew':
                 await create_user_new(objs)
@@ -372,6 +384,8 @@ class TestHandler(RequestHandler):
                 await create_joke2(objs)
             elif key == 'joke3':
                 await create_joke3(objs)
+            elif '/' in key:
+                await create_object(*key.split('/'), objs)
         self.write(objs)
 
     async def delete(self: 'TestHandler') -> None:

@@ -1,0 +1,10 @@
+{
+    "email": "admin@example.com",
+    "name": "The Admin",
+    "groups": ["admin"],
+    "tokens": [{"token": "57971a1e905c98584f27013d71583ea182b0b8b48c97a5fb75a6f97717d0e020415268378b686d8a7741bf78ccde478910feeb1cb76f9a83a1759130aa6749394055bc8bfe013e37323b556806f8811a3604f17db3799347e7706c33b4cc42ab3d60615227bfc5bfde7282b83d256b45763995e8a2ba2a5d20d9443140b03585",
+                "timestamp": "{{ utcnow|timedelta_add(days=30)|timestamp }}"}],
+    "password": "$2b$12$CnLQKZCb4h3jVx8gFxHT3eopZtjsrH7GtAJrBMaYL6OMNzLnVbrOO",
+    "status": "active",
+    "last_access": "{{ utcnow|timestamp }}"
+}
