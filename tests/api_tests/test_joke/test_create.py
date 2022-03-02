@@ -47,14 +47,14 @@ async def test_create_joke_user1(standard_database: Tuple[CouchDB, dict], http_c
                                                'attributes': {'coordinates': [25, 13, 213, 55]},
                                                'relationships': {'source': {'data': {'type': 'sources',
                                                                                      'id': objs['sources']['source1']['_id']}}}},  # noqa: E501
-                                         token=auth_token(objs['users']['user1']))
+                                         token=auth_token(objs['users']['one']))
     assert response.code == 201
     joke = json.load(response.buffer)['data']
     assert joke
     assert joke['attributes']['title'] == '[Untitled]'
     assert joke['attributes']['status'] == 'extracted'
     assert joke['attributes']['coordinates'] == [25, 13, 213, 55]
-    assert joke['attributes']['activity']['extracted']['user'] == objs['users']['user1']['_id']
+    assert joke['attributes']['activity']['extracted']['user'] == objs['users']['one']['_id']
     jokes_db = await session['jokes']
     db_joke = await jokes_db[joke['id']]
     image = Attachment(db_joke, 'image')

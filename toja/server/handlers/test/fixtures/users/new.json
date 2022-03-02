@@ -1,0 +1,10 @@
+{
+    "email": "user_new@example.com",
+    "name": "User New",
+    "groups": [],
+    "tokens": [{"token": "1edc288b8acccd007ea0ccf969f13a41c33c3c4212c71d326542feb52295e5e81257d5b7a631ca6b7415c428f4738de24e738e6c35d23decd85b635fea8703b5166c18a0568d40930c9ab2b378dbba9e958faadf41d6c03bfb3b41c07a3967200072976276dfd9b39b9c2db7ac9dc5a0bb644980fddfbc4a6e64abec3fc935f7",
+                "timestamp": "{{ utcnow|timedelta_add(days=30)|timestamp }}"}],
+    "password": "",
+    "status": "new",
+    "last_access": "{{ utcnow|timestamp }}"
+}

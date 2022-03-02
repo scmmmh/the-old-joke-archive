@@ -13,22 +13,22 @@ from ..util import auth_token
 async def test_delete_self(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
     """Test that deleting the user itself works."""
     session, objs = standard_database
-    response = await http_client['delete'](f'/api/users/{objs["users"]["user1"]["_id"]}',
-                                           token=auth_token(objs['users']['user1']))
+    response = await http_client['delete'](f'/api/users/{objs["users"]["one"]["_id"]}',
+                                           token=auth_token(objs['users']['one']))
     assert response.code == 204
     with pytest.raises(aio_exc.NotFoundError):
-        await (await session['users'])[objs['users']['user1']['_id']]
+        await (await session['users'])[objs['users']['one']['_id']]
 
 
 @pytest.mark.asyncio
 async def test_delete_by_admin(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
     """Test that deleting a user by an admin works."""
     session, objs = standard_database
-    response = await http_client['delete'](f'/api/users/{objs["users"]["user1"]["_id"]}',
+    response = await http_client['delete'](f'/api/users/{objs["users"]["one"]["_id"]}',
                                            token=auth_token(objs['users']['admin']))
     assert response.code == 204
     with pytest.raises(aio_exc.NotFoundError):
-        await (await session['users'])[objs['users']['user1']['_id']]
+        await (await session['users'])[objs['users']['one']['_id']]
 
 
 @pytest.mark.asyncio
@@ -49,7 +49,7 @@ async def test_fail_delete_by_non_admin(standard_database: Tuple[CouchDB, dict],
     session, objs = standard_database
     with pytest.raises(HTTPClientError) as exc_info:
         await http_client['delete'](f'/api/users/{objs["users"]["admin"]["_id"]}',
-                                    token=auth_token(objs['users']['user1']))
+                                    token=auth_token(objs['users']['one']))
     assert exc_info.value.code == 403
     data = json.load(exc_info.value.response.buffer)
     assert 'errors' in data

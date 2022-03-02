@@ -25,7 +25,7 @@ async def test_delete_extracted_joke(standard_database: Tuple[CouchDB, dict], ht
     """Test that deleting a joke works for the user who extracted it."""
     session, objs = standard_database
     response = await http_client['delete'](f'/api/jokes/{objs["jokes"]["joke2"]["_id"]}',
-                                           token=auth_token(objs['users']['user1']))
+                                           token=auth_token(objs['users']['one']))
     assert response.code == 204
     jokes_db = await session['jokes']
     with pytest.raises(aio_exc.NotFoundError):
@@ -38,7 +38,7 @@ async def test_fail_delete_extraction_verified_joke(standard_database: Tuple[Cou
     session, objs = standard_database
     with pytest.raises(HTTPClientError) as exc_info:
         await http_client['delete'](f'/api/jokes/{objs["jokes"]["joke3"]["_id"]}',
-                                    token=auth_token(objs['users']['user1']))
+                                    token=auth_token(objs['users']['one']))
         assert exc_info.value.code == 403
     jokes_db = await session['jokes']
     joke = await jokes_db[objs['jokes']['joke3']['_id']]

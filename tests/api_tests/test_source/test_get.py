@@ -42,7 +42,7 @@ async def test_get_source(standard_database: Tuple[CouchDB, dict], http_client: 
     session, objs = standard_database
 
     response = await http_client['get'](f'/api/sources/{objs["sources"]["source1"]["_id"]}',
-                                        token=auth_token(objs['users']['user1']))
+                                        token=auth_token(objs['users']['one']))
     assert response.code == 200
     source = json.load(response.buffer)['data']
     assert source['type'] == 'sources'
@@ -77,7 +77,7 @@ async def test_fail_missing(standard_database: Tuple[CouchDB, dict], http_client
 
     with pytest.raises(HTTPClientError) as exc_info:
         await http_client['get']('/api/sources/does-not-exist',
-                                 token=auth_token(objs['users']['user1']))
+                                 token=auth_token(objs['users']['one']))
     assert exc_info.value.code == 404
     data = json.load(exc_info.value.response.buffer)
     assert 'errors' in data

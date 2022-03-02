@@ -58,7 +58,7 @@ async def test_get_all_jokes_general_user(standard_database: Tuple[CouchDB, dict
     """Test that getting all jokes works for a logged-in user."""
     session, objs = standard_database
     response = await http_client['get']('/api/jokes',
-                                        token=auth_token(objs['users']['user1']))
+                                        token=auth_token(objs['users']['one']))
     assert response.code == 200
     jokes = json.load(response.buffer)['data']
     jokes_db = await session['jokes']

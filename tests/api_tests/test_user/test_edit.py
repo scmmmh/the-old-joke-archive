@@ -34,12 +34,12 @@ async def test_update_admin(standard_database: Tuple[CouchDB, dict], http_client
 async def test_update_user(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
     """Test that updating a user works."""
     session, objs = standard_database
-    response = await http_client['put'](f'/api/users/{objs["users"]["user1"]["_id"]}',
+    response = await http_client['put'](f'/api/users/{objs["users"]["one"]["_id"]}',
                                         body={'type': 'users',
-                                              'id': objs['users']['user1']['_id'],
+                                              'id': objs['users']['one']['_id'],
                                               'attributes': {'email': 'user_one@example.com',
                                                              'name': 'User Eins'}},
-                                        token=auth_token(objs['users']['user1']))
+                                        token=auth_token(objs['users']['one']))
     assert response.code == 200
     user = json.load(response.buffer)['data']
     users_db = await session['users']
@@ -54,11 +54,11 @@ async def test_update_user(standard_database: Tuple[CouchDB, dict], http_client:
 async def test_update_user_only_name(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
     """Test that updating a user works when only updating the name."""
     session, objs = standard_database
-    response = await http_client['put'](f'/api/users/{objs["users"]["user1"]["_id"]}',
+    response = await http_client['put'](f'/api/users/{objs["users"]["one"]["_id"]}',
                                         body={'type': 'users',
-                                              'id': objs['users']['user1']['_id'],
+                                              'id': objs['users']['one']['_id'],
                                               'attributes': {'name': 'User Eins'}},
-                                        token=auth_token(objs['users']['user1']))
+                                        token=auth_token(objs['users']['one']))
     assert response.code == 200
     user = json.load(response.buffer)['data']
     users_db = await session['users']
@@ -105,13 +105,13 @@ async def test_fail_incorrect_id(standard_database: Tuple[CouchDB, dict], http_c
 async def test_fail_non_admin_update_groups(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
     """Test that updating the groups of a user does not work for non-admins."""
     session, objs = standard_database
-    response = await http_client['put'](f'/api/users/{objs["users"]["user1"]["_id"]}',
+    response = await http_client['put'](f'/api/users/{objs["users"]["one"]["_id"]}',
                                         body={'type': 'users',
-                                              'id': objs['users']['user1']['_id'],
+                                              'id': objs['users']['one']['_id'],
                                               'attributes': {'email': 'user@example.com',
                                                              'name': 'User One',
                                                              'groups': ['admin']}},
-                                        token=auth_token(objs['users']['user1']))
+                                        token=auth_token(objs['users']['one']))
     user = json.load(response.buffer)['data']
     users_db = await session['users']
     db_user = await users_db[user['id']]
@@ -128,7 +128,7 @@ async def test_fail_non_admin_update_not_self(standard_database: Tuple[CouchDB, 
                                        'id': objs['users']['admin']['_id'],
                                        'attributes': {'email': 'admin1@example.com',
                                                       'name': 'The Best Admin'}},
-                                 token=auth_token(objs['users']['user1']))
+                                 token=auth_token(objs['users']['one']))
     assert exc_info.value.code == 403
     data = json.load(exc_info.value.response.buffer)
     assert 'errors' in data

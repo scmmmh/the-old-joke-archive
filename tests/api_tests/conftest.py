@@ -56,12 +56,12 @@ async def minimal_database(empty_database: CouchDB) -> None:
 async def standard_database(minimal_database: CouchDB) -> None:
     """Provide a database with a standard set of data."""
     session, objs = minimal_database
-    objs = merge_objects(objs, await create_objects(['user1',
-                                                     'userNew',
-                                                     'userInactive',
-                                                     'userBlocked',
-                                                     'provider',
-                                                     'editor',
+    objs = merge_objects(objs, await create_objects(['users/one',
+                                                     'users/new',
+                                                     'users/inactive',
+                                                     'users/blocked',
+                                                     'users/provider',
+                                                     'users/editor',
                                                      'source1',
                                                      'source2',
                                                      'joke1',

@@ -1,5 +1,4 @@
 """Handler for test setup requests."""
-import bcrypt
 import json
 
 from aiocouch import CouchDB, Document
@@ -9,20 +8,12 @@ from importlib import resources, import_module
 from io import BytesIO
 from jinja2 import Environment
 from PIL import Image
-from secrets import token_hex
 from tornado.web import RequestHandler
 from uuid import uuid1
 
 from toja.setup import setup_backend, reset_backend
 from toja.utils import couchdb
 from .. import test
-
-
-USER1_PWD = bcrypt.hashpw(b'user1pwd', bcrypt.gensalt()).decode('utf-8')
-USERBLOCKED_PWD = bcrypt.hashpw(b'userBlockedpwd', bcrypt.gensalt()).decode('utf-8')
-USERINACTIVE_PWD = bcrypt.hashpw(b'userInactivepwd', bcrypt.gensalt()).decode('utf-8')
-PROVIDER_PWD = bcrypt.hashpw(b'providerpwd', bcrypt.gensalt()).decode('utf-8')
-EDITOR_PWD = bcrypt.hashpw(b'editorpwd', bcrypt.gensalt()).decode('utf-8')
 
 
 async def create_singleton_object(dbsession: CouchDB, dbname: str, obj: dict) -> Document:
@@ -35,113 +26,6 @@ async def create_singleton_object(dbsession: CouchDB, dbname: str, obj: dict) ->
         db_obj[key] = value
     await db_obj.save()
     return db_obj
-
-
-async def create_user_user1(objs: dict) -> None:
-    """Create the first normal test user."""
-    if 'user1' not in objs['users']:
-        async with couchdb() as dbsession:
-            users = await dbsession['users']
-            user = await users.create(str(uuid1()))
-            user['email'] = 'user1@example.com'
-            user['name'] = 'User One'
-            user['groups'] = []
-            user['tokens'] = [{'token': token_hex(128),
-                               'timestamp': (datetime.utcnow() + timedelta(days=30)).timestamp()}]
-            user['password'] = USER1_PWD
-            user['status'] = 'active'
-            user['last_access'] = datetime.utcnow().timestamp()
-            await user.save()
-            objs['users']['user1'] = user['_id']
-
-
-async def create_user_new(objs: dict) -> None:
-    """Create a test new user."""
-    if 'userNew' not in objs['users']:
-        async with couchdb() as dbsession:
-            users = await dbsession['users']
-            user = await users.create(str(uuid1()))
-            user['email'] = 'user_new@example.com'
-            user['name'] = 'User New'
-            user['groups'] = []
-            user['tokens'] = [{'token': token_hex(128),
-                               'timestamp': (datetime.utcnow() + timedelta(days=30)).timestamp()}]
-            user['password'] = ''
-            user['status'] = 'new'
-            user['last_access'] = (datetime.utcnow() - timedelta(days=30)).timestamp()
-            await user.save()
-            objs['users']['userNew'] = user['_id']
-
-
-async def create_user_blocked(objs: dict) -> None:
-    """Create a test blocked user."""
-    if 'userBlocked' not in objs['users']:
-        async with couchdb() as dbsession:
-            users = await dbsession['users']
-            user = await users.create(str(uuid1()))
-            user['email'] = 'user_blocked@example.com'
-            user['name'] = 'User Blocked'
-            user['groups'] = []
-            user['tokens'] = [{'token': token_hex(128),
-                               'timestamp': (datetime.utcnow() + timedelta(days=30)).timestamp()}]
-            user['password'] = USERBLOCKED_PWD
-            user['status'] = 'blocked'
-            user['last_access'] = datetime.utcnow().timestamp()
-            await user.save()
-            objs['users']['userBlocked'] = user['_id']
-
-
-async def create_user_inactive(objs: dict) -> None:
-    """Create a test inactive user."""
-    if 'userInactive' not in objs['users']:
-        async with couchdb() as dbsession:
-            users = await dbsession['users']
-            user = await users.create(str(uuid1()))
-            user['email'] = 'user_inactive@example.com'
-            user['name'] = 'User One'
-            user['groups'] = []
-            user['tokens'] = [{'token': token_hex(128),
-                               'timestamp': (datetime.utcnow() + timedelta(days=30)).timestamp()}]
-            user['password'] = USERINACTIVE_PWD
-            user['status'] = 'active'
-            user['last_access'] = datetime.utcnow().timestamp()
-            await user.save()
-            objs['users']['userInactive'] = user['_id']
-
-
-async def create_user_provider(objs: dict) -> None:
-    """Create the test provider user."""
-    if 'provider' not in objs['users']:
-        async with couchdb() as dbsession:
-            users = await dbsession['users']
-            user = await users.create(str(uuid1()))
-            user['email'] = 'provider@example.com'
-            user['name'] = 'Data Provider'
-            user['groups'] = ['provider']
-            user['tokens'] = [{'token': token_hex(128),
-                               'timestamp': (datetime.utcnow() + timedelta(days=30)).timestamp()}]
-            user['password'] = PROVIDER_PWD
-            user['status'] = 'active'
-            user['last_access'] = datetime.utcnow().timestamp()
-            await user.save()
-            objs['users']['provider'] = user['_id']
-
-
-async def create_user_editor(objs: dict) -> None:
-    """Create the test editor user."""
-    async with couchdb() as dbsession:
-        user = await create_singleton_object(dbsession, 'users', {
-            'test_name_': 'editor',
-            'email': 'editor@example.com',
-            'name': 'An Editor',
-            'groups': ['editor'],
-            'tokens': [{'token': token_hex(128),
-                        'timestamp': (datetime.utcnow() + timedelta(days=30)).timestamp()}],
-            'password': EDITOR_PWD,
-            'status': 'active',
-            'last_access': datetime.utcnow().timestamp(),
-        })
-        objs['users']['editor'] = user['_id']
 
 
 async def create_source1(objs: dict) -> None:
@@ -169,7 +53,7 @@ async def create_source1(objs: dict) -> None:
 async def create_source2(objs: dict) -> None:
     """Create the second source."""
     if 'source2' not in objs['sources']:
-        await create_user_provider(objs)
+        await create_object('users', 'provider', objs)
         async with couchdb() as dbsession:
             sources = await dbsession['sources']
             source = await sources.create(str(uuid1()))
@@ -194,7 +78,7 @@ async def create_source2(objs: dict) -> None:
 async def create_joke1(objs: dict) -> None:
     """Create the test auto-transcribed joke user."""
     async with couchdb() as dbsession:
-        await create_user_user1(objs)
+        await create_object('users', 'one', objs)
         await create_source1(objs)
         joke = await create_singleton_object(dbsession, 'jokes', {
             'test_name_': 'joke1',
@@ -230,7 +114,7 @@ async def create_joke1(objs: dict) -> None:
             },
             'activity': {
                 'extracted': {
-                    'user': objs['users']['user1'],
+                    'user': objs['users']['one'],
                     'created': datetime.utcnow().timestamp(),
                 },
                 'extraction-verified': None,
@@ -253,7 +137,7 @@ async def create_joke1(objs: dict) -> None:
 async def create_joke2(objs: dict) -> None:
     """Create the test extracted joke."""
     async with couchdb() as dbsession:
-        await create_user_user1(objs)
+        await create_object('users', 'one', objs)
         await create_source1(objs)
         joke = await create_singleton_object(dbsession, 'jokes', {
             'test_name_': 'joke2',
@@ -263,7 +147,7 @@ async def create_joke2(objs: dict) -> None:
             'transcriptions': {},
             'activity': {
                 'extracted': {
-                    'user': objs['users']['user1'],
+                    'user': objs['users']['one'],
                     'created': datetime.utcnow().timestamp(),
                 },
                 'extraction-verified': None,
@@ -286,7 +170,7 @@ async def create_joke2(objs: dict) -> None:
 async def create_joke3(objs: dict) -> None:
     """Create the test extracted joke."""
     async with couchdb() as dbsession:
-        await create_user_user1(objs)
+        await create_object('users', 'one', objs)
         await create_source1(objs)
         joke = await create_singleton_object(dbsession, 'jokes', {
             'test_name_': 'joke3',
@@ -296,7 +180,7 @@ async def create_joke3(objs: dict) -> None:
             'transcriptions': {},
             'activity': {
                 'extracted': {
-                    'user': objs['users']['user1'],
+                    'user': objs['users']['one'],
                     'created': datetime.utcnow().timestamp(),
                 },
                 'extraction-verified': {
@@ -333,12 +217,17 @@ async def create_object(obj_type: str, obj_name: str, objs: dict) -> Document:
         """Add a timedelta to a datetime."""
         return dt + timedelta(days=days)
 
+    def timedelta_subtract(dt: datetime, days: int) -> datetime:
+        """Subtract a timedelta to a datetime."""
+        return dt - timedelta(days=days)
+
     mdl = import_module(f'toja.server.handlers.test.fixtures.{obj_type}')
     obj_data = resources.open_text(mdl, f'{obj_name}.json')
     env = Environment()
     env.filters['db_id'] = get_db_id
     env.filters['timestamp'] = timestamp
     env.filters['timedelta_add'] = timedelta_add
+    env.filters['timedelta_subtract'] = timedelta_subtract
     env.globals['utcnow'] = datetime.utcnow()
     tmpl = env.from_string(obj_data.read())
     obj = json.loads(tmpl.render())
@@ -362,19 +251,7 @@ class TestHandler(RequestHandler):
                 'sources': {},
                 'jokes': {}}
         for key in self.get_arguments('obj'):
-            if key == 'user1':
-                await create_user_user1(objs)
-            elif key == 'userNew':
-                await create_user_new(objs)
-            elif key == 'userBlocked':
-                await create_user_blocked(objs)
-            elif key == 'userInactive':
-                await create_user_inactive(objs)
-            elif key == 'provider':
-                await create_user_provider(objs)
-            elif key == 'editor':
-                await create_user_editor(objs)
-            elif key == 'source1':
+            if key == 'source1':
                 await create_source1(objs)
             elif key == 'source2':
                 await create_source2(objs)
