@@ -21,7 +21,7 @@ test('Create a source', async t => {
         .typeText(Selector('label').withText('Publisher'), 'Groan Publishing')
         .typeText(Selector('label').withText('Publication Location'), 'London, UK')
         .typeText(Selector('label').withText('Page Numbers'), '75')
-        .setFilesToUpload(Selector('label').withText('Source Image').find('input'), ['../../../toja/server/handlers/test/example-source1.png'])
+        .setFilesToUpload(Selector('label').withText('Source Image').find('input'), ['../../../toja/server/handlers/test/fixtures/sources/one.png'])
         .click(Selector('label').withText('Please confirm'))
         .click(Selector('button').withText('Add source'))
         .expect(Selector('h2').withText('THE BIG BOOK OF BAD JOKES').exists).ok();

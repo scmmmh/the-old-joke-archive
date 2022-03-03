@@ -93,7 +93,7 @@ test('Update a source image', async t => {
         .click(Selector('a').withText('Contribute Source Data'));
     await t
         .click(Selector('h2').withText('THE DAILY JOKE').parent('li').find('button[aria-label="Edit this source"]'))
-        .setFilesToUpload(Selector('ul form label').withText('New Source Image').find('input'), ['../../../toja/server/handlers/test/example-source1.png'])
+        .setFilesToUpload(Selector('ul form label').withText('New Source Image').find('input'), ['../../../toja/server/handlers/test/fixtures/sources/one.png'])
         .click(Selector('ul form label').withText('Please confirm'))
         .click(Selector('ul button[aria-label="Save changes"]'))
         .expect(Selector('h2').withText('THE DAILY JOKE').exists).ok();
@@ -121,7 +121,7 @@ test('Fail updating a source image without license consent', async t => {
         .click(Selector('a').withText('Contribute Source Data'));
     await t
         .click(Selector('h2').withText('THE DAILY JOKE').parent('li').find('button[aria-label="Edit this source"]'))
-        .setFilesToUpload(Selector('ul form label').withText('New Source Image').find('input'), ['../../../toja/server/handlers/test/example-source1.png'])
+        .setFilesToUpload(Selector('ul form label').withText('New Source Image').find('input'), ['../../../toja/server/handlers/test/fixtures/sources/one.png'])
         .click(Selector('ul button[aria-label="Save changes"]'))
         .expect(Selector('span').withText('Please confirm that you are permitted to upload the file under the given license').exists).ok();
         const allSources = await getAllRecords('sources');

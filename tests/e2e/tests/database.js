@@ -59,6 +59,6 @@ export async function setupMinimalDatabase() {
 
 export async function setupStandardDatabase() {
     let objs = await setupMinimalDatabase();
-    objs = mergeTestRecords(objs, await createTestRecords(['users/one', 'users/new', 'users/inactive', 'users/blocked', 'source1', 'source2']))
+    objs = mergeTestRecords(objs, await createTestRecords(['users/one', 'users/new', 'users/inactive', 'users/blocked', 'sources/one', 'sources/two']))
     return objs;
 }

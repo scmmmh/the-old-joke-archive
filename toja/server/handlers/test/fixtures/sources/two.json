@@ -1,0 +1,16 @@
+{
+    "type": "newspaper",
+    "title": "The Daily Joke",
+    "subtitle": "",
+    "date": "1872-04-13",
+    "location": "",
+    "publisher": "",
+    "page_numbers": "",
+    "creator": "{{ 'users/provider'|db_id }}",
+    "created": {{ utcnow|timestamp }},
+    "_attachment": {
+        "name": "image",
+        "filename": "two.png",
+        "mimetype": "image/png"
+    }
+}

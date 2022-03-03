@@ -14,12 +14,12 @@ async def test_delete_own_source(standard_database: Tuple[CouchDB, dict], http_c
     """Test that delete the source works."""
     session, objs = standard_database
 
-    response = await http_client['delete'](f'/api/sources/{objs["sources"]["source2"]["_id"]}',
+    response = await http_client['delete'](f'/api/sources/{objs["sources"]["two"]["_id"]}',
                                            token=auth_token(objs['users']['provider']))
     assert response.code == 204
     sources_db = await session['sources']
     with pytest.raises(aio_exc.NotFoundError):
-        await sources_db[objs['sources']['source2']['_id']]
+        await sources_db[objs['sources']['two']['_id']]
 
 
 @pytest.mark.asyncio
@@ -27,12 +27,12 @@ async def test_admin_delete_any_source(standard_database: Tuple[CouchDB, dict], 
     """Test that delete the source works."""
     session, objs = standard_database
 
-    response = await http_client['delete'](f'/api/sources/{objs["sources"]["source2"]["_id"]}',
+    response = await http_client['delete'](f'/api/sources/{objs["sources"]["two"]["_id"]}',
                                            token=auth_token(objs['users']['admin']))
     assert response.code == 204
     sources_db = await session['sources']
     with pytest.raises(aio_exc.NotFoundError):
-        await sources_db[objs['sources']['source2']['_id']]
+        await sources_db[objs['sources']['two']['_id']]
 
 
 @pytest.mark.asyncio
@@ -54,7 +54,7 @@ async def test_fail_delete_other_user(standard_database: Tuple[CouchDB, dict], h
     session, objs = standard_database
 
     with pytest.raises(HTTPClientError) as exc_info:
-        await http_client['delete'](f'/api/sources/{objs["sources"]["source1"]["_id"]}',
+        await http_client['delete'](f'/api/sources/{objs["sources"]["one"]["_id"]}',
                                     token=auth_token(objs['users']['provider']))
     assert exc_info.value.code == 403
     data = json.load(exc_info.value.response.buffer)

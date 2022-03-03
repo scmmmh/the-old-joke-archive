@@ -3,8 +3,8 @@
     "name": "Data Provider",
     "groups": ["provider"],
     "tokens": [{"token": "6cd2ffc6bf761071c9266c5bc048bdded1d909ff401e15686a81fba666d6fffa43c26266f03f0bdbaeef6cc7a288ab6bcfbba2b9051ac49bb461772131cddb673b62b343a1131ae8d332529b299c1cfeaa52440f384d3742eb7a31b113f17706eb0dbdfa310f1d91c6c5afb168d59c1f824bba2d97d1e1043aae8c75fd9f70bd",
-                "timestamp": "{{ utcnow|timedelta_add(days=30)|timestamp }}"}],
+                "timestamp": {{ utcnow|timedelta_add(days=30)|timestamp }}}],
     "password": "$2b$12$4ze6qDtdf5l8XA5XvIpeGuR.Ee/OPYa..EFd4mryeeTMTI9zBkdIG",
     "status": "active",
-    "last_access": "{{ utcnow|timestamp }}"
+    "last_access": {{ utcnow|timestamp }}
 }

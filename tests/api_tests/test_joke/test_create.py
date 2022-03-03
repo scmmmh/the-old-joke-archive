@@ -20,7 +20,7 @@ async def test_create_joke_by_editor(standard_database: Tuple[CouchDB, dict], ht
                                          body={'type': 'jokes',
                                                'attributes': {'coordinates': [25, 13, 213, 55]},
                                                'relationships': {'source': {'data': {'type': 'sources',
-                                                                                     'id': objs['sources']['source1']['_id']}}}},  # noqa: E501
+                                                                                     'id': objs['sources']['one']['_id']}}}},  # noqa: E501
                                          token=auth_token(objs['users']['editor']))
     assert response.code == 201
     joke = json.load(response.buffer)['data']
@@ -46,7 +46,7 @@ async def test_create_joke_user1(standard_database: Tuple[CouchDB, dict], http_c
                                          body={'type': 'jokes',
                                                'attributes': {'coordinates': [25, 13, 213, 55]},
                                                'relationships': {'source': {'data': {'type': 'sources',
-                                                                                     'id': objs['sources']['source1']['_id']}}}},  # noqa: E501
+                                                                                     'id': objs['sources']['one']['_id']}}}},  # noqa: E501
                                          token=auth_token(objs['users']['one']))
     assert response.code == 201
     joke = json.load(response.buffer)['data']
@@ -72,7 +72,7 @@ async def test_fail_create_joke_non_logged_in(standard_database: Tuple[CouchDB, 
                                   body={'type': 'jokes',
                                         'attributes': {'coordinates': [25, 13, 213, 55]},
                                         'relationships': {'source': {'data': {'type': 'sources',
-                                                                              'id': objs['sources']['source1']['_id']}}}})  # noqa: E501
+                                                                              'id': objs['sources']['one']['_id']}}}})  # noqa: E501
     assert exc_info.value.code == 403
     data = json.load(exc_info.value.response.buffer)
     assert 'errors' in data
@@ -103,7 +103,7 @@ async def test_fail_create_joke_no_coordinates(standard_database: Tuple[CouchDB,
                                   body={'type': 'jokes',
                                         'attributes': {},
                                         'relationships': {'source': {'data': {'type': 'sources',
-                                                                              'id': objs['sources']['source1']['_id']}}}},  # noqa: E501
+                                                                              'id': objs['sources']['one']['_id']}}}},  # noqa: E501
                                   token=auth_token(objs['users']['editor']))
     assert exc_info.value.code == 400
     data = json.load(exc_info.value.response.buffer)

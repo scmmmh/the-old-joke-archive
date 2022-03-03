@@ -1,0 +1,16 @@
+{
+    "type": "book",
+    "title": "The Big Book of Bad Jokes",
+    "subtitle": "Nothing as bad as a bad laugh",
+    "date": "1860-06",
+    "location": "London, UK",
+    "publisher": "Groan Publishing",
+    "page_numbers": "75",
+    "creator": "{{ 'users/admin'|db_id }}",
+    "created": {{ utcnow|timestamp }},
+    "_attachment": {
+        "name": "image",
+        "filename": "one.png",
+        "mimetype": "image/png"
+    }
+}

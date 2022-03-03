@@ -1,5 +1,6 @@
 """Handler for test setup requests."""
 import json
+import logging
 
 from aiocouch import CouchDB, Document
 from aiocouch.attachment import Attachment
@@ -16,6 +17,9 @@ from toja.utils import couchdb
 from .. import test
 
 
+logger = logging.getLogger(__name__)
+
+
 async def create_singleton_object(dbsession: CouchDB, dbname: str, obj: dict) -> Document:
     """Create a singleton CouchDB object with the given parameters."""
     db = await dbsession[dbname]
@@ -28,58 +32,11 @@ async def create_singleton_object(dbsession: CouchDB, dbname: str, obj: dict) ->
     return db_obj
 
 
-async def create_source1(objs: dict) -> None:
-    """Create the first source."""
-    if 'source1' not in objs['sources']:
-        await create_object('users', 'admin', objs)
-        async with couchdb() as dbsession:
-            sources = await dbsession['sources']
-            source = await sources.create(str(uuid1()))
-            source['type'] = 'book'
-            source['title'] = 'The Big Book of Bad Jokes'
-            source['subtitle'] = 'Nothing as bad as a bad laugh'
-            source['date'] = '1860-06'
-            source['location'] = 'London, UK'
-            source['publisher'] = 'Groan Publishing'
-            source['page_numbers'] = '75'
-            source['creator'] = objs['users']['admin']
-            source['created'] = datetime.utcnow().timestamp()
-            await source.save()
-            image = Attachment(source, 'image')
-            await image.save(resources.open_binary(test, 'example-source1.png').read(), 'image/png')
-            objs['sources']['source1'] = source['_id']
-
-
-async def create_source2(objs: dict) -> None:
-    """Create the second source."""
-    if 'source2' not in objs['sources']:
-        await create_object('users', 'provider', objs)
-        async with couchdb() as dbsession:
-            sources = await dbsession['sources']
-            source = await sources.create(str(uuid1()))
-            source['type'] = 'newspaper'
-            source['title'] = 'The Daily Joke'
-            source['subtitle'] = ''
-            source['date'] = '1872-04-13'
-            source['location'] = ''
-            source['publisher'] = ''
-            source['page_numbers'] = ''
-            source['creator'] = objs['users']['provider']
-            source['created'] = datetime.utcnow().timestamp()
-            await source.save()
-            image = Attachment(source, 'image')
-            img = Image.open(BytesIO(resources.open_binary(test, 'example-source2.jpeg').read()))
-            buffer = BytesIO()
-            img.save(buffer, format='png')
-            await image.save(buffer.getvalue(), 'image/png')
-            objs['sources']['source2'] = source['_id']
-
-
 async def create_joke1(objs: dict) -> None:
     """Create the test auto-transcribed joke user."""
     async with couchdb() as dbsession:
         await create_object('users', 'one', objs)
-        await create_source1(objs)
+        await create_object('sources', 'one', objs)
         joke = await create_singleton_object(dbsession, 'jokes', {
             'test_name_': 'joke1',
             'title': '[Untitled]',
@@ -124,7 +81,7 @@ async def create_joke1(objs: dict) -> None:
                 'annotated': None,
                 'annotation-verified': None,
             },
-            'source_id': objs['sources']['source1'],
+            'source_id': objs['sources']['one'],
         })
         image = Attachment(joke, 'image')
         img = Image.open(BytesIO(resources.open_binary(test, "example-joke1.png").read()))
@@ -138,7 +95,7 @@ async def create_joke2(objs: dict) -> None:
     """Create the test extracted joke."""
     async with couchdb() as dbsession:
         await create_object('users', 'one', objs)
-        await create_source1(objs)
+        await create_object('sources', 'one', objs)
         joke = await create_singleton_object(dbsession, 'jokes', {
             'test_name_': 'joke2',
             'title': '[Untitled]',
@@ -157,7 +114,7 @@ async def create_joke2(objs: dict) -> None:
                 'annotated': None,
                 'annotation-verified': None,
             },
-            'source_id': objs['sources']['source1'],
+            'source_id': objs['sources']['one'],
         })
         image = Attachment(joke, 'image')
         img = Image.open(BytesIO(resources.open_binary(test, "example-joke1.png").read()))
@@ -171,7 +128,7 @@ async def create_joke3(objs: dict) -> None:
     """Create the test extracted joke."""
     async with couchdb() as dbsession:
         await create_object('users', 'one', objs)
-        await create_source1(objs)
+        await create_object('sources', 'one', objs)
         joke = await create_singleton_object(dbsession, 'jokes', {
             'test_name_': 'joke3',
             'title': '[Untitled]',
@@ -193,7 +150,7 @@ async def create_joke3(objs: dict) -> None:
                 'annotated': None,
                 'annotation-verified': None,
             },
-            'source_id': objs['sources']['source1'],
+            'source_id': objs['sources']['one'],
         })
         image = Attachment(joke, 'image')
         img = Image.open(BytesIO(resources.open_binary(test, "example-joke1.png").read()))
@@ -205,9 +162,10 @@ async def create_joke3(objs: dict) -> None:
 
 async def create_object(obj_type: str, obj_name: str, objs: dict) -> Document:
     """Create a new database object."""
-    def get_db_id(path: str) -> str:
+    async def get_db_id(path: str) -> str:
         """Get the database id of the given object path."""
-        return 'hm'
+        obj = await create_object(*path.split('/'), objs)
+        return obj['_id']
 
     def timestamp(dt: datetime) -> float:
         """Return a datetime's timestamp."""
@@ -221,19 +179,34 @@ async def create_object(obj_type: str, obj_name: str, objs: dict) -> Document:
         """Subtract a timedelta to a datetime."""
         return dt - timedelta(days=days)
 
-    mdl = import_module(f'toja.server.handlers.test.fixtures.{obj_type}')
-    obj_data = resources.open_text(mdl, f'{obj_name}.json')
-    env = Environment()
-    env.filters['db_id'] = get_db_id
-    env.filters['timestamp'] = timestamp
-    env.filters['timedelta_add'] = timedelta_add
-    env.filters['timedelta_subtract'] = timedelta_subtract
-    env.globals['utcnow'] = datetime.utcnow()
-    tmpl = env.from_string(obj_data.read())
-    obj = json.loads(tmpl.render())
-    obj['test_name_'] = f'{obj_type}/{obj_name}'
+    logger.debug(f'Creating object {obj_type}/{obj_name}')
     async with couchdb() as dbsession:
-        db_obj = await create_singleton_object(dbsession, obj_type, obj)
+        db = await dbsession[obj_type]
+        async for db_obj in db.find({'test_name_': f'{obj_type}/{obj_name}'}):
+            logger.debug('Reusing existing database instance')
+            if obj_name not in objs[obj_type]:
+                objs[obj_type][obj_name] = db_obj['_id']
+            return db_obj
+        mdl = import_module(f'toja.server.handlers.test.fixtures.{obj_type}')
+        obj_data = resources.open_text(mdl, f'{obj_name}.json')
+        env = Environment(enable_async=True)
+        env.filters['db_id'] = get_db_id
+        env.filters['timestamp'] = timestamp
+        env.filters['timedelta_add'] = timedelta_add
+        env.filters['timedelta_subtract'] = timedelta_subtract
+        env.globals['utcnow'] = datetime.utcnow()
+        tmpl = env.from_string(obj_data.read())
+        obj = json.loads(await tmpl.render_async())
+        db_obj = await db.create(str(uuid1()))
+        db_obj['test_name_'] = f'{obj_type}/{obj_name}'
+        for key, value in obj.items():
+            if not key.startswith('_'):
+                db_obj[key] = value
+        await db_obj.save()
+        if '_attachment' in obj:
+            image = Attachment(db_obj, obj['_attachment']['name'])
+            await image.save(resources.open_binary(mdl, obj['_attachment']['filename']).read(),
+                             obj['_attachment']['mimetype'])
         objs[obj_type][obj_name] = db_obj['_id']
         return db_obj
 
@@ -251,11 +224,7 @@ class TestHandler(RequestHandler):
                 'sources': {},
                 'jokes': {}}
         for key in self.get_arguments('obj'):
-            if key == 'source1':
-                await create_source1(objs)
-            elif key == 'source2':
-                await create_source2(objs)
-            elif key == 'joke1':
+            if key == 'joke1':
                 await create_joke1(objs)
             elif key == 'joke2':
                 await create_joke2(objs)

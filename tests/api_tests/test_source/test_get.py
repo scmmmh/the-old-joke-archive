@@ -41,12 +41,12 @@ async def test_get_source(standard_database: Tuple[CouchDB, dict], http_client: 
     """Test that the fetching a single source works."""
     session, objs = standard_database
 
-    response = await http_client['get'](f'/api/sources/{objs["sources"]["source1"]["_id"]}',
+    response = await http_client['get'](f'/api/sources/{objs["sources"]["one"]["_id"]}',
                                         token=auth_token(objs['users']['one']))
     assert response.code == 200
     source = json.load(response.buffer)['data']
     assert source['type'] == 'sources'
-    assert source['id'] == objs["sources"]["source1"]["_id"]
+    assert source['id'] == objs['sources']['one']['_id']
     assert 'type' in source['attributes']
     assert 'title' in source['attributes']
     assert 'subtitle' in source['attributes']
@@ -64,7 +64,7 @@ async def test_fail_unauthenticated(standard_database: Tuple[CouchDB, dict], htt
     session, objs = standard_database
 
     with pytest.raises(HTTPClientError) as exc_info:
-        await http_client['get'](f'/api/sources/{objs["sources"]["source1"]["_id"]}')
+        await http_client['get'](f'/api/sources/{objs["sources"]["one"]["_id"]}')
     assert exc_info.value.code == 403
     data = json.load(exc_info.value.response.buffer)
     assert 'errors' in data

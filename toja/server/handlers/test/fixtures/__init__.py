@@ -1,2 +1,2 @@
 """Fixture files."""
-from . import users  # noqa
+from . import users, sources  # noqa

@@ -8,7 +8,7 @@ from importlib import resources
 from tornado.httpclient import HTTPClientError
 from typing import Tuple
 
-from toja.server.handlers import test
+from toja.server.handlers.test.fixtures import sources
 
 from ..util import auth_token
 
@@ -18,10 +18,10 @@ async def test_update_own_source(standard_database: Tuple[CouchDB, dict], http_c
     """Test that updating the source works."""
     session, objs = standard_database
 
-    image_data = f'data:image/png;base64,{b64encode(resources.open_binary(test, "example-source1.png").read()).decode("utf-8")}'  # noqa: E501
-    response = await http_client['put'](f'/api/sources/{objs["sources"]["source2"]["_id"]}',
+    image_data = f'data:image/png;base64,{b64encode(resources.open_binary(sources, "one.png").read()).decode("utf-8")}'  # noqa: E501
+    response = await http_client['put'](f'/api/sources/{objs["sources"]["two"]["_id"]}',
                                         body={'type': 'sources',
-                                              'id': objs['sources']['source2']['_id'],
+                                              'id': objs['sources']['two']['_id'],
                                               'attributes': {
                                                   'type': 'book',
                                                   'title': 'All change',
@@ -52,9 +52,9 @@ async def test_minimal_update_own_source(standard_database: Tuple[CouchDB, dict]
     """Test that minimal updating works."""
     session, objs = standard_database
 
-    response = await http_client['put'](f'/api/sources/{objs["sources"]["source2"]["_id"]}',
+    response = await http_client['put'](f'/api/sources/{objs["sources"]["two"]["_id"]}',
                                         body={'type': 'sources',
-                                              'id': objs['sources']['source2']['_id'],
+                                              'id': objs['sources']['two']['_id'],
                                               'attributes': {
                                               }},
                                         token=auth_token(objs['users']['provider']))
@@ -77,10 +77,10 @@ async def test_admin_update_other_source(standard_database: Tuple[CouchDB, dict]
     """Test that updating any source by the admin works."""
     session, objs = standard_database
 
-    image_data = f'data:image/png;base64,{b64encode(resources.open_binary(test, "example-source1.png").read()).decode("utf-8")}'  # noqa: E501
-    response = await http_client['put'](f'/api/sources/{objs["sources"]["source2"]["_id"]}',
+    image_data = f'data:image/png;base64,{b64encode(resources.open_binary(sources, "one.png").read()).decode("utf-8")}'  # noqa: E501
+    response = await http_client['put'](f'/api/sources/{objs["sources"]["two"]["_id"]}',
                                         body={'type': 'sources',
-                                              'id': objs['sources']['source2']['_id'],
+                                              'id': objs['sources']['two']['_id'],
                                               'attributes': {
                                                   'type': 'book',
                                                   'title': 'All change',
@@ -136,9 +136,9 @@ async def test_fail_other_user(standard_database: Tuple[CouchDB, dict], http_cli
     session, objs = standard_database
 
     with pytest.raises(HTTPClientError) as exc_info:
-        await http_client['put'](f'/api/sources/{objs["sources"]["source1"]["_id"]}',
+        await http_client['put'](f'/api/sources/{objs["sources"]["one"]["_id"]}',
                                  body={'type': 'sources',
-                                       'id': objs['sources']['source1']['_id'],
+                                       'id': objs['sources']['one']['_id'],
                                        'attributes': {
                                            'type': 'book',
                                            'title': 'All change',
@@ -160,9 +160,9 @@ async def test_fail_invalid_type(standard_database: Tuple[CouchDB, dict], http_c
     session, objs = standard_database
 
     with pytest.raises(HTTPClientError) as exc_info:
-        await http_client['put'](f'/api/sources/{objs["sources"]["source1"]["_id"]}',
+        await http_client['put'](f'/api/sources/{objs["sources"]["one"]["_id"]}',
                                  body={'type': 'sources',
-                                       'id': objs['sources']['source1']['_id'],
+                                       'id': objs['sources']['one']['_id'],
                                        'attributes': {
                                            'type': 'letter',
                                        }},
@@ -178,9 +178,9 @@ async def test_fail_invalid_title(standard_database: Tuple[CouchDB, dict], http_
     session, objs = standard_database
 
     with pytest.raises(HTTPClientError) as exc_info:
-        await http_client['put'](f'/api/sources/{objs["sources"]["source1"]["_id"]}',
+        await http_client['put'](f'/api/sources/{objs["sources"]["one"]["_id"]}',
                                  body={'type': 'sources',
-                                       'id': objs['sources']['source1']['_id'],
+                                       'id': objs['sources']['one']['_id'],
                                        'attributes': {
                                            'title': '',
                                        }},
@@ -196,9 +196,9 @@ async def test_fail_invalid_date(standard_database: Tuple[CouchDB, dict], http_c
     session, objs = standard_database
 
     with pytest.raises(HTTPClientError) as exc_info:
-        await http_client['put'](f'/api/sources/{objs["sources"]["source1"]["_id"]}',
+        await http_client['put'](f'/api/sources/{objs["sources"]["one"]["_id"]}',
                                  body={'type': 'sources',
-                                       'id': objs['sources']['source1']['_id'],
+                                       'id': objs['sources']['one']['_id'],
                                        'attributes': {
                                            'date': '',
                                        }},

@@ -3,8 +3,8 @@
     "name": "User One",
     "groups": [],
     "tokens": [{"token": "0722460f936a622475057b525f0e85d90bb99a15783c01382f4aaef55dbaec16880b1c45161619dfd1a24e59242010a0d42dee25c0e2c6a4ffe7a6fa8b53998d7b12c9dd4b2440b45977f8475f42d37c68ab874bce05ab7a94d1982c2232c2eeb6d1e33a5e082e31388fa70f904ac7fc6cf590af6df16981c682e7608e01f4a1",
-                "timestamp": "{{ utcnow|timedelta_add(days=30)|timestamp }}"}],
+                "timestamp": {{ utcnow|timedelta_add(days=30)|timestamp }}}],
     "password": "$2b$12$Y6WyxhdmV/91jJ16ZDOvEutAeRsGt0s10SXU10JobDQ5qeMh6frJ.",
     "status": "active",
-    "last_access": "{{ utcnow|timestamp }}"
+    "last_access": {{ utcnow|timestamp }}
 }

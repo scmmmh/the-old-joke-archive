@@ -15,6 +15,9 @@ async def create_objects(names: list[str], dbsession: CouchDB) -> dict:
         query = '&'.join([f'obj={name}' for name in names])
         async with http_session.put(f'http://localhost:6543/test?{query}') as response:
             objs = await response.json()
+            # data = (await response.content.read()).decode('utf-8')
+            # print(data)
+            # objs = json.loads(data)
             for dbname, items in objs.items():
                 db = await dbsession[dbname]
                 for obj_name, obj_id in list(items.items()):
@@ -62,8 +65,8 @@ async def standard_database(minimal_database: CouchDB) -> None:
                                                      'users/blocked',
                                                      'users/provider',
                                                      'users/editor',
-                                                     'source1',
-                                                     'source2',
+                                                     'sources/one',
+                                                     'sources/two',
                                                      'joke1',
                                                      'joke2',
                                                      'joke3',
