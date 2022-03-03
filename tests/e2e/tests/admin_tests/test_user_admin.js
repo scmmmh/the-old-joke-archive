@@ -22,7 +22,7 @@ test('Test edit user', async t => {
         .click(Selector('option[value="inactive"]'))
         .click(Selector('table td label').withText('E-Mail Address').parent('tr').find('button[aria-label="Save changes"]'))
         .expect(Selector('table td').withText('user2@example.com').exists).ok();
-    const user1 = await getRecord('users', objs.users.user1._id);
+    const user1 = await getRecord('users', objs.users.one._id);
     await t
         .expect(user1.email).eql('user2@example.com')
         .expect(user1.name).eql('Updated')
@@ -43,7 +43,7 @@ test('Test delete user', async t => {
         .click(Selector('table td').withText('user1@example.com').parent('tr').find('button[aria-label="Delete this user"]'))
         .expect(Selector('table td').withText('user1@example.com').exists).notOk()
     try {
-        await getRecord('users', objs.users.user1._id);
+        await getRecord('users', objs.users.one._id);
         await t
             .expect(true).eql(false);
     } catch {
