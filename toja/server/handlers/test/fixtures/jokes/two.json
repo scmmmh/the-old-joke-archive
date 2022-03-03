@@ -1,0 +1,25 @@
+{
+    "test_name_": "joke2",
+    "title": "[Untitled]",
+    "status": "extracted",
+    "coordinates": [20, 20, 200, 60],
+    "transcriptions": {},
+    "activity": {
+        "extracted": {
+            "user": "{{ 'users/one'|db_id }}",
+            "created": {{ utcnow|timestamp }}
+        },
+        "extraction-verified": null,
+        "transcribed": [],
+        "transcription-verified": null,
+        "category-verified": null,
+        "annotated": null,
+        "annotation-verified": null
+    },
+    "source_id": "{{ 'sources/one'|db_id }}",
+    "_attachment": {
+        "name": "image",
+        "filename": "one.png",
+        "mimetype": "image/png"
+    }
+}

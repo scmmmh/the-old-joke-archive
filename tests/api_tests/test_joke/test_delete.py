@@ -12,24 +12,24 @@ from ..util import auth_token
 async def test_delete_joke_by_editor(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
     """Test that deleting a joke works for an editor."""
     session, objs = standard_database
-    response = await http_client['delete'](f'/api/jokes/{objs["jokes"]["joke1"]["_id"]}',
+    response = await http_client['delete'](f'/api/jokes/{objs["jokes"]["one"]["_id"]}',
                                            token=auth_token(objs['users']['editor']))
     assert response.code == 204
     jokes_db = await session['jokes']
     with pytest.raises(aio_exc.NotFoundError):
-        await jokes_db[objs['jokes']['joke1']['_id']]
+        await jokes_db[objs['jokes']['one']['_id']]
 
 
 @pytest.mark.asyncio
 async def test_delete_extracted_joke(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
     """Test that deleting a joke works for the user who extracted it."""
     session, objs = standard_database
-    response = await http_client['delete'](f'/api/jokes/{objs["jokes"]["joke2"]["_id"]}',
+    response = await http_client['delete'](f'/api/jokes/{objs["jokes"]["two"]["_id"]}',
                                            token=auth_token(objs['users']['one']))
     assert response.code == 204
     jokes_db = await session['jokes']
     with pytest.raises(aio_exc.NotFoundError):
-        await jokes_db[objs['jokes']['joke2']['_id']]
+        await jokes_db[objs['jokes']['two']['_id']]
 
 
 @pytest.mark.asyncio
@@ -37,9 +37,9 @@ async def test_fail_delete_extraction_verified_joke(standard_database: Tuple[Cou
     """Test that deleting fails if the joke has been verified."""
     session, objs = standard_database
     with pytest.raises(HTTPClientError) as exc_info:
-        await http_client['delete'](f'/api/jokes/{objs["jokes"]["joke3"]["_id"]}',
+        await http_client['delete'](f'/api/jokes/{objs["jokes"]["three"]["_id"]}',
                                     token=auth_token(objs['users']['one']))
         assert exc_info.value.code == 403
     jokes_db = await session['jokes']
-    joke = await jokes_db[objs['jokes']['joke3']['_id']]
+    joke = await jokes_db[objs['jokes']['three']['_id']]
     assert joke is not None

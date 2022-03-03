@@ -90,7 +90,7 @@ async def test_fail_get_all_jokes_non_logged_in(standard_database: Tuple[CouchDB
 async def test_get_joke_admin(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
     """Test that getting a single joke works for an admin."""
     session, objs = standard_database
-    response = await http_client['get'](f'/api/jokes/{objs["jokes"]["joke1"]["_id"]}',
+    response = await http_client['get'](f'/api/jokes/{objs["jokes"]["one"]["_id"]}',
                                         token=auth_token(objs['users']['admin']))
     assert response.code == 200
     joke = json.load(response.buffer)['data']
@@ -108,7 +108,7 @@ async def test_get_joke_admin(standard_database: Tuple[CouchDB, dict], http_clie
 async def test_get_joke_editor(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
     """Test that getting a single joke works for an editor."""
     session, objs = standard_database
-    response = await http_client['get'](f'/api/jokes/{objs["jokes"]["joke1"]["_id"]}',
+    response = await http_client['get'](f'/api/jokes/{objs["jokes"]["one"]["_id"]}',
                                         token=auth_token(objs['users']['editor']))
     assert response.code == 200
     joke = json.load(response.buffer)['data']
@@ -126,7 +126,7 @@ async def test_get_joke_editor(standard_database: Tuple[CouchDB, dict], http_cli
 async def test_get_joke_contributor(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
     """Test that getting a single joke works for a logged-in user."""
     session, objs = standard_database
-    response = await http_client['get'](f'/api/jokes/{objs["jokes"]["joke1"]["_id"]}',
+    response = await http_client['get'](f'/api/jokes/{objs["jokes"]["one"]["_id"]}',
                                         token=auth_token(objs['users']['provider']))
     assert response.code == 200
     joke = json.load(response.buffer)['data']
@@ -145,7 +145,7 @@ async def test_get_joke_contributor(standard_database: Tuple[CouchDB, dict], htt
 async def test_get_published_joke_anonymous(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
     """Test that getting a published joke works for a logged-in user."""
     session, objs = standard_database
-    response = await http_client['get'](f'/api/jokes/{objs["jokes"]["joke1"]["_id"]}')
+    response = await http_client['get'](f'/api/jokes/{objs["jokes"]["one"]["_id"]}')
     assert response.code == 200
     joke = json.load(response.buffer)['data']
     assert 'attributes' in joke
