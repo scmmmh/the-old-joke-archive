@@ -14,9 +14,9 @@ test('Login user (remember)', async t => {
         .click(Selector('label').withText('Remember me'))
         .click(Selector('button').withText('Log in'))
         .expect(Selector('a').withText('User One').exists).ok();
-    const dbUser = await getRecord('users', objs.users.user1._id);
+    const dbUser = await getRecord('users', objs.users.one._id);
     await t.
-        expect(dbUser.tokens[0].token).notEql(objs.users.user1.tokens[0].token);
+        expect(dbUser.tokens[0].token).notEql(objs.users.one.tokens[0].token);
     await t
         .expect(await localLoadValue('auth.token')).eql(dbUser.tokens[0].token)
         .expect(await sessionLoadValue('auth.token')).notOk();
@@ -30,9 +30,9 @@ test('Login user (do not remember)', async t => {
         .typeText(Selector('label').withText('Password'), 'user1pwd')
         .click(Selector('button').withText('Log in'))
         .expect(Selector('a').withText('User One').exists).ok();
-    const dbUser = await getRecord('users', objs.users.user1._id);
+    const dbUser = await getRecord('users', objs.users.one._id);
     await t.
-        expect(dbUser.tokens[0].token).notEql(objs.users.user1.tokens[0].token);
+        expect(dbUser.tokens[0].token).notEql(objs.users.one.tokens[0].token);
     await t
         .expect(await localLoadValue('auth.token')).notOk()
         .expect(await sessionLoadValue('auth.token')).eql(dbUser.tokens[0].token);

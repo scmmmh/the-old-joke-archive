@@ -53,12 +53,12 @@ export async function setupEmptyDatabase() {
 
 export async function setupMinimalDatabase() {
     await setupEmptyDatabase();
-    const objs = createTestRecords(['admin']);
+    const objs = createTestRecords(['users/admin']);
     return objs;
 }
 
 export async function setupStandardDatabase() {
     let objs = await setupMinimalDatabase();
-    objs = mergeTestRecords(objs, await createTestRecords(['user1', 'userNew', 'userInactive', 'userBlocked', 'source1', 'source2']))
+    objs = mergeTestRecords(objs, await createTestRecords(['users/one', 'users/new', 'users/inactive', 'users/blocked', 'source1', 'source2']))
     return objs;
 }
