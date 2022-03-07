@@ -31,6 +31,8 @@ from toja.validation import validate, ValidationError, object_schema, type_schem
 
 def coerce_coordinates(value: list) -> list:
     """Coerce the coordinates into an integer bounding box."""
+    if not value:
+        return value
     if len(value) == 4:
         return [
             int(math.floor(value[0])),
@@ -178,7 +180,7 @@ class JokeCollectionHandler(JSONAPICollectionHandler):
                 'extraction-verified': None,
                 'transcribed': [],
                 'transcription-verified': None,
-                'category-verified': None,
+                'categories-verified': None,
                 'annotated': None,
                 'annotation-verified': None,
             }
@@ -238,33 +240,12 @@ class JokeItemHandler(JSONAPIItemHandler):
                 raise JSONAPIError(404, [{'title': 'This joke does not exist'}])
 
     async def allow_put(self: 'JokeItemHandler', iid: str, data: dict, user: Union[Document, None]) -> None:
-        """Check whether updating a joke is allowed.
+        """Allow all logged-in users to update a joke.
 
-        * Admins and editors are allowed to update all jokes.
-        * Logged-in users are allowed to update a joke if:
-
-          * They have not undertaken a previous step in the joke pipeline.
-          * They are the user who undertook the current step in the joke pipeline and no further steps have been
-            completed.
+        Which fields they may update is configured in :func:`~toja.server.handlers.joke.validate_put`.
         """
         if user is not None:
-            if 'admin' in user['groups'] or 'editor' in user['groups']:
-                return
-            else:
-                async with couchdb() as session:
-                    db = await session['jokes']
-                    joke = await db[iid]
-                    if joke['status'] in joke['activity'] and joke['activity'][joke['status']] is not None \
-                            and joke['activity'][joke['status']]['user'] == user['_id']:
-                        return
-                    found = False
-                    for activity in ['extracted', 'extraction-verified', 'transcribed', 'transcription-verified',
-                                     'categories-verified', 'annotated', 'annotation-verified']:
-                        if joke['activity'][activity] is not None and joke['activity'][activity]['user'] == user['_id']:
-                            found = True
-                            break
-                    if not found:
-                        return
+            return
         raise JSONAPIError(403, [{'title': 'You are not authorised to update this joke'}])
 
     async def validate_put(self: 'JokeItemHandler', iid: str, data: dict, user: Union[Document, None]) -> dict:
@@ -274,11 +255,7 @@ class JokeItemHandler(JSONAPIItemHandler):
             db = await session['jokes']
             joke = await db[iid]
             relationships = {
-                'type': 'dict',
-                'required': True,
-                'schema': {
-                    'source': one_to_one_relationship_schema('sources', value=joke['source_id'])
-                }
+                'source': one_to_one_relationship_schema('sources', value=joke['source_id'])
             }
             attributes = {}
             if joke['status'] == 'extracted' or allow_everything:
@@ -369,12 +346,31 @@ class JokeItemHandler(JSONAPIItemHandler):
                 if 'coordinates' in data['attributes'] and doc['coordinates'] != data['attributes']['coordinates']:
                     doc['coordinates'] = data['attributes']['coordinates']
                     coords_changed = True
-                    if coords_changed and 'transcriptions' in doc and 'auto' in doc['transcriptions']:
+                    if 'transcriptions' in doc and 'auto' in doc['transcriptions']:
                         del doc['transcriptions']['auto']
+                    doc['activity']['extracted'] = {
+                        'user': user['_id'],
+                        'timtestamp': datetime.utcnow().timestamp(),
+                    }
+                    if 'editor' in user['groups'] or 'admin' in user['groups']:
+                        doc['activity']['extraction-verified'] = {
+                            'user': user['_id'],
+                            'timtestamp': datetime.utcnow().timestamp(),
+                        }
+                        doc['status'] = 'extraction-verified'
+                    else:
+                        doc['status'] = 'extracted'
                 if 'transcriptions' in data['attributes'] and user['_id'] in data['attributes']['transcriptions']:
                     doc['transcriptions'][user['_id']] = data['attributes']['transcriptions'][user['_id']]
                 if 'status' in data['attributes']:
                     doc['status'] = data['attributes']['status']
+                    if data['attributes']['status'] == 'transcribed':
+                        pass
+                    else:
+                        doc['activity'][data['attributes']['status']] = {
+                            'user': user['_id'],
+                            'timtestamp': datetime.utcnow().timestamp(),
+                        }
 
                 """if 'admin' in user['groups'] or 'editor' in user['groups']:
                     # Changes to save if the user is an editor or admin
