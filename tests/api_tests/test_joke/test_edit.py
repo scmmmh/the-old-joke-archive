@@ -102,8 +102,8 @@ async def test_confirm_extraction_user(standard_database: Tuple[CouchDB, dict], 
 
 
 @pytest.mark.asyncio
-async def test_fail_extraction_user(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
-    """Test confirming the extraction fails for a user who did extract the joke."""
+async def test_fail_confirm_extraction_user(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
+    """Test that the extraction verification fails for a user who extracted the joke."""
     session, objs = standard_database
     response = await http_client['put'](f'/api/jokes/{objs["jokes"]["two"]["_id"]}',
                                         body={'type': 'jokes',
@@ -118,3 +118,60 @@ async def test_fail_extraction_user(standard_database: Tuple[CouchDB, dict], htt
     assert joke is not None
     assert joke['status'] == 'extracted'
     assert joke['activity']['extraction-verified'] is None
+
+
+@pytest.mark.asyncio
+async def test_transcribe_editor(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
+    """Test that transcribing works for an editor."""
+    session, objs = standard_database
+    response = await http_client['put'](f'/api/jokes/{objs["jokes"]["three"]["_id"]}',
+                                        body={'type': 'jokes',
+                                              'id': objs['jokes']['three']['_id'],
+                                              'attributes': {'transcriptions': {
+                                                  objs['users']['editor']['_id']: {
+                                                      'type': 'doc',
+                                                      'content': []
+                                                  }}},
+                                              'relationships': {'source': {'data': {'type': 'sources',
+                                                                                    'id': objs['sources']['one']['_id']}}}},  # noqa: E501
+                                        token=auth_token(objs['users']['editor']))
+    assert response.code == 200
+    joke = json.load(response.buffer)['data']
+    assert joke
+    assert joke['attributes']['title'] == '[Untitled]'
+    assert joke['attributes']['transcriptions'][objs['users']['editor']['_id']] == {
+        'type': 'doc', 'content': []
+    }
+    assert joke['attributes']['transcriptions']['final'] == {
+        'type': 'doc', 'content': []
+    }
+    assert joke['attributes']['status'] == 'transcription-verified'
+    assert objs['users']['editor']['_id'] in joke['attributes']['activity']['transcribed']
+    assert joke['attributes']['activity']['transcription-verified']['user'] == objs['users']['editor']['_id']
+
+
+@pytest.mark.asyncio
+async def test_transcribe_user(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
+    """Test that transcribing works for an user who has not done anything previously."""
+    session, objs = standard_database
+    response = await http_client['put'](f'/api/jokes/{objs["jokes"]["three"]["_id"]}',
+                                        body={'type': 'jokes',
+                                              'id': objs['jokes']['three']['_id'],
+                                              'attributes': {'transcriptions': {
+                                                  objs['users']['three']['_id']: {
+                                                      'type': 'doc',
+                                                      'content': []
+                                                  }}},
+                                              'relationships': {'source': {'data': {'type': 'sources',
+                                                                                    'id': objs['sources']['one']['_id']}}}},  # noqa: E501
+                                        token=auth_token(objs['users']['three']))
+    assert response.code == 200
+    joke = json.load(response.buffer)['data']
+    assert joke
+    assert joke['attributes']['title'] == '[Untitled]'
+    assert joke['attributes']['transcriptions'][objs['users']['three']['_id']] == {
+        'type': 'doc', 'content': []
+    }
+    assert 'final' not in joke['attributes']['transcriptions']
+    assert joke['attributes']['status'] == 'auto-transcribed'
+    assert objs['users']['three']['_id'] in joke['attributes']['activity']['transcribed']

@@ -178,7 +178,7 @@ class JokeCollectionHandler(JSONAPICollectionHandler):
                     'timestamp': datetime.utcnow().timestamp(),
                 },
                 'extraction-verified': None,
-                'transcribed': [],
+                'transcribed': {},
                 'transcription-verified': None,
                 'categories-verified': None,
                 'annotated': None,
@@ -273,13 +273,14 @@ class JokeItemHandler(JSONAPIItemHandler):
                 }
             if (joke['status'] == 'extracted' and user['_id'] != joke['activity']['extracted']['user']) \
                     or allow_everything:
+                # Allow verifying the extraction unless the current user is the user who extracted the joke
                 attributes['status'] = {
                     'type': 'string',
                     'required': False,
                     'empty': False,
                     'allowed': ['extraction-verified']
                 }
-            if joke['status'] == 'transcribed' or allow_everything:
+            if joke['status'] == 'transcribed' or joke['status'] == 'auto-transcribed' or allow_everything:
                 attributes['transcriptions'] = {
                     'type': 'dict',
                     'required': False,
@@ -344,6 +345,7 @@ class JokeItemHandler(JSONAPIItemHandler):
                 doc = await db[iid]
                 coords_changed = False
                 if 'coordinates' in data['attributes'] and doc['coordinates'] != data['attributes']['coordinates']:
+                    # Update the joke's coordinates
                     doc['coordinates'] = data['attributes']['coordinates']
                     coords_changed = True
                     if 'transcriptions' in doc and 'auto' in doc['transcriptions']:
@@ -362,11 +364,17 @@ class JokeItemHandler(JSONAPIItemHandler):
                         doc['status'] = 'extracted'
                 if 'transcriptions' in data['attributes'] and user['_id'] in data['attributes']['transcriptions']:
                     doc['transcriptions'][user['_id']] = data['attributes']['transcriptions'][user['_id']]
+                    doc['activity']['transcribed'][user['_id']] = datetime.utcnow().timestamp()
+                    if 'editor' in user['groups'] or 'admin' in user['groups']:
+                        doc['transcriptions']['final'] = data['attributes']['transcriptions'][user['_id']]
+                        doc['activity']['transcription-verified'] = {
+                            'user': user['_id'],
+                            'timtestamp': datetime.utcnow().timestamp(),
+                        }
+                        doc['status'] = 'transcription-verified'
                 if 'status' in data['attributes']:
                     doc['status'] = data['attributes']['status']
-                    if data['attributes']['status'] == 'transcribed':
-                        pass
-                    else:
+                    if data['attributes']['status'] != 'transcribed':
                         doc['activity'][data['attributes']['status']] = {
                             'user': user['_id'],
                             'timtestamp': datetime.utcnow().timestamp(),

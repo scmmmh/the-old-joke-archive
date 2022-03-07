@@ -1,19 +1,24 @@
 {
     "test_name_": "joke3",
     "title": "[Untitled]",
-    "status": "extraction-verified",
+    "status": "auto-transcribed",
     "coordinates": [20, 20, 200, 60],
-    "transcriptions": {},
+    "transcriptions": {
+        "auto": {
+            "type": "doc",
+            "content": []
+        }
+    },
     "activity": {
         "extracted": {
             "user": "{{ 'users/one'|db_id }}",
             "created": {{ utcnow|timestamp }}
         },
         "extraction-verified": {
-            "user": "{{ 'users/editor'|db_id }}",
+            "user": "{{ 'users/two'|db_id }}",
             "created": {{ utcnow|timestamp }}
         },
-        "transcribed": [],
+        "transcribed": {},
         "transcription-verified": null,
         "categories-verified": null,
         "annotated": null,
