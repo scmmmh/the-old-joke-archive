@@ -290,6 +290,12 @@ class JokeItemHandler(JSONAPIItemHandler):
                         }
                     }
                 }
+            if joke['status'] == 'transcribed' and allow_everything:
+                attributes['status'] = {
+                    'type': 'string',
+                    'required': False,
+                    'allowed': ['transcription-verified']
+                }
             if joke['status'] == 'auto-categorised' or allow_everything:
                 attributes['categories'] = {
                     'type': 'list',
@@ -303,6 +309,7 @@ class JokeItemHandler(JSONAPIItemHandler):
                     'required': False,
                     'empty': False,
                     'allowed': ['categories-verified'] if not allow_everything else ['extraction-verified',
+                                                                                     'transcription-verified',
                                                                                      'categories-verified']
                 }
             if joke['status'] == 'categories-verified' or allow_everything:
@@ -320,6 +327,7 @@ class JokeItemHandler(JSONAPIItemHandler):
                     'required': False,
                     'empty': False,
                     'allowed': ['annotated'] if not allow_everything else ['extraction-verified',
+                                                                           'transcription-verified',
                                                                            'categories-verified',
                                                                            'annotated']
                 }
@@ -329,6 +337,7 @@ class JokeItemHandler(JSONAPIItemHandler):
                     'required': False,
                     'empty': False,
                     'allowed': ['annotations-verified'] if not allow_everything else ['extraction-verified',
+                                                                                      'transcription-verified',
                                                                                       'categories-verified',
                                                                                       'annotated',
                                                                                       'annotations-verified']
