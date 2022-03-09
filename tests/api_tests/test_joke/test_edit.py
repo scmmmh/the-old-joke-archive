@@ -257,3 +257,28 @@ async def test_fail_transcription_verified_normal_user(standard_database: Tuple[
     assert joke
     assert joke['attributes']['status'] == 'transcribed'
     assert joke['attributes']['activity']['transcription-verified'] is None
+
+
+@pytest.mark.asyncio
+async def test_verify_categories_editor(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:  # noqa: E501
+    """Test that verifying the categories works for the editor."""
+    session, objs = standard_database
+    response = await http_client['put'](f'/api/jokes/{objs["jokes"]["five"]["_id"]}',
+                                        body={'type': 'jokes',
+                                              'id': objs['jokes']['five']['_id'],
+                                              'attributes': {
+                                                  'categories': [
+                                                      'test',
+                                                      'example',
+                                                  ],
+                                                  'status': 'categories-verified'
+                                              },
+                                              'relationships': {'source': {'data': {'type': 'sources',
+                                                                                    'id': objs['sources']['one']['_id']}}}},  # noqa: E501
+                                        token=auth_token(objs['users']['editor']))
+    assert response.code == 200
+    joke = json.load(response.buffer)['data']
+    assert joke
+    assert joke['attributes']['categories'] == ['test', 'example']
+    assert joke['attributes']['status'] == 'categories-verified'
+    assert joke['attributes']['activity']['categories-verified']['user'] == objs['users']['editor']['_id']

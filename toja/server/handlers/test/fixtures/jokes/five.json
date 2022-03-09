@@ -1,15 +1,21 @@
 {
-    "test_name_": "joke3",
+    "test_name_": "joke5",
     "title": "[Untitled]",
-    "status": "auto-transcribed",
+    "status": "auto-categorised",
     "coordinates": [20, 20, 200, 60],
     "transcriptions": {
         "auto": {
             "type": "doc",
             "content": []
+        },
+        "{{ 'users/three'|db_id }}": {
+            "type": "doc",
+            "content": []
         }
     },
-    "categories": [],
+    "categories": [
+        "test"
+    ],
     "activity": {
         "extracted": {
             "user": "{{ 'users/one'|db_id }}",
@@ -19,7 +25,9 @@
             "user": "{{ 'users/two'|db_id }}",
             "created": {{ utcnow|timestamp }}
         },
-        "transcribed": {},
+        "transcribed": {
+            "{{ 'users/three'|db_id }}": {{ utcnow|timestamp }}
+        },
         "transcription-verified": null,
         "categories-verified": null,
         "annotated": null,

@@ -4,6 +4,7 @@
     "status": "extracted",
     "coordinates": [20, 20, 200, 60],
     "transcriptions": {},
+    "categories": [],
     "activity": {
         "extracted": {
             "user": "{{ 'users/one'|db_id }}",

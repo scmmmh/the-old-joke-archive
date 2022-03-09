@@ -60,6 +60,7 @@ async def as_jsonapi(doc: Document, user: Union[Document, None]) -> dict:
             'transcriptions': dict([(key, value)
                                     for key, value in doc['transcriptions'].items()
                                     if key in ['auto', 'final', user['_id'] if user else None]]),
+            'categories': doc['categories'],
             'data': image_data,
             'status': doc['status'],
             'activity': doc['activity'],
@@ -171,6 +172,7 @@ class JokeCollectionHandler(JSONAPICollectionHandler):
             doc = await db.create(uid)
             doc['title'] = '[Untitled]'
             doc['coordinates'] = data['attributes']['coordinates']
+            doc['categories'] = []
             doc['source_id'] = data['relationships']['source']['data']['id']
             doc['activity'] = {
                 'extracted': {
@@ -381,6 +383,8 @@ class JokeItemHandler(JSONAPIItemHandler):
                             'timtestamp': datetime.utcnow().timestamp(),
                         }
                         doc['status'] = 'transcription-verified'
+                if 'categories' in data['attributes']:
+                    doc['categories'] = data['attributes']['categories']
                 if 'status' in data['attributes']:
                     doc['status'] = data['attributes']['status']
                     if data['attributes']['status'] != 'transcribed':

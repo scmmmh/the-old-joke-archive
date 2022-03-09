@@ -30,6 +30,7 @@
             }
         }
     },
+    "categories": [],
     "activity": {
         "extracted": {
             "user": "{{ 'users/one'|db_id }}",
