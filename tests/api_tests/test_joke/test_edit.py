@@ -286,7 +286,7 @@ async def test_verify_categories_editor(standard_database: Tuple[CouchDB, dict],
 
 @pytest.mark.asyncio
 async def test_verify_categories_user(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:  # noqa: E501
-    """Test that verifying the categories works for the editor."""
+    """Test that verifying the categories works for a general user."""
     session, objs = standard_database
     response = await http_client['put'](f'/api/jokes/{objs["jokes"]["five"]["_id"]}',
                                         body={'type': 'jokes',
