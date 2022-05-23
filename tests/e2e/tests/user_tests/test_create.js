@@ -10,7 +10,7 @@ test('Create a first user', async t => {
     await setupEmptyDatabase();
     await t
         .click(Selector('a').withText('Sign Up'))
-        .typeText(Selector('label').withText('E-Mail Address'), 'test@example.com')
+        .typeText(Selector('label').withText('E-Mail Address'), 'test@oldjokearchive.com')
         .typeText(Selector('label').withText('Name'), 'A Tester')
         .click(Selector('button').withText('Sign up'))
         .expect(Selector('h1').withText('Signed up to').exists).ok();
@@ -19,7 +19,7 @@ test('Create a first user', async t => {
         .expect(allUsers.obj_rows.length).eql(1);
     let dbUser = await getRecord('users', allUsers.obj_rows[0].id);
     await t
-        .expect(dbUser.email).eql('test@example.com')
+        .expect(dbUser.email).eql('test@oldjokearchive.com')
         .expect(dbUser.name).eql('A Tester')
         .expect(dbUser.groups).eql(['admin'])
         .expect(dbUser.status).eql('new');
@@ -39,7 +39,7 @@ test('Create a second user', async t => {
     const objs = await setupMinimalDatabase();
     await t
         .click(Selector('a').withText('Sign Up'))
-        .typeText(Selector('label').withText('E-Mail Address'), 'test@example.com')
+        .typeText(Selector('label').withText('E-Mail Address'), 'test@oldjokearchive.com')
         .typeText(Selector('label').withText('Name'), 'A Tester')
         .click(Selector('button').withText('Sign up'))
         .expect(Selector('h1').withText('Signed up to').exists).ok();
@@ -54,7 +54,7 @@ test('Create a second user', async t => {
         }
     }
     await t
-        .expect(dbUser.email).eql('test@example.com')
+        .expect(dbUser.email).eql('test@oldjokearchive.com')
         .expect(dbUser.name).eql('A Tester')
         .expect(dbUser.groups).eql([])
         .expect(dbUser.status).eql('new');
@@ -79,7 +79,7 @@ test('Fail to create duplicate user', async t => {
     const objs = await setupMinimalDatabase();
     await t
         .click(Selector('a').withText('Sign Up'))
-        .typeText(Selector('label').withText('E-Mail Address'), 'admin@example.com')
+        .typeText(Selector('label').withText('E-Mail Address'), 'admin@oldjokearchive.com')
         .typeText(Selector('label').withText('Name'), 'A Tester')
         .click(Selector('button').withText('Sign up'))
         .expect(Selector('h1').withText('Signed up to').exists).notOk()
@@ -100,7 +100,7 @@ test('Fail to create with an empty name', async t => {
     await setupEmptyDatabase();
     await t
         .click(Selector('a').withText('Sign Up'))
-        .typeText(Selector('label').withText('E-Mail Address'), 'test@example.com')
+        .typeText(Selector('label').withText('E-Mail Address'), 'test@oldjokearchive.com')
         .click(Selector('button').withText('Sign up'))
         .expect(Selector('h1').withText('Signed up to').exists).notOk()
         .expect(Selector('span').withText('Empty values not allowed').exists).ok();
@@ -110,7 +110,7 @@ test('Fail to set mismatching password', async t => {
     await setupEmptyDatabase();
     await t
         .click(Selector('a').withText('Sign Up'))
-        .typeText(Selector('label').withText('E-Mail Address'), 'test@example.com')
+        .typeText(Selector('label').withText('E-Mail Address'), 'test@oldjokearchive.com')
         .typeText(Selector('label').withText('Name'), 'A Tester')
         .click(Selector('button').withText('Sign up'))
         .expect(Selector('h1').withText('Signed up to').exists).ok();
@@ -119,7 +119,7 @@ test('Fail to set mismatching password', async t => {
         .expect(allUsers.obj_rows.length).eql(1);
     let dbUser = await getRecord('users', allUsers.obj_rows[0].id);
     await t
-        .expect(dbUser.email).eql('test@example.com')
+        .expect(dbUser.email).eql('test@oldjokearchive.com')
         .expect(dbUser.name).eql('A Tester')
         .expect(dbUser.groups).eql(['admin'])
         .expect(dbUser.status).eql('new');
@@ -136,7 +136,7 @@ test('Fail to set empty password', async t => {
     await setupEmptyDatabase();
     await t
         .click(Selector('a').withText('Sign Up'))
-        .typeText(Selector('label').withText('E-Mail Address'), 'test@example.com')
+        .typeText(Selector('label').withText('E-Mail Address'), 'test@oldjokearchive.com')
         .typeText(Selector('label').withText('Name'), 'A Tester')
         .click(Selector('button').withText('Sign up'))
         .expect(Selector('h1').withText('Signed up to').exists).ok();
@@ -145,7 +145,7 @@ test('Fail to set empty password', async t => {
         .expect(allUsers.obj_rows.length).eql(1);
     let dbUser = await getRecord('users', allUsers.obj_rows[0].id);
     await t
-        .expect(dbUser.email).eql('test@example.com')
+        .expect(dbUser.email).eql('test@oldjokearchive.com')
         .expect(dbUser.name).eql('A Tester')
         .expect(dbUser.groups).eql(['admin'])
         .expect(dbUser.status).eql('new');

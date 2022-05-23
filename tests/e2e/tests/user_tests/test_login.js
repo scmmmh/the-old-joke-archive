@@ -9,7 +9,7 @@ test('Login user (remember)', async t => {
     const objs = await setupStandardDatabase();
     await t
         .click(Selector('a').withText('Log in'))
-        .typeText(Selector('label').withText('E-Mail Address'), 'user1@example.com')
+        .typeText(Selector('label').withText('E-Mail Address'), 'user1@oldjokearchive.com')
         .typeText(Selector('label').withText('Password'), 'user1pwd')
         .click(Selector('label').withText('Remember me'))
         .click(Selector('button').withText('Log in'))
@@ -26,7 +26,7 @@ test('Login user (do not remember)', async t => {
     const objs = await setupStandardDatabase();
     await t
         .click(Selector('a').withText('Log in'))
-        .typeText(Selector('label').withText('E-Mail Address'), 'user1@example.com')
+        .typeText(Selector('label').withText('E-Mail Address'), 'user1@oldjokearchive.com')
         .typeText(Selector('label').withText('Password'), 'user1pwd')
         .click(Selector('button').withText('Log in'))
         .expect(Selector('a').withText('User One').exists).ok();
@@ -52,7 +52,7 @@ test('Login fail missing password', async t => {
     await setupStandardDatabase();
     await t
         .click(Selector('a').withText('Log in'))
-        .typeText(Selector('label').withText('E-Mail Address'), 'user1@example.com')
+        .typeText(Selector('label').withText('E-Mail Address'), 'user1@oldjokearchive.com')
         .click(Selector('button').withText('Log in'))
         .expect(Selector('span').withText('This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.').exists).ok();
 });
@@ -61,7 +61,7 @@ test('Login fail incorrect e-mail', async t => {
     await setupStandardDatabase();
     await t
         .click(Selector('a').withText('Log in'))
-        .typeText(Selector('label').withText('E-Mail Address'), 'incorrect-email@example.com')
+        .typeText(Selector('label').withText('E-Mail Address'), 'incorrect-email@oldjokearchive.com')
         .typeText(Selector('label').withText('Password'), 'user1pwd')
         .click(Selector('button').withText('Log in'))
         .expect(Selector('span').withText('This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.').exists).ok();
@@ -71,7 +71,7 @@ test('Login fail incorrect password', async t => {
     await setupStandardDatabase();
     await t
         .click(Selector('a').withText('Log in'))
-        .typeText(Selector('label').withText('E-Mail Address'), 'user1@example.com')
+        .typeText(Selector('label').withText('E-Mail Address'), 'user1@oldjokearchive.com')
         .typeText(Selector('label').withText('Password'), 'user2pwd')
         .click(Selector('button').withText('Log in'))
         .expect(Selector('span').withText('This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.').exists).ok();
@@ -81,7 +81,7 @@ test('Login fail new user', async t => {
     await setupStandardDatabase();
     await t
         .click(Selector('a').withText('Log in'))
-        .typeText(Selector('label').withText('E-Mail Address'), 'user_new@example.com')
+        .typeText(Selector('label').withText('E-Mail Address'), 'user_new@oldjokearchive.com')
         .typeText(Selector('label').withText('Password'), 'userNewpwd')
         .click(Selector('button').withText('Log in'))
         .expect(Selector('span').withText('This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.').exists).ok();
@@ -91,7 +91,7 @@ test('Login fail locked user', async t => {
     await setupStandardDatabase();
     await t
         .click(Selector('a').withText('Log in'))
-        .typeText(Selector('label').withText('E-Mail Address'), 'user_locked@example.com')
+        .typeText(Selector('label').withText('E-Mail Address'), 'user_locked@oldjokearchive.com')
         .typeText(Selector('label').withText('Password'), 'userLockedpwd')
         .click(Selector('button').withText('Log in'))
         .expect(Selector('span').withText('This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.').exists).ok();
@@ -101,7 +101,7 @@ test('Login fail blocked user', async t => {
     await setupStandardDatabase();
     await t
         .click(Selector('a').withText('Log in'))
-        .typeText(Selector('label').withText('E-Mail Address'), 'user_blocked@example.com')
+        .typeText(Selector('label').withText('E-Mail Address'), 'user_blocked@oldjokearchive.com')
         .typeText(Selector('label').withText('Password'), 'userBlockedpwd')
         .click(Selector('button').withText('Log in'))
         .expect(Selector('span').withText('This e-mail address is not registered, the password is incorrect, or the account is locked due to inactivity.').exists).ok();

@@ -9,7 +9,7 @@ test('Reset password', async t => {
     await t
         .click(Selector('a').withText('Log in'))
         .click(Selector('a').withText('Reset your password'))
-        .typeText(Selector('label').withText('E-Mail Address'), 'user1@example.com')
+        .typeText(Selector('label').withText('E-Mail Address'), 'user1@oldjokearchive.com')
         .click(Selector('button').withText('Reset password'))
         .expect(Selector('p').withText('Your password has been reset').exists).ok();
     const dbUser = await getRecord('users', objs.users.one._id);
@@ -29,7 +29,7 @@ test('Reset password fails invalid password', async t => {
     await t
         .click(Selector('a').withText('Log in'))
         .click(Selector('a').withText('Reset your password'))
-        .typeText(Selector('label').withText('E-Mail Address'), 'user1@example.com')
+        .typeText(Selector('label').withText('E-Mail Address'), 'user1@oldjokearchive.com')
         .click(Selector('button').withText('Reset password'))
         .expect(Selector('p').withText('Your password has been reset').exists).ok();
     const dbUser = await getRecord('users', objs.users.one._id);
@@ -47,7 +47,7 @@ test('Reset password fails incorrect confirmation', async t => {
     await t
         .click(Selector('a').withText('Log in'))
         .click(Selector('a').withText('Reset your password'))
-        .typeText(Selector('label').withText('E-Mail Address'), 'user1@example.com')
+        .typeText(Selector('label').withText('E-Mail Address'), 'user1@oldjokearchive.com')
         .click(Selector('button').withText('Reset password'))
         .expect(Selector('p').withText('Your password has been reset').exists).ok();
     const dbUser = await getRecord('users', objs.users.one._id);
