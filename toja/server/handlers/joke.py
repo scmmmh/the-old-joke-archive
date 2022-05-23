@@ -13,6 +13,7 @@ The joke status workflow is as follows:
 * Annotation-verified
 * Published
 """
+import logging
 import math
 
 from aiocouch import Document, exception as aio_exc
@@ -27,6 +28,9 @@ from uuid import uuid1
 from .base import JSONAPICollectionHandler, JSONAPIItemHandler, JSONAPIError
 from toja.utils import couchdb, mosquitto
 from toja.validation import validate, ValidationError, object_schema, type_schema, one_to_one_relationship_schema
+
+
+logger = logging.getLogger(__name__)
 
 
 def coerce_coordinates(value: list) -> list:
@@ -51,19 +55,24 @@ async def as_jsonapi(doc: Document, user: Union[Document, None]) -> dict:
         doc = await db[doc['_id']]
         image = Attachment(doc, 'image')
         image_data = f'data:image/png;base64,{b64encode(await image.fetch()).decode("utf-8")}'
+    full_rights = 'admin' in user['groups'] or 'editor' in user['groups']
     return {
         'id': doc['_id'],
         'type': 'jokes',
         'attributes': {
             'title': doc['title'],
             'coordinates': doc['coordinates'],
-            'transcriptions': dict([(key, value)
-                                    for key, value in doc['transcriptions'].items()
-                                    if key in ['auto', 'final', user['_id'] if user else None]]),
+            'transcriptions': doc['transcriptions']
+                if full_rights else dict([(key, value)
+                                          for key, value in doc['transcriptions'].items()
+                                          if key in ['auto', 'verified', 'final',
+                                                     user['_id'] if user else None]]),
             'categories': doc['categories'],
             'data': image_data,
             'status': doc['status'],
-            'activity': doc['activity'],
+            'activity': doc['activity'] if full_rights else [action
+                                                             for action in doc['activity']
+                                                             if action['user'] == user['_id']],
         },
         'relationships': {
             'source': {
@@ -93,15 +102,7 @@ class JokeCollectionHandler(JSONAPICollectionHandler):
             if 'admin' in user['groups'] or 'editor' in user['groups']:
                 selector = {'title': {'$exists': True}}
             else:
-                selector = {'$or': [
-                    {'activity.extracted.user': user['_id']},
-                    {'activity.extraction-verified.user': user['_id']},
-                    {'activity.transcribed.user': user['_id']},
-                    {'activity.transcription-verified.user': user['_id']},
-                    {'activity.category-verified.user': user['_id']},
-                    {'activity.annotated.user': user['_id']},
-                    {'activity.annotation-verified.user': user['_id']},
-                ]}
+                selector = {'activity': {'$elemMatch': {'user': user['_id']}}}
             filter_ids = self.get_argument('filter[id]', default=None)
             if filter_ids:
                 selector = {
@@ -131,16 +132,28 @@ class JokeCollectionHandler(JSONAPICollectionHandler):
                 'type': 'dict',
                 'required': True,
                 'schema': {
-                    'coordinates': {
+                    'actions': {
                         'type': 'list',
                         'required': True,
                         'empty': False,
-                        'minlength': 4,
-                        'maxlength': 4,
+                        'minlength': 1,
+                        'maxlength': 1,
                         'schema': {
-                            'type': 'number',
-                        },
-                        'coerce': coerce_coordinates,
+                            'type': 'dict',
+                            'schema': {
+                                'coordinates': {
+                                    'type': 'list',
+                                    'required': True,
+                                    'empty': False,
+                                    'minlength': 4,
+                                    'maxlength': 4,
+                                    'schema': {
+                                        'type': 'number',
+                                    },
+                                    'coerce': coerce_coordinates,
+                                }
+                            }
+                        }
                     }
                 }
             },
@@ -161,7 +174,7 @@ class JokeCollectionHandler(JSONAPICollectionHandler):
                 raise ValidationError({'relationships.source': 'This source does not exist'})
             source_attachment = Attachment(source, 'image')
             with Image.open(BytesIO(await source_attachment.fetch())) as img:
-                obj['attributes']['data'] = img.crop(obj['attributes']['coordinates'])
+                obj['attributes']['data'] = img.crop(obj['attributes']['actions'][0]['coordinates'])
         return obj
 
     async def create_post(self: 'JokeCollectionHandler', data: dict, user: Union[Document, None]) -> Document:
@@ -171,37 +184,26 @@ class JokeCollectionHandler(JSONAPICollectionHandler):
             db = await session['jokes']
             doc = await db.create(uid)
             doc['title'] = '[Untitled]'
-            doc['coordinates'] = data['attributes']['coordinates']
+            action = data['attributes']['actions'][0]
+            doc['coordinates'] = action['coordinates']
             doc['categories'] = []
             doc['source_id'] = data['relationships']['source']['data']['id']
-            doc['activity'] = {
-                'extracted': {
+            doc['activity'] = [
+                {
+                    'action': 'extracted',
                     'user': user['_id'],
                     'timestamp': datetime.utcnow().timestamp(),
-                },
-                'extraction-verified': None,
-                'transcribed': {},
-                'transcription-verified': None,
-                'categories-verified': None,
-                'annotated': None,
-                'annotation-verified': None,
-            }
+                    'params': action,
+                }
+            ]
+            doc['status'] = 'extracted'
             if 'editor' in user['groups'] or 'admin' in user['groups']:
-                doc['activity']['extracted'] = {
+                doc['activity'].append({
+                    'action': 'extraction-verified',
                     'user': user['_id'],
                     'timestamp': datetime.utcnow().timestamp(),
-                }
-                doc['activity']['extraction-verified'] = {
-                    'user': user['_id'],
-                    'timestamp': datetime.utcnow().timestamp(),
-                }
+                })
                 doc['status'] = 'extraction-verified'
-            else:
-                doc['activity']['extracted'] = {
-                    'user': user['_id'],
-                    'timestamp': datetime.utcnow().timestamp(),
-                }
-                doc['status'] = 'extracted'
             doc['transcriptions'] = {}
             await doc.save()
             image = Attachment(doc, 'image')
@@ -252,7 +254,6 @@ class JokeItemHandler(JSONAPIItemHandler):
 
     async def validate_put(self: 'JokeItemHandler', iid: str, data: dict, user: Union[Document, None]) -> dict:
         """Validate that the PUT data is valid."""
-        allow_everything = 'admin' in user['groups'] or 'editor' in user['groups']
         async with couchdb() as session:
             db = await session['jokes']
             joke = await db[iid]
@@ -260,6 +261,113 @@ class JokeItemHandler(JSONAPIItemHandler):
                 'source': one_to_one_relationship_schema('sources', value=joke['source_id'])
             }
             attributes = {}
+            actions = []
+            if 'admin' in user['groups'] or 'editor' in user['groups']:
+                actions.append({
+                    'coordinates': {
+                        'type': 'list',
+                        'required': False,
+                        'empty': False,
+                        'minlength': 4,
+                        'maxlength': 4,
+                        'schema': {
+                            'type': 'number',
+                        },
+                        'coerce': coerce_coordinates,
+                    }
+                })
+                actions.append({
+                    'verified_transcription': {
+                        'type': 'dict'
+                    }
+                })
+                actions.append({
+                    'status': {
+                        'type': 'string',
+                        'required': False,
+                        'empty': False,
+                        'allowed': ['extraction-verified', 'published']
+                    }
+                })
+            else:
+                if joke['status'] == 'extracted':
+                    actions.append({
+                        'coordinates': {
+                            'type': 'list',
+                            'required': False,
+                            'empty': False,
+                            'minlength': 4,
+                            'maxlength': 4,
+                            'schema': {
+                                'type': 'number',
+                            },
+                            'coerce': coerce_coordinates,
+                        }
+                    })
+                    user_performed_extraction = False
+                    for activity in joke['activity']:
+                        if activity['action'] == 'extracted' and activity['user'] == user['_id']:
+                            user_performed_extraction = True
+                    if not user_performed_extraction:
+                        actions.append({
+                            'status': {
+                                'type': 'string',
+                                'required': False,
+                                'empty': False,
+                                'allowed': ['extraction-verified']
+                            }
+                        })
+                if joke['status'] == 'auto-transcribed':
+                    user_performed_extraction = False
+                    for activity in joke['activity']:
+                        if activity['user'] == user['_id']:
+                            if activity['action'] == 'extracted' or activity['action'] == 'extraction-verified':
+                                user_performed_extraction = True
+                    if not user_performed_extraction:
+                        actions.append({
+                            'transcription': {
+                                'type': 'dict'
+                            }
+                        })
+                if joke['status'] == 'auto-categorised':
+                    actions.append({
+                        'categories': {
+                            'type': 'list',
+                            'schema': {
+                                'type': 'string',
+                                'empty': False,
+                            }
+                        }
+                    })
+                if joke['status'] == 'categories-verified':
+                    user_performed_transcription = False
+                    for activity in joke['activity']:
+                        if activity['user'] == user['_id']:
+                            if activity['action'] == 'transcribed' or activity['action'] == 'verified_transcription':
+                                user_performed_transcription = True
+                    if not user_performed_transcription:
+                        actions.append({
+                            'annotate': {
+                                'type': 'dict'
+                            }
+                        })
+            # Merge all the actions into the attributes
+            attributes['actions'] = {
+                'type': 'list',
+                'schema': {
+                    'anyof': [
+                        {
+                            'type': 'dict',
+                            'required': True,
+                            'empty': False,
+                            'schema': action
+                        }
+                        for action in actions
+                    ]
+                },
+                'default': []
+            }
+            '''
             if joke['status'] == 'extracted' or allow_everything:
                 # Validation for coordinate changes
                 attributes['coordinates'] = {
@@ -292,12 +400,6 @@ class JokeItemHandler(JSONAPIItemHandler):
                         }
                     }
                 }
-            if joke['status'] == 'transcribed' and allow_everything:
-                attributes['status'] = {
-                    'type': 'string',
-                    'required': False,
-                    'allowed': ['transcription-verified']
-                }
             if joke['status'] == 'auto-categorised' or allow_everything:
                 attributes['categories'] = {
                     'type': 'list',
@@ -315,15 +417,20 @@ class JokeItemHandler(JSONAPIItemHandler):
                                                                                      'categories-verified']
                 }
             if joke['status'] == 'categories-verified' or allow_everything:
-                attributes['transcriptions'] = {
-                    'type': 'dict',
-                    'required': False,
-                    'schema': {
-                        user['_id']: {
-                            'type': 'dict',
+                if 'transcriptions' in attributes:
+                    attributes['transcriptions']['schema'][user['_id']] = {
+                        'type': 'dict'
+                    }
+                else:
+                    attributes['transcriptions'] = {
+                        'type': 'dict',
+                        'required': False,
+                        'schema': {
+                            user['_id']: {
+                                'type': 'dict',
+                            }
                         }
                     }
-                }
                 attributes['status'] = {
                     'type': 'string',
                     'required': False,
@@ -344,6 +451,7 @@ class JokeItemHandler(JSONAPIItemHandler):
                                                                                       'annotated',
                                                                                       'annotations-verified']
                 }
+            '''
             schema = object_schema('jokes', iid, attributes, relationships)
             obj = validate(schema, data, purge_unknown=True)
             return obj
@@ -354,6 +462,69 @@ class JokeItemHandler(JSONAPIItemHandler):
             async with couchdb() as session:
                 db = await session['jokes']
                 doc = await db[iid]
+                coords_changed = False
+                for action in data['attributes']['actions']:
+                    if 'coordinates' in action:
+                        doc['coordinates'] = action['coordinates']
+                        coords_changed = True
+                        doc['activity'].append({
+                            'action': 'extracted',
+                            'user': user['_id'],
+                            'timestamp': datetime.utcnow().timestamp(),
+                            'params': action,
+                        })
+                        doc['status'] = 'extracted'
+                        if 'editor' in user['groups'] or 'admin' in user['groups']:
+                            doc['activity'].append({
+                                'action': 'extraction-verified',
+                                'user': user['_id'],
+                                'timestamp': datetime.utcnow().timestamp(),
+                            })
+                            doc['status'] = 'extraction-verified'
+                    elif 'transcription' in action:
+                        doc['transcriptions'][user['_id']] = action['transcription']
+                        doc['activity'].append({
+                            'action': 'transcribe',
+                            'user': user['_id'],
+                            'timestamp': datetime.utcnow().timestamp(),
+                            'params': action,
+                        })
+                    elif 'verified_transcription' in action:
+                        doc['transcriptions']['verified'] = action['verified_transcription']
+                        doc['activity'].append({
+                            'action': 'verified_transcription',
+                            'user': user['_id'],
+                            'timestamp': datetime.utcnow().timestamp(),
+                            'params': action,
+                        })
+                        doc['status'] = 'transcription-verified'
+                    elif 'categories' in action:
+                        doc['categories'] = action['categories']
+                        doc['activity'].append({
+                            'action': 'categories-verified',
+                            'user': user['_id'],
+                            'timestamp': datetime.utcnow().timestamp(),
+                            'params': action,
+                        })
+                        doc['status'] = 'categories-verified'
+                    elif 'annotate' in action:
+                        doc['transcriptions'][user['_id']] = action['annotate']
+                        doc['activity'].append({
+                            'action': 'annotated',
+                            'user': user['_id'],
+                            'timestamp': datetime.utcnow().timestamp(),
+                            'params': action
+                        })
+                    elif 'status' in action:
+                        doc['status'] = action['status']
+                        doc['activity'].append({
+                                'action': action['status'],
+                                'user': user['_id'],
+                                'timestamp': datetime.utcnow().timestamp(),
+                        })
+                    else:
+                        logger.debug(action)
+                '''
                 coords_changed = False
                 if 'coordinates' in data['attributes'] and doc['coordinates'] != data['attributes']['coordinates']:
                     # Update the joke's coordinates
@@ -373,15 +544,24 @@ class JokeItemHandler(JSONAPIItemHandler):
                         doc['status'] = 'extraction-verified'
                     else:
                         doc['status'] = 'extracted'
-                if 'transcriptions' in data['attributes'] and user['_id'] in data['attributes']['transcriptions']:
-                    doc['transcriptions'][user['_id']] = data['attributes']['transcriptions'][user['_id']]
-                    doc['activity']['transcribed'][user['_id']] = datetime.utcnow().timestamp()
-                    if 'editor' in user['groups'] or 'admin' in user['groups']:
-                        doc['transcriptions']['final'] = data['attributes']['transcriptions'][user['_id']]
+                if 'transcriptions' in data['attributes']:
+                    if user['_id'] in data['attributes']['transcriptions']:
+                        doc['transcriptions'][user['_id']] = data['attributes']['transcriptions'][user['_id']]
+                        doc['activity']['transcribed'][user['_id']] = datetime.utcnow().timestamp()
+                        if 'editor' in user['groups'] or 'admin' in user['groups']:
+                            doc['transcriptions']['final'] = data['attributes']['transcriptions'][user['_id']]
+                            doc['activity']['transcription-verified'] = {
+                                'user': user['_id'],
+                                'timtestamp': datetime.utcnow().timestamp(),
+                            }
+                            doc['status'] = 'transcription-verified'
+                    if 'verified' in data['attributes']['transcriptions']:
+                        doc['transcriptions'][user['_id']] = data['attributes']['transcriptions']['verified']
                         doc['activity']['transcription-verified'] = {
                             'user': user['_id'],
-                            'timtestamp': datetime.utcnow().timestamp(),
+                            'timestamp': datetime.utcnow().timestamp(),
                         }
+                        doc['transcriptions']['verified'] = data['attributes']['transcriptions']['verified']
                         doc['status'] = 'transcription-verified'
                 if 'categories' in data['attributes']:
                     doc['categories'] = data['attributes']['categories']
@@ -392,33 +572,21 @@ class JokeItemHandler(JSONAPIItemHandler):
                             'user': user['_id'],
                             'timtestamp': datetime.utcnow().timestamp(),
                         }
-
-                """if 'admin' in user['groups'] or 'editor' in user['groups']:
-                    # Changes to save if the user is an editor or admin
-                    if 'transcriptions' in data['attributes'] and user['_id'] in data['attributes']['transcriptions']:
-                        doc['transcriptions']['final'] = data['attributes']['transcriptions'][user['_id']]
-                        found = False
-                        for activity in doc['activity']['transcribed']:
-                            if activity['user'] == user['_id']:
-                                found = True
-                                activity['timestamp'] = datetime.utcnow().timestamp()
-                                break
-                        if not found:
-                            doc['activity']['transcribed'].append({
-                                'user': user['_id'],
-                                'timestamp': datetime.utcnow().timestamp(),
-                            })
-                        doc['activity']['transcription-verified'] = {
-                            'user': user['_id'],
-                            'timestamp': datetime.utcnow().timestamp(),
-                        }
-                        doc['status'] = 'transcription-verified'"""
+                '''
                 doc['updated'] = datetime.utcnow().timestamp()
                 await doc.save()
-                if coords_changed and 'data' in data['attributes']:
-                    image = Attachment(doc, 'image')
+                if coords_changed:
+                    sources_db = await session['sources']
+                    try:
+                        source = await sources_db[data['relationships']['source']['data']['id']]
+                    except aio_exc.NotFoundError:
+                        raise ValidationError({'relationships.source': 'This source does not exist'})
+                    source_attachment = Attachment(source, 'image')
                     buffer = BytesIO()
-                    data['attributes']['data'].save(buffer, format='png')
+                    with Image.open(BytesIO(await source_attachment.fetch())) as img:
+                        cropped = img.crop(action['coordinates'])
+                        cropped.save(buffer, format='png')
+                    image = Attachment(doc, 'image')
                     await image.save(buffer.getvalue(), 'image/png')
                     async with mosquitto() as client:
                         await client.publish(f'jokes/{iid}/ocr')
@@ -443,8 +611,10 @@ class JokeItemHandler(JSONAPIItemHandler):
                 async with couchdb() as session:
                     db = await session['jokes']
                     joke = await db[iid]
-                    if joke['status'] == 'extracted' and joke['activity']['extracted']['user'] == user['_id']:
-                        return
+                    if joke['status'] == 'extracted':
+                        for activity in joke['activity']:
+                            if activity['action'] == 'extracted' and activity['user'] == user['_id']:
+                                return
         raise JSONAPIError(403, [{'title': 'You are not authorised to delete this joke'}])
 
     async def create_delete(self: 'JSONAPIItemHandler', iid: str, user: Union[Document, None]) -> None:

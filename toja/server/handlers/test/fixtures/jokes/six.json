@@ -1,7 +1,7 @@
 {
     "test_name_": "joke5",
     "title": "[Untitled]",
-    "status": "auto-categorised",
+    "status": "categories-verified",
     "coordinates": [20, 20, 200, 60],
     "transcriptions": {
         "auto": {
@@ -10,7 +10,17 @@
         },
         "{{ 'users/three'|db_id }}": {
             "type": "doc",
-            "content": []
+            "content": [
+                {
+                    "type": "paragraph",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": "This is a test joke!"
+                        }
+                    ]
+                }
+            ]
         }
     },
     "categories": [
@@ -37,9 +47,29 @@
             "params": {
                 "doc": {
                     "type": "doc",
-                    "content": []
+                    "content": [
+                        {
+                            "type": "paragraph",
+                            "content": [
+                                {
+                                    "type": "text",
+                                    "text": "This is a test joke!"
+                                }
+                            ]
+                        }
+                    ]
                 }
             }
+        },
+        {
+            "action": "transcription-verified",
+            "user": "{{ 'users/four'|db_id }}",
+            "created": {{ utcnow|timestamp }}
+        },
+        {
+            "action": "categories-verified",
+            "user": "{{ 'users/five'|db_id }}",
+            "created": {{ utcnow|timestamp }}
         }
     ],
     "source_id": "{{ 'sources/one'|db_id }}",

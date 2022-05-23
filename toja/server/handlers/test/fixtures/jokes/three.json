@@ -10,21 +10,21 @@
         }
     },
     "categories": [],
-    "activity": {
-        "extracted": {
+    "activity": [
+        {
+            "action": "extracted",
             "user": "{{ 'users/one'|db_id }}",
-            "created": {{ utcnow|timestamp }}
+            "created": {{ utcnow|timestamp }},
+            "params": {
+                "coordinates": [20, 20, 200, 60]
+            }
         },
-        "extraction-verified": {
+        {
+            "action": "extraction-verified",
             "user": "{{ 'users/two'|db_id }}",
             "created": {{ utcnow|timestamp }}
-        },
-        "transcribed": {},
-        "transcription-verified": null,
-        "categories-verified": null,
-        "annotated": null,
-        "annotation-verified": null
-    },
+        }
+    ],
     "source_id": "{{ 'sources/one'|db_id }}",
     "_attachment": {
         "name": "image",

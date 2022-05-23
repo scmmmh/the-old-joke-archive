@@ -14,23 +14,32 @@
         }
     },
     "categories": [],
-    "activity": {
-        "extracted": {
+    "activity": [
+        {
+            "action": "extracted",
             "user": "{{ 'users/one'|db_id }}",
-            "created": {{ utcnow|timestamp }}
+            "created": {{ utcnow|timestamp }},
+            "params": {
+                "coordinates": [20, 20, 200, 60]
+            }
         },
-        "extraction-verified": {
+        {
+            "action": "extraction-verified",
             "user": "{{ 'users/two'|db_id }}",
             "created": {{ utcnow|timestamp }}
         },
-        "transcribed": {
-            "{{ 'users/three'|db_id }}": {{ utcnow|timestamp }}
-        },
-        "transcription-verified": null,
-        "categories-verified": null,
-        "annotated": null,
-        "annotation-verified": null
-    },
+        {
+            "action": "transcribed",
+            "user": "{{ 'users/three'|db_id }}",
+            "created": {{ utcnow|timestamp }},
+            "params": {
+                "doc": {
+                    "type": "doc",
+                    "content": []
+                }
+            }
+        }
+    ],
     "source_id": "{{ 'sources/one'|db_id }}",
     "_attachment": {
         "name": "image",
