@@ -25,5 +25,5 @@ test('Test user admin access', async t => {
         .click(Selector('a').withExactText('Admin'))
         .click(Selector('a').withExactText('User Administration'))
         .expect(Selector('table thead th').withText('E-Mail').exists).ok()
-        .expect(Selector('table td').withText('admin@example.com').exists).ok();
+        .expect(Selector('table td').withText('admin@oldjokearchive.com').exists).ok();
 });
