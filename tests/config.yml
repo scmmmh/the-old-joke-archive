@@ -1,0 +1,30 @@
+database:
+  server: http://localhost:5984
+  user: main
+  password: aiZiojoh7Eux
+server:
+  host: '0.0.0.0'
+mosquitto:
+  host: localhost
+debug: True
+test: True
+logging:
+  version: 1
+  loggers:
+    toja:
+      level: DEBUG
+      qualname: toja
+      handlers:
+        - console
+  formatters:
+    default:
+      format: '%(asctime)s %(levelname)-8s %(name)-15s %(message)s'
+      datefmt: '%Y-%m-%d %H:%M:%S'
+  handlers:
+    console:
+      class: logging.StreamHandler
+      formatter: default
+      level: DEBUG
+      stream: ext://sys.stdout
+  root:
+    level: WARN

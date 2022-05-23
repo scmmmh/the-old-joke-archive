@@ -1,0 +1,27 @@
+database:
+  server: http://couchdb:5984
+  user: main
+  password: to6aen2aethe8ouH
+server:
+  host: '0.0.0.0'
+debug: False
+logging:
+  version: 1
+  loggers:
+    toja:
+      level: WARN
+      qualname: toja
+      handlers:
+        - console
+  formatters:
+    default:
+      format: '%(asctime)s %(levelname)-8s %(name)-15s %(message)s'
+      datefmt: '%Y-%m-%d %H:%M:%S'
+  handlers:
+    console:
+      class: logging.StreamHandler
+      formatter: default
+      level: WARN
+      stream: ext://sys.stdout
+  root:
+    level: WARN

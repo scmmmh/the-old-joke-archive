@@ -1,0 +1,50 @@
+{
+    "test_name_": "joke1",
+    "title": "[Untitled]",
+    "status": "auto-transcribed",
+    "coordinates": [20, 20, 200, 60],
+    "transcriptions": {
+        "auto": {
+            "content": {
+                "type": "doc",
+                "content": [
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Why should a sallor always be a good pugilist?"
+                            }
+                        ]
+                    },
+                    {
+                        "type": "paragraph",
+                        "content": [
+                            {
+                                "type": "text",
+                                "text": "Because he is always boxing the compass"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "categories": [],
+    "activity": [
+        {
+            "action": "extracted",
+            "user": "{{ 'users/one'|db_id }}",
+            "created": {{ utcnow|timestamp }},
+            "params": {
+                "coordinates": [20, 20, 200, 60]
+            }
+        }
+    ],
+    "source_id": "{{ 'sources/one'|db_id }}",
+    "_attachment": {
+        "name": "image",
+        "filename": "one.png",
+        "mimetype": "image/png"
+    }
+}

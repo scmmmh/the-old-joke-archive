@@ -11,3 +11,5 @@ post-build
 __pycache__
 .tox
 dist
+.vscode
+.pytest_cache

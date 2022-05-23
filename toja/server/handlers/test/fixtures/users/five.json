@@ -1,0 +1,10 @@
+{
+    "email": "user5@example.com",
+    "name": "User Five",
+    "groups": [],
+    "tokens": [{"token": "fabd25b48333a860765f2ba0fe80b9170b3db7cacfa59aaa3a947190f636ed13bd7b5892b5eb9182597b805b13310934662e796f4cc031a35b4c812f6c431ac455b585d8b652c54b5c1aa57b13598ee3e7c8072417aa35cf319bd84ccc30d227fd3fe812f5ad8a50295502efb13050dd2311079d3a8c0f919d28719b5f1bd466",
+                "timestamp": {{ utcnow|timedelta_add(days=30)|timestamp }}}],
+    "password": "$2b$12$/dO880q9jlK9ECvctded1.xK1SzFLK0OWus0u3gHYoJ9EG75DigY2",
+    "status": "active",
+    "last_access": {{ utcnow|timestamp }}
+}

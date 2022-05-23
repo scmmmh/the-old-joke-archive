@@ -1,6 +1,6 @@
-paths: 
-  - src/toja
-  - src/frontend
-paths-ignore: 
+paths:
+  - toja
+  - toja/server/frontend
+paths-ignore:
   - node_modules
   - static

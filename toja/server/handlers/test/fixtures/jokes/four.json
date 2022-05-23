@@ -1,0 +1,49 @@
+{
+    "test_name_": "joke4",
+    "title": "[Untitled]",
+    "status": "transcribed",
+    "coordinates": [20, 20, 200, 60],
+    "transcriptions": {
+        "auto": {
+            "type": "doc",
+            "content": []
+        },
+        "{{ 'users/three'|db_id }}": {
+            "type": "doc",
+            "content": []
+        }
+    },
+    "categories": [],
+    "activity": [
+        {
+            "action": "extracted",
+            "user": "{{ 'users/one'|db_id }}",
+            "created": {{ utcnow|timestamp }},
+            "params": {
+                "coordinates": [20, 20, 200, 60]
+            }
+        },
+        {
+            "action": "extraction-verified",
+            "user": "{{ 'users/two'|db_id }}",
+            "created": {{ utcnow|timestamp }}
+        },
+        {
+            "action": "transcribed",
+            "user": "{{ 'users/three'|db_id }}",
+            "created": {{ utcnow|timestamp }},
+            "params": {
+                "doc": {
+                    "type": "doc",
+                    "content": []
+                }
+            }
+        }
+    ],
+    "source_id": "{{ 'sources/one'|db_id }}",
+    "_attachment": {
+        "name": "image",
+        "filename": "one.png",
+        "mimetype": "image/png"
+    }
+}
