@@ -12,8 +12,7 @@ Dependencies
 Building the Frontend
 ---------------------
 
-* In the project root directory run ``gulp watch``
-* In the ``src/frontend/apps/{app-to-build}`` directory run ``yarn build``
+* In the ``toja/server/frontend`` directory run ``npm install`` and ``npm run dev``.
 
 Dependencies
 ------------
