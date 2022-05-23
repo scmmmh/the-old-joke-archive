@@ -16,7 +16,7 @@ async def test_update_admin(standard_database: Tuple[CouchDB, dict], http_client
     response = await http_client['put'](f'/api/users/{objs["users"]["admin"]["_id"]}',
                                         body={'type': 'users',
                                               'id': objs['users']['admin']['_id'],
-                                              'attributes': {'email': 'admin1@example.com',
+                                              'attributes': {'email': 'admin1@oldjokearchive.com',
                                                              'name': 'The Best Admin',
                                                              'groups': ['admin', 'new-group']}},
                                         token=auth_token(objs['users']['admin']))
@@ -25,7 +25,7 @@ async def test_update_admin(standard_database: Tuple[CouchDB, dict], http_client
     users_db = await session['users']
     db_user = await users_db[user['id']]
     assert db_user
-    assert db_user['email'] == 'admin1@example.com'
+    assert db_user['email'] == 'admin1@oldjokearchive.com'
     assert db_user['name'] == 'The Best Admin'
     assert db_user['groups'] == ['admin', 'new-group']
 
@@ -37,7 +37,7 @@ async def test_update_user(standard_database: Tuple[CouchDB, dict], http_client:
     response = await http_client['put'](f'/api/users/{objs["users"]["one"]["_id"]}',
                                         body={'type': 'users',
                                               'id': objs['users']['one']['_id'],
-                                              'attributes': {'email': 'user_one@example.com',
+                                              'attributes': {'email': 'user_one@oldjokearchive.com',
                                                              'name': 'User Eins'}},
                                         token=auth_token(objs['users']['one']))
     assert response.code == 200
@@ -45,7 +45,7 @@ async def test_update_user(standard_database: Tuple[CouchDB, dict], http_client:
     users_db = await session['users']
     db_user = await users_db[user['id']]
     assert db_user
-    assert db_user['email'] == 'user_one@example.com'
+    assert db_user['email'] == 'user_one@oldjokearchive.com'
     assert db_user['name'] == 'User Eins'
     assert db_user['groups'] == []
 
@@ -64,7 +64,7 @@ async def test_update_user_only_name(standard_database: Tuple[CouchDB, dict], ht
     users_db = await session['users']
     db_user = await users_db[user['id']]
     assert db_user
-    assert db_user['email'] == 'user1@example.com'
+    assert db_user['email'] == 'user1@oldjokearchive.com'
     assert db_user['name'] == 'User Eins'
     assert db_user['groups'] == []
 
@@ -77,7 +77,7 @@ async def test_fail_nonexistent_id(standard_database: Tuple[CouchDB, dict], http
         await http_client['put']('/api/users/abc',
                                  body={'type': 'users',
                                        'id': 'abc',
-                                       'attributes': {'email': 'test@example.com',
+                                       'attributes': {'email': 'test@oldjokearchive.com',
                                                       'name': 'User One'}},
                                  token=auth_token(objs['users']['admin']))
     assert exc_info.value.code == 404
@@ -93,7 +93,7 @@ async def test_fail_incorrect_id(standard_database: Tuple[CouchDB, dict], http_c
         await http_client['put'](f'/api/users/{objs["users"]["admin"]["_id"]}',
                                  body={'type': 'users',
                                        'id': 'something',
-                                       'attributes': {'email': 'test@example.com',
+                                       'attributes': {'email': 'test@oldjokearchive.com',
                                                       'name': 'User One'}},
                                  token=auth_token(objs['users']['admin']))
     assert exc_info.value.code == 400
@@ -108,7 +108,7 @@ async def test_fail_non_admin_update_groups(standard_database: Tuple[CouchDB, di
     response = await http_client['put'](f'/api/users/{objs["users"]["one"]["_id"]}',
                                         body={'type': 'users',
                                               'id': objs['users']['one']['_id'],
-                                              'attributes': {'email': 'user@example.com',
+                                              'attributes': {'email': 'user@oldjokearchive.com',
                                                              'name': 'User One',
                                                              'groups': ['admin']}},
                                         token=auth_token(objs['users']['one']))
@@ -126,7 +126,7 @@ async def test_fail_non_admin_update_not_self(standard_database: Tuple[CouchDB, 
         await http_client['put'](f'/api/users/{objs["users"]["admin"]["_id"]}',
                                  body={'type': 'users',
                                        'id': objs['users']['admin']['_id'],
-                                       'attributes': {'email': 'admin1@example.com',
+                                       'attributes': {'email': 'admin1@oldjokearchive.com',
                                                       'name': 'The Best Admin'}},
                                  token=auth_token(objs['users']['one']))
     assert exc_info.value.code == 403
@@ -142,7 +142,7 @@ async def test_fail_update_to_existing_email(standard_database: Tuple[CouchDB, d
         await http_client['put'](f'/api/users/{objs["users"]["admin"]["_id"]}',
                                  body={'type': 'users',
                                        'id': objs['users']['admin']['_id'],
-                                       'attributes': {'email': 'user1@example.com',
+                                       'attributes': {'email': 'user1@oldjokearchive.com',
                                                       'name': 'The Best Admin'}},
                                  token=auth_token(objs['users']['admin']))
     assert exc_info.value.code == 400
@@ -158,7 +158,7 @@ async def test_fail_update_additional_fields(standard_database: Tuple[CouchDB, d
         await http_client['put'](f'/api/users/{objs["users"]["admin"]["_id"]}',
                                  body={'type': 'users',
                                        'id': objs['users']['admin']['_id'],
-                                       'attributes': {'email': 'user1@example.com',
+                                       'attributes': {'email': 'user1@oldjokearchive.com',
                                                       'name': 'The Best Admin',
                                                       'token': '123456'}},
                                  token=auth_token(objs['users']['admin']))

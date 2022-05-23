@@ -18,11 +18,11 @@ async def test_reset_password(standard_database: Tuple[CouchDB, dict], http_clie
     """Test that the password reset step works."""
     session, objs = standard_database
     users_db = await session['users']
-    user = (await async_gen_to_list(users_db.find({'email': 'admin@example.com'})))[0]
+    user = (await async_gen_to_list(users_db.find({'email': 'admin@oldjokearchive.com'})))[0]
     token = user['tokens'][0]['token']
     response = await http_client['post']('/api/users/_reset-password',
                                          {'type': 'users',
-                                          'attributes': {'email': 'admin@example.com'}})
+                                          'attributes': {'email': 'admin@oldjokearchive.com'}})
     assert response.code == 204
-    user = (await async_gen_to_list(users_db.find({'email': 'admin@example.com'})))[0]
+    user = (await async_gen_to_list(users_db.find({'email': 'admin@oldjokearchive.com'})))[0]
     assert token != user['tokens'][0]['token']

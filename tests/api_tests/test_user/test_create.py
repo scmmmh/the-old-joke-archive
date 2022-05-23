@@ -12,7 +12,7 @@ async def test_create_first_user(empty_database: CouchDB, http_client: dict) -> 
     """Test that creating the first user works."""
     response = await http_client['post']('/api/users',
                                          body={'type': 'users',
-                                               'attributes': {'email': 'test@example.com',
+                                               'attributes': {'email': 'test@oldjokearchive.com',
                                                               'name': 'A Tester'}})
     assert response.code == 201
     user = json.load(response.buffer)['data']
@@ -40,7 +40,7 @@ async def test_create_second_user(minimal_database: Tuple[CouchDB, dict], http_c
     session, _ = minimal_database
     response = await http_client['post']('/api/users',
                                          body={'type': 'users',
-                                               'attributes': {'email': 'test@example.com',
+                                               'attributes': {'email': 'test@oldjokearchive.com',
                                                               'name': 'A Tester'}})
     assert response.code == 201
     user = json.load(response.buffer)['data']
@@ -69,7 +69,7 @@ async def test_fail_create_no_name(minimal_database: Tuple[CouchDB, dict], http_
     with pytest.raises(HTTPClientError) as exc_info:
         await http_client['post']('/api/users',
                                   body={'type': 'users',
-                                        'attributes': {'email': 'test@example.com'}})
+                                        'attributes': {'email': 'test@oldjokearchive.com'}})
     assert exc_info.value.code == 400
     data = json.load(exc_info.value.response.buffer)
     assert 'errors' in data
@@ -82,7 +82,7 @@ async def test_fail_create_empty_name(minimal_database: Tuple[CouchDB, dict], ht
     with pytest.raises(HTTPClientError) as exc_info:
         await http_client['post']('/api/users',
                                   body={'type': 'users',
-                                        'attributes': {'email': 'test@example.com',
+                                        'attributes': {'email': 'test@oldjokearchive.com',
                                                        'name': ''}})
     assert exc_info.value.code == 400
     data = json.load(exc_info.value.response.buffer)
@@ -123,7 +123,7 @@ async def test_fail_create_additional_data(minimal_database: Tuple[CouchDB, dict
     with pytest.raises(HTTPClientError) as exc_info:
         await http_client['post']('/api/users',
                                   body={'type': 'users',
-                                        'attributes': {'email': 'test@example.com',
+                                        'attributes': {'email': 'test@oldjokearchive.com',
                                                        'name': 'A Tester',
                                                        'token': 'hack',
                                                        'groups': ['admin']}})
