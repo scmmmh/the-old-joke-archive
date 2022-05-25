@@ -91,7 +91,7 @@ type JokeDocumentReference = {
 type JokeDocument = {
     type: 'jokes',
     id?: string,
-    attributes: JokeDocumentAttributes,
+    attributes: JokeDocumentAttributes | JokeUpdateAttributes,
     relationships: JokeDocumentRelationships,
 };
 
@@ -99,6 +99,16 @@ type JokeDocumentAttributes = {
     title: string,
     coordinates: number[],
     transcriptions: JokeDocumentTranscriptions,
+};
+
+type JokeUpdateAttributes = {
+    actions: JokeUpdateAction[],
+};
+
+type JokeUpdateAction = JokeUpdateCoordinates;
+
+type JokeUpdateCoordinates = {
+    coordinates: number[],
 };
 
 type JokeDocumentTranscriptions = {

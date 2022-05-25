@@ -65,19 +65,33 @@
     function selectJoke(joke: JokeDocument) {
         selectedJoke = joke;
         if (selectedJoke) {
-            if (selectedJoke.attributes.transcriptions[$authUser.id]) {
-                editor.commands.setContent(selectedJoke.attributes.transcriptions[$authUser.id]);
-            } else if (selectedJoke.attributes.transcriptions.auto) {
-                editor.commands.setContent(selectedJoke.attributes.transcriptions.auto);
+            if ((selectedJoke.attributes as JokeDocumentAttributes).transcriptions[$authUser.id]) {
+                editor.commands.setContent((selectedJoke.attributes as JokeDocumentAttributes).transcriptions[$authUser.id]);
+            } else if ((selectedJoke.attributes as JokeDocumentAttributes).transcriptions.auto) {
+                editor.commands.setContent((selectedJoke.attributes as JokeDocumentAttributes).transcriptions.auto);
             }
         }
     }
 
     async function saveJoke() {
-        selectedJoke.attributes.transcriptions[$authUser.id] = editor.state.doc.toJSON();
         saveBusy = true;
         try {
-            selectedJoke = await saveJsonApiObject(selectedJoke) as JokeDocument;
+            const updatedJoke = {
+                type: 'jokes',
+                id: selectedJoke.id,
+                attributes: {
+                    actions: [
+                        {
+                            annotated: editor.state.doc.toJSON(),
+                        },
+                        {
+                            status: 'annotated'
+                        }
+                    ]
+                },
+                relationships: selectedJoke.relationships
+            }
+            selectedJoke = await saveJsonApiObject(updatedJoke) as JokeDocument;
             for (let idx = 0; idx < jokes.length; idx++) {
                 if (jokes[idx].id === selectedJoke.id) {
                     jokes[idx] = selectedJoke;

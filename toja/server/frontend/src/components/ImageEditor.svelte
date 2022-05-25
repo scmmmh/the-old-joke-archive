@@ -60,16 +60,16 @@
         image.y = offsetY;
         image.scale.set(scale);
         for (let element of elements) {
-            if (element.joke.attributes.coordinates[0] !== null && element.joke.attributes.coordinates[1] !== null) {
-                element.graphics.x = element.joke.attributes.coordinates[0] * scale + offsetX;
-                element.graphics.y = element.joke.attributes.coordinates[1] * scale + offsetY;
+            if  ((element.joke.attributes as JokeDocumentAttributes).coordinates[0] !== null &&  ((element.joke.attributes as JokeDocumentAttributes) as JokeDocumentAttributes).coordinates[1] !== null) {
+                element.graphics.x =  ((element.joke.attributes as JokeDocumentAttributes) as JokeDocumentAttributes).coordinates[0] * scale + offsetX;
+                element.graphics.y =  ((element.joke.attributes as JokeDocumentAttributes) as JokeDocumentAttributes).coordinates[1] * scale + offsetY;
                 element.graphics.clear();
                 if (element.editable) {
                     if (element.selected) {
                         element.graphics.lineStyle(3, 0xDF95B6).beginFill(0xffffff, 0.1);
                         element.graphics.zIndex = 20;
-                        editMenuElement.style.left = Math.min(containerElement.clientWidth - editMenuElement.offsetWidth, element.joke.attributes.coordinates[2] * scale + offsetX - editMenuElement.offsetWidth + 2) + 'px';
-                        editMenuElement.style.top = (element.joke.attributes.coordinates[3] * scale + offsetY + 2) + 'px';
+                        editMenuElement.style.left = Math.min(containerElement.clientWidth - editMenuElement.offsetWidth,  ((element.joke.attributes as JokeDocumentAttributes) as JokeDocumentAttributes).coordinates[2] * scale + offsetX - editMenuElement.offsetWidth + 2) + 'px';
+                        editMenuElement.style.top =  ((element.joke.attributes as JokeDocumentAttributes).coordinates[3] * scale + offsetY + 2) + 'px';
                     } else {
                         element.graphics.lineStyle(3, 0x2D8095).beginFill(0xffffff, 0.1);
                         element.graphics.zIndex = 10;
@@ -78,7 +78,7 @@
                     element.graphics.lineStyle(3, 0x222222, 0.4).beginFill(0x222222, 0.2);
                     element.graphics.zIndex = 0;
                 }
-                element.graphics.drawRect(0, 0, (element.joke.attributes.coordinates[2] - element.joke.attributes.coordinates[0]) * scale, (element.joke.attributes.coordinates[3] - element.joke.attributes.coordinates[1]) * scale);
+                element.graphics.drawRect(0, 0,  ((element.joke.attributes as JokeDocumentAttributes).coordinates[2] -  ((element.joke.attributes as JokeDocumentAttributes) as JokeDocumentAttributes).coordinates[0]) * scale,  ((element.joke.attributes as JokeDocumentAttributes).coordinates[3] -  ((element.joke.attributes as JokeDocumentAttributes) as JokeDocumentAttributes).coordinates[1]) * scale);
             }
         }
     }
@@ -91,7 +91,7 @@
         if (mode === MODE_NEW) {
             const point = new Point(0, 0);
             app.renderer.plugins.interaction.mapPositionToPoint(point, ev.clientX, ev.clientY);
-            selectedElement.joke.attributes.coordinates = [(point.x - offsetX) / scale, (point.y - offsetY) / scale, (point.x - offsetX) / scale, (point.y - offsetY) / scale];
+             (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates = [(point.x - offsetX) / scale, (point.y - offsetY) / scale, (point.x - offsetX) / scale, (point.y - offsetY) / scale];
             dragging = true;
             app.view.style.cursor = 'nwse-resize';
             mode = MODE_EDIT;
@@ -112,30 +112,30 @@
                     deltaX = deltaX / scale;
                     deltaY = deltaY / scale;
                     if (dragMode === DRAG_MODE_WHOLE) {
-                        selectedElement.joke.attributes.coordinates[0] = selectedElement.joke.attributes.coordinates[0] + deltaX;
-                        selectedElement.joke.attributes.coordinates[1] = selectedElement.joke.attributes.coordinates[1] + deltaY;
-                        selectedElement.joke.attributes.coordinates[2] = selectedElement.joke.attributes.coordinates[2] + deltaX;
-                        selectedElement.joke.attributes.coordinates[3] = selectedElement.joke.attributes.coordinates[3] + deltaY;
+                         (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[0] =  (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[0] + deltaX;
+                         (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[1] =  (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[1] + deltaY;
+                         (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[2] =  (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[2] + deltaX;
+                         (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[3] =  (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[3] + deltaY;
                     } else if (dragMode == DRAG_MODE_LEFT_EDGE) {
-                        selectedElement.joke.attributes.coordinates[0] = selectedElement.joke.attributes.coordinates[0] + deltaX;
+                         (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[0] =  (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[0] + deltaX;
                     } else if (dragMode == DRAG_MODE_TOP_EDGE) {
-                        selectedElement.joke.attributes.coordinates[1] = selectedElement.joke.attributes.coordinates[1] + deltaY;
+                         (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[1] =  (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[1] + deltaY;
                     } else if (dragMode == DRAG_MODE_RIGHT_EDGE) {
-                        selectedElement.joke.attributes.coordinates[2] = selectedElement.joke.attributes.coordinates[2] + deltaX;
+                         (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[2] =  (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[2] + deltaX;
                     } else if (dragMode == DRAG_MODE_BOTTOM_EDGE) {
-                        selectedElement.joke.attributes.coordinates[3] = selectedElement.joke.attributes.coordinates[3] + deltaY;
+                         (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[3] =  (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[3] + deltaY;
                     } else if (dragMode == DRAG_MODE_LEFT_TOP_CORNER) {
-                        selectedElement.joke.attributes.coordinates[0] = selectedElement.joke.attributes.coordinates[0] + deltaX;
-                        selectedElement.joke.attributes.coordinates[1] = selectedElement.joke.attributes.coordinates[1] + deltaY;
+                         (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[0] =  (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[0] + deltaX;
+                         (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[1] =  (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[1] + deltaY;
                     } else if (dragMode == DRAG_MODE_RIGHT_TOP_CORNER) {
-                        selectedElement.joke.attributes.coordinates[2] = selectedElement.joke.attributes.coordinates[2] + deltaX;
-                        selectedElement.joke.attributes.coordinates[1] = selectedElement.joke.attributes.coordinates[1] + deltaY;
+                         (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[2] =  (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[2] + deltaX;
+                         (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[1] =  (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[1] + deltaY;
                     } else if (dragMode == DRAG_MODE_RIGHT_BOTTOM_CORNER) {
-                        selectedElement.joke.attributes.coordinates[2] = selectedElement.joke.attributes.coordinates[2] + deltaX;
-                        selectedElement.joke.attributes.coordinates[3] = selectedElement.joke.attributes.coordinates[3] + deltaY;
+                         (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[2] =  (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[2] + deltaX;
+                         (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[3] =  (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[3] + deltaY;
                     } else if (dragMode == DRAG_MODE_LEFT_BOTTOM_CORNER) {
-                        selectedElement.joke.attributes.coordinates[0] = selectedElement.joke.attributes.coordinates[0] + deltaX;
-                        selectedElement.joke.attributes.coordinates[3] = selectedElement.joke.attributes.coordinates[3] + deltaY;
+                         (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[0] =  (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[0] + deltaX;
+                         (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[3] =  (selectedElement.joke.attributes as JokeDocumentAttributes).coordinates[3] + deltaY;
                     }
                 } else {
                     offsetX = offsetX + deltaX;
@@ -320,7 +320,9 @@
             joke: {
                 type: 'jokes',
                 attributes: {
+                    title: '[Untitled]',
                     coordinates: [null, null, null, null],
+                    transcriptions: {}
                 },
                 relationships: {
                     source: {
@@ -346,7 +348,7 @@
 
     function cancelEdit() {
         if (originalElement) {
-            selectedElement.joke.attributes.coordinates = originalElement.joke.attributes.coordinates;
+            ( (selectedElement.joke.attributes as JokeDocumentAttributes) as JokeDocumentAttributes).coordinates = (originalElement.joke.attributes as JokeDocumentAttributes).coordinates;
         } else {
             elements = elements.filter((element) => { return element === selectedElement});
             app.stage.removeChild(selectedElement.graphics);
@@ -363,7 +365,21 @@
     async function saveEdit() {
         busyAction = 'edit';
         try {
-            selectedElement.joke = await saveJsonApiObject(selectedElement.joke) as JokeDocument;
+            const updateJoke = {
+                type: 'jokes',
+                attributes: {
+                    actions: [
+                        {
+                            coordinates: ( (selectedElement.joke.attributes as JokeDocumentAttributes) as JokeDocumentAttributes).coordinates,
+                        }
+                    ],
+                },
+                relationships: selectedElement.joke.relationships,
+            } as JokeDocument;
+            if (selectedElement.joke.id) {
+                updateJoke.id = selectedElement.joke.id;
+            }
+            selectedElement.joke = await saveJsonApiObject(updateJoke) as JokeDocument;
             dispatch('changed', selectedElement.joke);
             mode = MODE_SELECT;
             editMenuElement.classList.add('hidden');

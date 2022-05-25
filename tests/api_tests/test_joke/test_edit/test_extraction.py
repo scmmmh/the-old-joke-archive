@@ -37,6 +37,7 @@ async def test_update_extracted_editor(standard_database: Tuple[CouchDB, dict], 
     assert len(joke['attributes']['activity']) == 3
     assert joke['attributes']['activity'][2]['action'] == 'extraction-verified'
     assert joke['attributes']['activity'][2]['user'] == objs['users']['editor']['_id']
+    assert 'auto' not in joke['attributes']['transcriptions']
     jokes_db = await session['jokes']
     db_joke = await jokes_db[joke['id']]
     image = Attachment(db_joke, 'image')
@@ -71,6 +72,7 @@ async def test_update_extracted_same_user(standard_database: Tuple[CouchDB, dict
     assert len(joke['attributes']['activity']) == 2
     assert joke['attributes']['activity'][1]['action'] == 'extracted'
     assert joke['attributes']['activity'][1]['user'] == objs['users']['one']['_id']
+    assert 'auto' not in joke['attributes']['transcriptions']
     jokes_db = await session['jokes']
     db_joke = await jokes_db[joke['id']]
     image = Attachment(db_joke, 'image')

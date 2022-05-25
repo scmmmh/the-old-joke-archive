@@ -18,7 +18,7 @@ async def test_annotate_user(standard_database: Tuple[CouchDB, dict], http_clien
                                               'attributes': {
                                                   'actions': [
                                                       {
-                                                          'annotate': {
+                                                          'annotated': {
                                                               'type': 'doc',
                                                               'content': [
                                                                   {
@@ -92,7 +92,6 @@ async def test_annotate_user(standard_database: Tuple[CouchDB, dict], http_clien
     assert len(joke['attributes']['activity']) == 1
 
 
-'''
 @pytest.mark.asyncio
 async def test_annotate_editor(standard_database: Tuple[CouchDB, dict], http_client: dict) -> None:
     """Test that transcribing works for an editor."""
@@ -103,10 +102,39 @@ async def test_annotate_editor(standard_database: Tuple[CouchDB, dict], http_cli
                                               'attributes': {
                                                   'actions': [
                                                       {
-                                                          'transcription': {
+                                                          'annotated': {
                                                               'type': 'doc',
-                                                              'content': []
+                                                              'content': [
+                                                                  {
+                                                                      'type': 'paragraph',
+                                                                      'content': [
+                                                                          {
+                                                                              'type': 'text',
+                                                                              'text': 'This is a '
+                                                                          },
+                                                                          {
+                                                                              'type': 'text',
+                                                                              'text': 'joke',
+                                                                              'marks': [
+                                                                                  {
+                                                                                      'type': 'annotation',
+                                                                                      'attrs': {
+                                                                                          'test': 'test'
+                                                                                      }
+                                                                                  }
+                                                                              ]
+                                                                          },
+                                                                          {
+                                                                              'type': 'text',
+                                                                              'text': '!'
+                                                                          }
+                                                                      ]
+                                                                  }
+                                                              ]
                                                           }
+                                                      },
+                                                      {
+                                                          'status': 'annotated'
                                                       }
                                                   ]
                                               },
@@ -118,12 +146,64 @@ async def test_annotate_editor(standard_database: Tuple[CouchDB, dict], http_cli
     assert joke
     assert joke['attributes']['title'] == '[Untitled]'
     assert joke['attributes']['transcriptions'][objs['users']['editor']['_id']] == {
-        'type': 'doc', 'content': []
+        'type': 'doc',
+        'content': [
+            {
+                'type': 'paragraph',
+                'content': [
+                    {
+                        'type': 'text',
+                        'text': 'This is a '
+                    },
+                    {
+                        'type': 'text',
+                        'text': 'joke',
+                        'marks': [
+                            {
+                                'type': 'annotation',
+                                'attrs': {
+                                    'test': 'test'
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        'type': 'text',
+                        'text': '!'
+                    }
+                ]
+            }
+        ]
     }
-    assert joke['attributes']['transcriptions']['final'] == {
-        'type': 'doc', 'content': []
+    assert joke['attributes']['transcriptions']['annotated'] == {
+        'type': 'doc',
+        'content': [
+            {
+                'type': 'paragraph',
+                'content': [
+                    {
+                        'type': 'text',
+                        'text': 'This is a '
+                    },
+                    {
+                        'type': 'text',
+                        'text': 'joke',
+                        'marks': [
+                            {
+                                'type': 'annotation',
+                                'attrs': {
+                                    'test': 'test'
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        'type': 'text',
+                        'text': '!'
+                    }
+                ]
+            }
+        ]
     }
-    assert joke['attributes']['status'] == 'transcription-verified'
-    assert objs['users']['editor']['_id'] in joke['attributes']['activity']['transcribed']
-    assert joke['attributes']['activity']['transcription-verified']['user'] == objs['users']['editor']['_id']
-'''
+    assert joke['attributes']['status'] == 'annotated'
+    assert len(joke['attributes']['activity']) == 4
