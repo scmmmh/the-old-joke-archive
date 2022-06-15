@@ -38,6 +38,7 @@ def run_application_server() -> None:
         routes,
         debug=config()['debug'],
         xsrf_cookies=True,
+        xsrf_cookie_kwargs={'secure': False if config()['debug'] else True, 'samesite': 'strict'},
         cookie_secret='ohqu6aegezie9uuChiaf9shuisahsiegiej4Quo9aiK3Ohhe8eisoimig4Bee9Eb')
     logger.debug(f'Application listening on {config()["server"]["host"]} port {config()["server"]["port"]}')
     app.listen(config()['server']['port'], config()['server']['host'])
