@@ -35,6 +35,12 @@
 		}
 	}
 
+	@layer components {
+		[type=TitleMark], [type=PersonMark], [type=SpokenTextMark], [type=AttributionMark] {
+			@apply inline-block px-1 bg-gray-100 border border-accent;
+		}
+	}
+
 	html {
 		@apply font-merriweather-regular;
 		font-size: 11pt;

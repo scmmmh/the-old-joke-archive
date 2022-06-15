@@ -3,6 +3,7 @@
     import { Application, Sprite, Graphics, Point } from 'pixi.js';
     import deepcopy from 'deepcopy';
 
+    import IconButton from './IconButton.svelte';
     import { getJsonApiObjects, saveJsonApiObject, deleteJsonApiObject } from '../stores';
 
     type Element = {
@@ -412,57 +413,25 @@
 
 <div class="w-full h-full flex flex-col">
     <nav class="flex-none">
-        <ul class="flex flex-row space-x-2">
+        <ul class="flex flex-row gap-1 pb-1">
             <li role="presentation">
-                <button on:click={addNew} class="block p-2 {mode === MODE_EDIT ? 'text-gray-400' : (mode === MODE_NEW ? 'text-primary' : 'text-accent')}" disabled={mode === MODE_EDIT}>
-                    <svg viewBox="0 0 24 24" class="w-6 h-6">
-                        <path fill="currentColor" d="M14.1,9L15,9.9L5.9,19H5V18.1L14.1,9M17.7,3C17.5,3 17.2,3.1 17,3.3L15.2,5.1L18.9,8.9L20.7,7C21.1,6.6 21.1,6 20.7,5.6L18.4,3.3C18.2,3.1 17.9,3 17.7,3M14.1,6.2L3,17.2V21H6.8L17.8,9.9L14.1,6.2M7,2V5H10V7H7V10H5V7H2V5H5V2H7Z" />
-                    </svg>
-                </button>
+                <IconButton on:action={addNew} disabled={mode === MODE_EDIT} active={mode === MODE_NEW} label="Mark up a new joke"><path fill="currentColor" d="M14.1,9L15,9.9L5.9,19H5V18.1L14.1,9M17.7,3C17.5,3 17.2,3.1 17,3.3L15.2,5.1L18.9,8.9L20.7,7C21.1,6.6 21.1,6 20.7,5.6L18.4,3.3C18.2,3.1 17.9,3 17.7,3M14.1,6.2L3,17.2V21H6.8L17.8,9.9L14.1,6.2M7,2V5H10V7H7V10H5V7H2V5H5V2H7Z" /></IconButton>
             </li>
         </ul>
     </nav>
     <div bind:this={containerElement} class="relative flex-auto border">
-        <nav bind:this={editMenuElement} class="hidden absolute z-10 w-min bg-white/90 border border-primary shadow-lg">
-            <ul class="flex flex-row space-x-2">
+        <nav bind:this={editMenuElement} class="hidden absolute z-10 w-min bg-white/95 border border-primary shadow-lg">
+            <ul class="flex flex-row p-1 gap-1">
                 {#if selectedElement && selectedElement.joke.id}
                     <li role="presentation">
-                        {#if busyAction === 'delete'}
-                            <span class="block p-2 text-primary">
-                                <svg viewBox="0 0 24 24" class="w-6 h-6 animate-spin" aria-hidden="true">
-                                    <path fill="currentColor" d="M12,6V9L16,5L12,1V4A8,8 0 0,0 4,12C4,13.57 4.46,15.03 5.24,16.26L6.7,14.8C6.25,13.97 6,13 6,12A6,6 0 0,1 12,6M18.76,7.74L17.3,9.2C17.74,10.04 18,11 18,12A6,6 0 0,1 12,18V15L8,19L12,23V20A8,8 0 0,0 20,12C20,10.43 19.54,8.97 18.76,7.74Z" />
-                                </svg>
-                            </span>
-                        {:else}
-                            <button on:click={deleteElement} disabled={busyAction !== ''} class="block p-2 text-accent" aria-label="Delete the joke">
-                                <svg viewBox="0 0 24 24" class="w-6 h-6" aria-hidden="true">
-                                    <path fill="currentColor" d="M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8,9H16V19H8V9M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z" />
-                                </svg>
-                            </button>
-                        {/if}
+                        <IconButton on:action={deleteElement} disabled={busyAction !== '' && busyAction !== 'delete'} busy={busyAction === 'delete'} label="Delete this joke"><path fill="currentColor" d="M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19M8,9H16V19H8V9M15.5,4L14.5,3H9.5L8.5,4H5V6H19V4H15.5Z" /></IconButton>
                     </li>
                 {/if}
                 <li role="presentation">
-                    <button on:click={cancelEdit} disabled={busyAction !== ''} class="block p-2 text-accent" aria-label="Discard any changes">
-                        <svg viewBox="0 0 24 24" class="w-6 h-6" aria-hidden="true">
-                            <path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" />
-                        </svg>
-                    </button>
+                    <IconButton on:action={cancelEdit} disabled={busyAction !== ''} label="Discard any changes"><path fill="currentColor" d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z" /></IconButton>
                 </li>
                 <li role="presentation">
-                    {#if busyAction === 'edit'}
-                        <span class="block p-2 text-primary">
-                            <svg viewBox="0 0 24 24" class="w-6 h-6 animate-spin" aria-hidden="true">
-                                <path fill="currentColor" d="M12,6V9L16,5L12,1V4A8,8 0 0,0 4,12C4,13.57 4.46,15.03 5.24,16.26L6.7,14.8C6.25,13.97 6,13 6,12A6,6 0 0,1 12,6M18.76,7.74L17.3,9.2C17.74,10.04 18,11 18,12A6,6 0 0,1 12,18V15L8,19L12,23V20A8,8 0 0,0 20,12C20,10.43 19.54,8.97 18.76,7.74Z" />
-                            </svg>
-                        </span>
-                    {:else}
-                        <button on:click={saveEdit} disabled={busyAction !== ''} class="block p-2 text-accent" aria-label="Save changes">
-                            <svg viewBox="0 0 24 24" class="w-6 h-6" aria-hidden="true">
-                                <path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" />
-                            </svg>
-                        </button>
-                    {/if}
+                    <IconButton on:action={saveEdit} disabled={busyAction !== '' && busyAction !== 'edit'} busy={busyAction === 'edit'} label="Save changes"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z" /></IconButton>
                 </li>
             </ul>
         </nav>

@@ -9,6 +9,7 @@ import typescript from '@rollup/plugin-typescript';
 import css from 'rollup-plugin-css-only';
 import tailwindcss from 'tailwindcss';
 import autoprefixer from 'autoprefixer';
+import replace from '@rollup/plugin-replace';
 
 if (fs.existsSync('public/build')) {
 	fs.rmdirSync('public/build', { recursive: true });
@@ -64,9 +65,13 @@ export default {
 		// browser on changes when not in production
 		!production && livereload('public'),
 
+		replace({
+			'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development'),
+		}),
+
 		// If we're building for production (npm run build
 		// instead of npm run dev), minify
-		production && terser()
+		production && terser(),
 	],
 	watch: {
 		clearScreen: false

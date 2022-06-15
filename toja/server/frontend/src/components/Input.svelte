@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
+
     export let type = 'text';
     export let value: string | boolean;
     export let values = [] as string[][];
@@ -6,7 +8,7 @@
     export let error = '';
     export let disabled = false;
 
-    let nullValue = null;
+    const dispatch = createEventDispatcher();
 
     function changeValue(ev: Event) {
         if (type === 'checkbox' || type === 'radio') {
@@ -25,6 +27,7 @@
         } else {
             value = (ev.target as HTMLInputElement).value
         }
+        dispatch('change', value);
     }
 
     function stopPropagation(ev: KeyboardEvent) {
