@@ -14,8 +14,8 @@ test('Reset password', async t => {
         .expect(Selector('p').withText('Your password has been reset').exists).ok();
     const dbUser = await getRecord('users', objs.users.one._id);
     await t
-        .expect(dbUser.tokens[0].token).notEql(objs.users.one.tokens[0].token)
         .expect(dbUser.tokens.length).eql(1)
+        .expect(dbUser.tokens[0].token).notEql(objs.users.one.tokens[0].token)
     await t
         .navigateTo('http://localhost:6543/app/user/confirm?id=' + dbUser._id + '&token=' + dbUser.tokens[0].token + '&action=reset-password')
         .typeText(Selector('label').withText('Password'), 'newPassword')
