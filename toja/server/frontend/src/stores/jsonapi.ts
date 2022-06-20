@@ -14,7 +14,6 @@ export class JsonApiException extends Error {
 }
 
 function getCookie(name: string): string | undefined {
-    console.log(document.cookie);
     const cookies = Object.fromEntries(document.cookie.split(';').map((cookie) => {
         return cookie.trim().split('=');
     }));
