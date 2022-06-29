@@ -5,12 +5,23 @@ export const PersonMark = Mark.create({
 
     addAttributes() {
         return {
+            age: {
+                default: null,
+            },
             gender: {
-                default: 'unknown'
+                default: null,
+            },
+            class: {
+                default: null,
+            },
+            role: {
+                default: null,
+            },
+            nationality: {
+                default: null,
             }
         }
     },
-
     renderHTML({ HTMLAttributes }) {
         return ['span', mergeAttributes(HTMLAttributes, { 'type': 'PersonMark' }), 0]
     },

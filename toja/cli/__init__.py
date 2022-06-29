@@ -67,6 +67,21 @@ CONFIG_SCHEMA = {
             }
         }
     },
+    'meilisearch': {
+        'type': 'dict',
+        'required': True,
+        'schema': {
+            'server': {
+                'type': 'string',
+                'required': True
+            },
+            'auth_token': {
+                'type': 'string',
+                'empty': True,
+                'default': None
+            }
+        }
+    },
     'email': {
         'type': 'dict',
         'schema': {

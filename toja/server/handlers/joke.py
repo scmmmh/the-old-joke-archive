@@ -68,6 +68,8 @@ async def as_jsonapi(doc: Document, user: Union[Document, None]) -> dict:
                                           if key in ['auto', 'verified', 'final',
                                                      user['_id'] if user else None]]),
             'categories': doc['categories'],
+            'topics': doc['topics'] if 'topics' in doc else '',
+            'language': doc['language'] if 'language' in doc else None,
             'data': image_data,
             'status': doc['status'],
             'activity': doc['activity'] if full_rights else [action
@@ -290,6 +292,28 @@ class JokeItemHandler(JSONAPIItemHandler):
                     }
                 })
                 actions.append({
+                    'categories': {
+                        'type': 'list',
+                        'schema': {
+                            'type': 'string',
+                            'empty': False,
+                            'allowed': ['pun', 'dialogue', 'story', 'wit-wisdom', 'conundrum', 'verse',
+                                        'definition', 'factoid'],
+                        }
+                    }
+                })
+                actions.append({
+                    'topics': {
+                        'type': 'string',
+                    }
+                })
+                actions.append({
+                    'language': {
+                        'type': 'string',
+                        'allowed': ['en'],
+                    }
+                })
+                actions.append({
                     'status': {
                         'type': 'string',
                         'required': False,
@@ -344,6 +368,8 @@ class JokeItemHandler(JSONAPIItemHandler):
                             'schema': {
                                 'type': 'string',
                                 'empty': False,
+                                'allowed': ['pun', 'dialogue', 'story', 'wit-wisdom', 'conundrum', 'verse',
+                                            'definition', 'factoid'],
                             }
                         }
                     })
@@ -440,6 +466,22 @@ class JokeItemHandler(JSONAPIItemHandler):
                             'timestamp': datetime.utcnow().timestamp(),
                             'params': action
                         })
+                    elif 'topics' in action:
+                        doc['topics'] = action['topics']
+                        doc['activity'].append({
+                            'action': 'set-topics',
+                            'user': user['_id'],
+                            'timestamp': datetime.utcnow().timestamp(),
+                            'params': action
+                        })
+                    elif 'language' in action:
+                        doc['language'] = action['language']
+                        doc['activity'].append({
+                            'action': 'set-language',
+                            'user': user['_id'],
+                            'timestamp': datetime.utcnow().timestamp(),
+                            'params': action
+                        })
                     elif 'status' in action:
                         doc['status'] = action['status']
                         doc['activity'].append({
@@ -450,6 +492,9 @@ class JokeItemHandler(JSONAPIItemHandler):
                         if doc['status'] == 'annotated':
                             if user['_id'] in doc['transcriptions']:
                                 doc['transcriptions']['annotated'] = doc['transcriptions'][user['_id']]
+                        if doc['status'] == 'published':
+                            if 'annotated' in doc['transcriptions']:
+                                doc['transcriptions']['final'] = doc['transcriptions']['annotated']
                     else:
                         logger.debug(action)
                 doc['updated'] = datetime.utcnow().timestamp()
@@ -472,6 +517,9 @@ class JokeItemHandler(JSONAPIItemHandler):
                 if doc['status'] == 'transcription-verified':
                     async with mosquitto() as client:
                         await client.publish(f'jokes/{iid}/categorise')
+                if doc['status'] == 'published':
+                    async with mosquitto() as client:
+                        await client.publish(f'jokes/{iid}/publish')
                 doc = await db[iid]
                 return doc
         except aio_exc.NotFoundError:

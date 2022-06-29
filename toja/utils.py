@@ -9,6 +9,9 @@ from email.utils import formatdate
 from smtplib import SMTP
 from tornado.web import HTTPError
 
+from .async_meili import AsyncMeiliClient
+
+
 logger = logging.getLogger(__name__)
 _config = {}
 
@@ -34,6 +37,11 @@ def couchdb() -> CouchDB:
 def mosquitto() -> Client:
     """Get a mosquitto client."""
     return Client(config()['mosquitto']['host'])
+
+
+def meilisearch() -> AsyncMeiliClient:
+    """Get a Mailisearch client."""
+    return AsyncMeiliClient(config()['meilisearch']['server'], config()['meilisearch']['auth_token'])
 
 
 def send_email(recipient: str, subject: str, body: str) -> None:

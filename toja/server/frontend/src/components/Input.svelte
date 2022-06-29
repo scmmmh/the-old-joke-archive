@@ -24,8 +24,13 @@
                     value = ev.target.result as string;
                 }
             }
+        } else if (type === 'select') {
+            value = (ev.target as HTMLInputElement).value;
+            if (value === 'null') {
+                value = null;
+            }
         } else {
-            value = (ev.target as HTMLInputElement).value
+            value = (ev.target as HTMLInputElement).value;
         }
         dispatch('change', value);
     }
@@ -55,7 +60,7 @@
     <label class="block mb-4 {disabled ? 'cursor-not-allowed' : ''}"><span class="block mb-1 {disabled ? 'text-gray-700' : 'text-black'} transition-colors text-sm"><slot></slot></span>
         <select class="block w-full bg-gray-200 rounded px-4 py-3 focus:outline-primary {disabled ? 'cursor-not-allowed' : ''}" disabled={disabled} on:blur={changeValue} on:change={changeValue}>
             {#each values as [option_value, option_label]}
-                <option value={option_value} selected={option_value === value ? 'selected' : null}>{option_label}</option>
+                <option value={option_value} selected={option_value === value}>{option_label}</option>
             {/each}
         </select>
         {#if error}
@@ -65,6 +70,14 @@
 {:else if type === 'file'}
     <label class="block mb-4 {disabled ? 'cursor-not-allowed' : ''}">
         <span class="block mb-1 {disabled ? 'text-gray-700' : 'text-black'} transition-colors text-sm"><slot></slot></span><input type="file" disabled={disabled} on:change={changeValue} class="block w-full bg-gray-200 rounded px-4 py-3 focus:outline-primary {disabled ? 'cursor-not-allowed' : ''}"/>
+        {#if error}
+            <span class="block pt-1 text-red-600 text-sm role-error">{error}</span>
+        {/if}
+    </label>
+{:else if type === 'textarea'}
+    <label class="block mb-4 {disabled ? 'cursor-not-allowed' : ''}">
+        <span class="block mb-1 {disabled ? 'text-gray-700' : 'text-black'} transition-colors text-sm"><slot></slot></span>
+        <textarea disabled={disabled} on:change={changeValue} class="block w-full bg-gray-200 rounded px-4 py-3 focus:outline-primary {disabled ? 'cursor-not-allowed' : ''}">{value}</textarea>
         {#if error}
             <span class="block pt-1 text-red-600 text-sm role-error">{error}</span>
         {/if}

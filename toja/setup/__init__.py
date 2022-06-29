@@ -4,7 +4,7 @@ import logging.config
 
 from aiocouch import exception
 
-from ..utils import couchdb
+from ..utils import couchdb, meilisearch
 
 
 logger = logging.getLogger(__name__)
@@ -76,9 +76,19 @@ async def setup_couchdb() -> None:
                         })
 
 
+async def setup_meilisearch() -> None:
+    """Create the Meilisearch indexes."""
+    logger.debug('Setting up the search index')
+    await meilisearch().create_index('jokes', 'id', sync=True)
+    await meilisearch().update_index_settings('jokes', {
+        'filterableAttributes': ['categories', 'language', 'topics'],
+    }, sync=True)
+
+
 async def setup_backend() -> None:
     """Run an asynchronous backend setup process."""
     await setup_couchdb()
+    await setup_meilisearch()
 
 
 async def reset_couchdb() -> None:
@@ -99,6 +109,12 @@ async def reset_couchdb() -> None:
                     pass
 
 
+async def reset_meilisearch() -> None:
+    """Remove all Meilisearch indexes."""
+    await meilisearch().delete_index('jokes', sync=True)
+
+
 async def reset_backend() -> None:
     """Run an asynchronous backend reset process."""
     await reset_couchdb()
+    await reset_meilisearch()

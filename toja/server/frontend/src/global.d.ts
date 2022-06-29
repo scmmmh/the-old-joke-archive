@@ -99,16 +99,39 @@ type JokeDocumentAttributes = {
     title: string,
     coordinates: number[],
     transcriptions: JokeDocumentTranscriptions,
+    categories: string[],
+    topics: string,
+    language: string,
 };
 
 type JokeUpdateAttributes = {
     actions: JokeUpdateAction[],
 };
 
-type JokeUpdateAction = JokeUpdateCoordinates;
+type JokeUpdateAction = JokeUpdateCoordinates | JokeUpdateAnnotated | JokeUpdateCategories | JokeUpdateTopics | JokeUpdateLanguage | JokeUpdateStatus;
+
+type JokeUpdateAnnotated = {
+    annotated: TiptapNode;
+};
+
+type JokeUpdateStatus = {
+    status: 'annotated';
+};
 
 type JokeUpdateCoordinates = {
     coordinates: number[],
+};
+
+type JokeUpdateCategories = {
+    categories: string[];
+};
+
+type JokeUpdateTopics = {
+    topics: string;
+};
+
+type JokeUpdateLanguage = {
+    language: string;
 };
 
 type JokeDocumentTranscriptions = {

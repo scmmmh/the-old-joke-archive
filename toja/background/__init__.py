@@ -9,7 +9,8 @@ from concurrent.futures import Executor, ProcessPoolExecutor
 from io import BytesIO
 from PIL import Image
 
-from ..utils import mosquitto, couchdb
+from ..utils import mosquitto, couchdb, meilisearch
+from ..text_utils import raw_text
 
 
 logger = logging.getLogger(__name__)
@@ -65,17 +66,41 @@ async def joke_categorise_listener(client: Client, executor: Executor) -> None:
             logger.debug(topic)
 
 
+async def joke_publish_listener(client: Client, executor: Executor) -> None:
+    """Run the publishing process on the final, published joke."""
+    search = meilisearch()
+    async with client.filtered_messages('jokes/+/publish') as messages:
+        await client.subscribe('jokes/+/publish')
+        async for message in messages:
+            topic = message.topic.split('/')
+            async with couchdb() as session:
+                db = await session['jokes']
+                joke = await db[topic[1]]
+                if 'final' in joke['transcriptions']:
+                    logger.debug(f'Indexing joke {joke["_id"]}')
+                    await search.index_document('jokes', {
+                        'id': joke['_id'],
+                        'title': joke['title'],
+                        'categories': joke['categories'],
+                        'language': joke['language'],
+                        'topics': joke['topics'].split('\n'),
+                        'text': raw_text(joke['transcriptions']['final'])
+                    })
+
+
 async def main() -> None:
     """Connect to Mosquitto and start individual tasks."""
     with ProcessPoolExecutor() as executor:
         async with mosquitto() as client:
             await asyncio.gather(joke_ocr_listener(client, executor),
-                                 joke_categorise_listener(client, executor))
+                                 joke_categorise_listener(client, executor),
+                                 joke_publish_listener(client, executor))
 
 
 def run_background_app() -> None:
     """Start the background application."""
     try:
+        logger.debug('Starting up')
         asyncio.run(main())
     except KeyboardInterrupt:
         logger.debug('Shutting down')
