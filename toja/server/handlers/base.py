@@ -16,16 +16,8 @@ from toja.utils import couchdb, JSONAPIError, config
 logger = logging.getLogger(__name__)
 
 
-class JSONAPIHandler(RequestHandler):
-    """Base class for all JSONAPI requests."""
-
-    jsonapi_body_schema = {
-        'data': {
-            'type': 'dict',
-            'required': True,
-            'empty': False,
-        }
-    }
+class BaseHandler(RequestHandler):
+    """Base class for all requests."""
 
     async def get_user(self: 'JSONAPIHandler') -> Union[Document, None]:
         """Get the current user based on the X-Toja-Auth header."""
@@ -44,7 +36,25 @@ class JSONAPIHandler(RequestHandler):
                 pass
             except aio_exc.NotFoundError:
                 pass
+            except aio_exc.ConflictError:
+                return await self.get_user()
         return None
+
+    def json_body(self: 'BaseHandler') -> dict:
+        """Return the request body as a :class:`dict`."""
+        return json.loads(self.request.body)
+
+
+class JSONAPIHandler(BaseHandler):
+    """Base class for all JSONAPI requests."""
+
+    jsonapi_body_schema = {
+        'data': {
+            'type': 'dict',
+            'required': True,
+            'empty': False,
+        }
+    }
 
     async def jsonapi_body(self: 'JSONAPIHandler') -> None:
         """Get the JSON body.
@@ -52,7 +62,7 @@ class JSONAPIHandler(RequestHandler):
         Raises JSONAPIError if it isn't a valid JSONAPI body.
         """
         try:
-            body = json.loads(self.request.body)
+            body = self.json_body()
             return validate(self.jsonapi_body_schema, body)['data']
         except json.JSONDecodeError:
             raise JSONAPIError(400, [{'title': 'The request body must be valid JSON.'}])

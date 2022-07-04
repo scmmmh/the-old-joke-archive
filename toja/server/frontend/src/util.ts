@@ -64,3 +64,28 @@ export function monthDayFromDate(date: string): string | undefined {
         return undefined;
     }
 }
+
+export function formatText(node: TiptapNode): string {
+    if (node.text) {
+        return node.text;
+    } else if (node.content) {
+        return node.content.map((child) => { return formatText(child); }).join('');
+    } else {
+        return '';
+    }
+}
+
+export function titleCase(text: string): string {
+    if (text.length > 0) {
+        return text[0].toUpperCase() + text.substring(1);
+    } else {
+        return text;
+    }
+}
+
+export function languageToHuman(lang: string): string {
+    if (lang === 'en') {
+        return 'English'
+    }
+    return lang;
+}

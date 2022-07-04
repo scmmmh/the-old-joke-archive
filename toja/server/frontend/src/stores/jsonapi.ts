@@ -13,7 +13,7 @@ export class JsonApiException extends Error {
     }
 }
 
-function getCookie(name: string): string | undefined {
+export function getCookie(name: string): string | undefined {
     const cookies = Object.fromEntries(document.cookie.split(';').map((cookie) => {
         return cookie.trim().split('=');
     }));

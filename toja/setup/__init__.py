@@ -81,7 +81,8 @@ async def setup_meilisearch() -> None:
     logger.debug('Setting up the search index')
     await meilisearch().create_index('jokes', 'id', sync=True)
     await meilisearch().update_index_settings('jokes', {
-        'filterableAttributes': ['categories', 'language', 'topics'],
+        'filterableAttributes': ['categories', 'language', 'topics', 'attribution', 'publication', 'section',
+                                 'publisher', 'year'],
     }, sync=True)
 
 
@@ -111,6 +112,7 @@ async def reset_couchdb() -> None:
 
 async def reset_meilisearch() -> None:
     """Remove all Meilisearch indexes."""
+    logger.debug('Deleting the search index')
     await meilisearch().delete_index('jokes', sync=True)
 
 

@@ -3,12 +3,15 @@ import asyncio
 import logging
 import tesserocr
 
+from aiocouch import CouchDB, Document
 from aiocouch.attachment import Attachment
 from asyncio_mqtt import Client
 from concurrent.futures import Executor, ProcessPoolExecutor
 from io import BytesIO
 from PIL import Image
+from typing import Union
 
+from ..setup import setup_meilisearch, reset_meilisearch
 from ..utils import mosquitto, couchdb, meilisearch
 from ..text_utils import raw_text
 
@@ -42,6 +45,7 @@ async def joke_ocr_listener(client: Client, executor: Executor) -> None:
     """Run OCR on a single joke."""
     async with client.filtered_messages('jokes/+/ocr') as messages:
         await client.subscribe('jokes/+/ocr')
+        logger.debug('OCR listener ready')
         async for message in messages:
             topic = message.topic.split('/')
             async with couchdb() as session:
@@ -61,9 +65,44 @@ async def joke_categorise_listener(client: Client, executor: Executor) -> None:
     """Run the categorisation on the final joke text."""
     async with client.filtered_messages('jokes/+/categorise') as messages:
         await client.subscribe('jokes/+/categorise')
+        logger.debug('Categorise listener ready')
         async for message in messages:
             topic = message.topic.split('/')
             logger.debug(topic)
+
+
+async def create_joke_index_doc(session: CouchDB, joke: Document) -> Union[dict, None]:
+    """Create the index document for a joke.
+
+    :param session: The CouchDB session to use
+    :type session: :class:`~aiocouch.CouchDB`
+    :param joke: The joke to create the index document for
+    :type joke: :class:`~aiocouch.Document`
+    :return: The search document format of the joke or ``None`` if the joke cannot be published
+    :return_type: dict or None
+    """
+    if joke['status'] == 'published' and 'final' in joke['transcriptions']:
+        logger.debug(f'Indexing joke {joke["_id"]}')
+        sources_db = await session['sources']
+        source = await sources_db[joke['source_id']]
+        doc = {
+            'id': joke['_id'],
+            'title': joke['title'],
+            'categories': joke['categories'],
+            'topics': [topic.strip() for topic in joke['topics'].split('\n')] if 'topics' in joke else [],
+            'text': raw_text(joke['transcriptions']['final']),
+        }
+        if 'language' in joke and joke['language'].strip():
+            doc['language'] = joke['language'].strip()
+        if 'title' in source and source['title'].strip():
+            doc['publication'] = source['title'].strip()
+        if 'subtitle' in source and source['subtitle'].strip():
+            doc['section'] = source['subtitle'].strip()
+        if 'publisher' in source and source['publisher'].strip():
+            doc['publisher'] = source['publisher'].strip()
+        if 'date' in source and len(source['date'].strip()) >= 4:
+            doc['year'] = int(source['date'][:4])
+        return doc
 
 
 async def joke_publish_listener(client: Client, executor: Executor) -> None:
@@ -71,21 +110,41 @@ async def joke_publish_listener(client: Client, executor: Executor) -> None:
     search = meilisearch()
     async with client.filtered_messages('jokes/+/publish') as messages:
         await client.subscribe('jokes/+/publish')
+        logger.debug('Publish listener ready')
         async for message in messages:
             topic = message.topic.split('/')
             async with couchdb() as session:
                 db = await session['jokes']
-                joke = await db[topic[1]]
-                if 'final' in joke['transcriptions']:
-                    logger.debug(f'Indexing joke {joke["_id"]}')
-                    await search.index_document('jokes', {
-                        'id': joke['_id'],
-                        'title': joke['title'],
-                        'categories': joke['categories'],
-                        'language': joke['language'],
-                        'topics': joke['topics'].split('\n'),
-                        'text': raw_text(joke['transcriptions']['final'])
-                    })
+                doc = await create_joke_index_doc(session, await db[topic[1]])
+                if doc:
+                    search.index_document('jokes', doc)
+
+
+async def admin_listener(client: Client, executor: Executor) -> None:
+    """Run the backend admin processes."""
+    async with client.filtered_messages('admin/+/+') as messages:
+        await client.subscribe('admin/+/+')
+        logger.debug('Admin listener ready')
+        async for message in messages:
+            topic = message.topic.split('/')
+            if topic[1] == 'search':
+                if topic[2] == 're-index':
+                    logger.debug('Re-indexing all published jokes')
+                    await reset_meilisearch()
+                    await setup_meilisearch()
+                    search = meilisearch()
+                    async with couchdb() as session:
+                        db = await session['jokes']
+                        buffer = []
+                        async for joke in db.find({'status': 'published'}):
+                            doc = await create_joke_index_doc(session, joke)
+                            if doc:
+                                buffer.append(doc)
+                                if len(buffer) >= 100:
+                                    await search.index_documents('jokes', buffer)
+                                    buffer = []
+                        if len(buffer) > 0:
+                            await search.index_documents('jokes', buffer)
 
 
 async def main() -> None:
@@ -94,7 +153,8 @@ async def main() -> None:
         async with mosquitto() as client:
             await asyncio.gather(joke_ocr_listener(client, executor),
                                  joke_categorise_listener(client, executor),
-                                 joke_publish_listener(client, executor))
+                                 joke_publish_listener(client, executor),
+                                 admin_listener(client, executor))
 
 
 def run_background_app() -> None:

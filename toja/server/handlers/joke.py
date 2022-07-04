@@ -26,8 +26,9 @@ from typing import Union
 from uuid import uuid1
 
 from .base import JSONAPICollectionHandler, JSONAPIItemHandler, JSONAPIError
-from toja.utils import couchdb, mosquitto
-from toja.validation import validate, ValidationError, object_schema, type_schema, one_to_one_relationship_schema
+from ...text_utils import annotations
+from ...utils import couchdb, mosquitto
+from ...validation import validate, ValidationError, object_schema, type_schema, one_to_one_relationship_schema
 
 
 logger = logging.getLogger(__name__)
@@ -55,12 +56,13 @@ async def as_jsonapi(doc: Document, user: Union[Document, None]) -> dict:
         doc = await db[doc['_id']]
         image = Attachment(doc, 'image')
         image_data = f'data:image/png;base64,{b64encode(await image.fetch()).decode("utf-8")}'
-    full_rights = 'admin' in user['groups'] or 'editor' in user['groups']
+    full_rights = user and ('admin' in user['groups'] or 'editor' in user['groups'])
     return {
         'id': doc['_id'],
         'type': 'jokes',
         'attributes': {
             'title': doc['title'],
+            'attribution': doc['attribution'] if 'attribution' in doc else None,
             'coordinates': doc['coordinates'],
             'transcriptions': doc['transcriptions']
                 if full_rights else dict([(key, value)
@@ -74,7 +76,7 @@ async def as_jsonapi(doc: Document, user: Union[Document, None]) -> dict:
             'status': doc['status'],
             'activity': doc['activity'] if full_rights else [action
                                                              for action in doc['activity']
-                                                             if action['user'] == user['_id']],
+                                                             if user and action['user'] == user['_id']],
         },
         'relationships': {
             'source': {
@@ -495,6 +497,11 @@ class JokeItemHandler(JSONAPIItemHandler):
                         if doc['status'] == 'published':
                             if 'annotated' in doc['transcriptions']:
                                 doc['transcriptions']['final'] = doc['transcriptions']['annotated']
+                                for annotation in annotations(doc['transcriptions']['final']):
+                                    if annotation['type'] == 'TitleMark':
+                                        doc['title'] = annotation['text']
+                                    elif annotation['type'] == 'AttributionMark':
+                                        doc['attribution'] = annotation['text']
                     else:
                         logger.debug(action)
                 doc['updated'] = datetime.utcnow().timestamp()

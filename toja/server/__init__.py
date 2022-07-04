@@ -5,7 +5,8 @@ from tornado.web import Application, RedirectHandler
 from tornado.ioloop import IOLoop
 
 from .handlers import (UserCollectionHandler, UserItemHandler, LoginHandler, ResetPasswordHandler, FrontendHandler,
-                       SourceCollectionHandler, SourceItemHandler, JokeCollectionHandler, JokeItemHandler)
+                       SourceCollectionHandler, SourceItemHandler, JokeCollectionHandler, JokeItemHandler,
+                       SearchHandler, SearchExactCountsHandler, AdminSearchHandler)
 from ..utils import config
 
 
@@ -30,6 +31,9 @@ def run_application_server() -> None:
         (r'/api/sources/([a-z0-9\-]+)', SourceItemHandler),
         ('/api/jokes', JokeCollectionHandler),
         (r'/api/jokes/([a-z0-9\-]+)', JokeItemHandler),
+        ('/api/search', SearchHandler),
+        ('/api/search/exhaustive-counts', SearchExactCountsHandler),
+        ('/api/admin/search', AdminSearchHandler),
     ]
     if config()['test']:
         from .handlers.test import TestHandler
