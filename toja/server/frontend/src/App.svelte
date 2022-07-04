@@ -36,7 +36,8 @@
 	}
 
 	@layer components {
-		[type=TitleMark], [type=PersonMark], [type=SpokenTextMark], [type=AttributionMark] {
+		[type=TitleMark], [type=AsideMark], [type=AttributionMark], [type=PersonMark], [type=SpokenTextMark],
+		[type=LocationMark], [type=ObjectMark], [type=QuestionMark], [type=AnswerMark] {
 			@apply inline-block px-1 bg-gray-100 border border-accent;
 		}
 	}
