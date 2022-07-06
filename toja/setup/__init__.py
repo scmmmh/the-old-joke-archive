@@ -82,7 +82,7 @@ async def setup_meilisearch() -> None:
     await meilisearch().create_index('jokes', 'id', sync=True)
     await meilisearch().update_index_settings('jokes', {
         'filterableAttributes': ['categories', 'language', 'topics', 'attribution', 'publication', 'section',
-                                 'publisher', 'year'],
+                                 'publisher', 'year', 'annotations'],
     }, sync=True)
 
 

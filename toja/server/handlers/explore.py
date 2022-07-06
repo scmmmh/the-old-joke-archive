@@ -46,6 +46,10 @@ QUERY_SCHEMA = {
                 'type': 'dict',
                 'default': {},
             },
+            'annotations': {
+                'type': 'dict',
+                'default': {},
+            },
         }
     }
 }
@@ -58,7 +62,8 @@ class SearchBase(BaseHandler):
         """Construct a Meilisearch query based on the request body."""
         params = validate(QUERY_SCHEMA, self.json_body(), purge_unknown=True)
         facets = []
-        for facet_name in ['categories', 'topics', 'language', 'publisher', 'publication', 'section', 'year']:
+        for facet_name in ['categories', 'topics', 'language', 'publisher', 'publication', 'section', 'year',
+                           'annotations']:
             if facet_name in params['facets']:
                 facets.append(' OR '.join([f'{facet_name}="{value}"'
                                            for value, selected in params['facets'][facet_name].items()

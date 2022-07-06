@@ -19,6 +19,7 @@
         {name: 'publication', label: 'Publication'},
         {name: 'section', label: 'Chapter / Column'},
         {name: 'year', label: 'Year'},
+        {name: 'annotations', label: 'Joke contents'},
         {name: 'language', label: 'Language', format: languageToHuman},
     ];
     const DEFAULT_QUERY = {
@@ -31,6 +32,7 @@
             'year': {},
             'publisher': {},
             'language': {},
+            'annotations': {},
         }
     }
     let queryElement = null as HTMLInputElement;
@@ -114,8 +116,8 @@
     function sortedFacets(facet: {[value: string]: number}): {value: String, count: number}[] {
         const items = Object.entries(facet);
         items.sort(([valueA, countA], [valueB, countB]) => {
-            return countB[1] - countA[1];
-        })
+            return countB - countA;
+        });
         return items.map(([value, count]) => {
             return {value: value, count: count};
         }).slice(0, 10);

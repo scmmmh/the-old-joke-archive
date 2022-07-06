@@ -13,7 +13,7 @@ from typing import Union
 
 from ..setup import setup_meilisearch, reset_meilisearch
 from ..utils import mosquitto, couchdb, meilisearch
-from ..text_utils import raw_text
+from ..text_utils import raw_text, annotations
 
 
 logger = logging.getLogger(__name__)
@@ -102,6 +102,15 @@ async def create_joke_index_doc(session: CouchDB, joke: Document) -> Union[dict,
             doc['publisher'] = source['publisher'].strip()
         if 'date' in source and len(source['date'].strip()) >= 4:
             doc['year'] = int(source['date'][:4])
+        annotation_labels = set()
+        for annotation in annotations(joke['transcriptions']['final']):
+            if annotation['type'] == 'PersonMark':
+                annotation_labels.add('person')
+            elif annotation['type'] == 'ObjectMark':
+                annotation_labels.add('object')
+            elif annotation['type'] == 'LocationMark':
+                annotation_labels.add('location')
+        doc['annotations'] = list(annotation_labels)
         return doc
 
 
@@ -117,7 +126,7 @@ async def joke_publish_listener(client: Client, executor: Executor) -> None:
                 db = await session['jokes']
                 doc = await create_joke_index_doc(session, await db[topic[1]])
                 if doc:
-                    search.index_document('jokes', doc)
+                    await search.index_document('jokes', doc)
 
 
 async def admin_listener(client: Client, executor: Executor) -> None:
