@@ -8,7 +8,7 @@ mosquitto:
   host: localhost
 meilisearch:
   server: http://localhost:7700
-  auth_token: changethis
+  auth_token: soofob5eixe2Chu7ood7phuaDoophoh6
 debug: True
 test: True
 logging:

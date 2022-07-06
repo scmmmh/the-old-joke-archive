@@ -13,3 +13,11 @@ services:
       - "127.0.0.1:1883:1883"
     volumes:
       - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+  meilisearch:
+    image: getmeili/meilisearch:v0.27.2
+    environment:
+      MEILI_MASTER_KEY: soofob5eixe2Chu7ood7phuaDoophoh6
+      ENV: development
+      MEILI_NO_ANALYTICS: "true"
+    ports:
+      - "127.0.0.1:7700:7700"
