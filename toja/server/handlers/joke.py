@@ -306,7 +306,11 @@ class JokeItemHandler(JSONAPIItemHandler):
                 })
                 actions.append({
                     'topics': {
-                        'type': 'string',
+                        'type': 'list',
+                        'schema': {
+                            'type': 'string'
+                        },
+                        'default': []
                     }
                 })
                 actions.append({
