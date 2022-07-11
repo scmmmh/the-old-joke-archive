@@ -122,3 +122,25 @@ class SearchExactCountsHandler(SearchBase):
         except Exception as e:
             logger.error(e)
             self.send_error(400)
+
+
+class SuggestionHandler(BaseHandler):
+    """Handler for search suggestion API endpoint."""
+
+    async def get(self: 'SuggestionHandler', index: str) -> None:
+        """Return the matching keywords from the first 10 matching documents."""
+        if index == 'joke_topics':
+            query = self.get_argument('q', '')
+            results = await meilisearch().search('joke_topics', {'q': query})
+            keywords = set()
+            for hit in results['hits']:
+                for kw in hit['keywords']:
+                    if query in kw:
+                        keywords.add(kw)
+            keywords = list(keywords)
+            keywords.sort()
+            self.write({
+                'data': [{'type': 'keywords', 'id': kw} for kw in keywords]
+            })
+        else:
+            self.send_error(404)

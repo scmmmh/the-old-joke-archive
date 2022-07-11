@@ -89,7 +89,7 @@ async def create_joke_index_doc(session: CouchDB, joke: Document) -> Union[dict,
             'id': joke['_id'],
             'title': joke['title'],
             'categories': joke['categories'],
-            'topics': [topic.strip() for topic in joke['topics'].split('\n')] if 'topics' in joke else [],
+            'topics': joke['topics'] if 'topics' in joke else [],
             'text': raw_text(joke['transcriptions']['final']),
         }
         if 'language' in joke and joke['language'].strip():
@@ -114,6 +114,20 @@ async def create_joke_index_doc(session: CouchDB, joke: Document) -> Union[dict,
         return doc
 
 
+async def create_joke_topics_doc(joke: Document) -> Union[dict, None]:
+    """Create the index document for a joke topic.
+
+    :param joke: The joke to create the index document for
+    :type joke: :class:`~aiocouch.Document`
+    :return: The search document format of the joke topics or ``None`` if the joke cannot be
+             published
+    :return_type: dict or None
+    """
+    if joke['status'] == 'published' and 'topics' in joke:
+        return {'id': joke['_id'],
+                'keywords': joke['topics']}
+
+
 async def joke_publish_listener(client: Client, executor: Executor) -> None:
     """Run the publishing process on the final, published joke."""
     search = meilisearch()
@@ -124,9 +138,45 @@ async def joke_publish_listener(client: Client, executor: Executor) -> None:
             topic = message.topic.split('/')
             async with couchdb() as session:
                 db = await session['jokes']
+                # Index the full joke
                 doc = await create_joke_index_doc(session, await db[topic[1]])
                 if doc:
                     await search.index_document('jokes', doc)
+                # Index just the topics
+                doc = await create_joke_topics_doc(await db[topic[1]])
+                if doc:
+                    await search.index_document('joke_topics', doc)
+
+
+async def recreate_search_indexes(client: Client, executor: Executor) -> None:
+    """Recreate and repopulate all search indexes."""
+    logger.debug('Re-indexing all published jokes')
+    await reset_meilisearch()
+    await setup_meilisearch()
+    search = meilisearch()
+    async with couchdb() as session:
+        db = await session['jokes']
+        jokes_buffer = []
+        topics_buffer = []
+        async for joke in db.find({'status': 'published'}):
+            # Index the full joke
+            doc = await create_joke_index_doc(session, joke)
+            if doc:
+                jokes_buffer.append(doc)
+                if len(jokes_buffer) >= 100:
+                    await search.index_documents('jokes', jokes_buffer)
+                    jokes_buffer = []
+            # Index just the topics
+            doc = await create_joke_topics_doc(joke)
+            if doc:
+                topics_buffer.append(doc)
+                if len(topics_buffer) >= 100:
+                    await search.index_documents('joke_topics', topics_buffer)
+                    topics_buffer = []
+        if len(jokes_buffer) > 0:
+            await search.index_documents('jokes', jokes_buffer)
+        if len(topics_buffer) > 0:
+            await search.index_documents('joke_topics', topics_buffer)
 
 
 async def admin_listener(client: Client, executor: Executor) -> None:
@@ -138,22 +188,7 @@ async def admin_listener(client: Client, executor: Executor) -> None:
             topic = message.topic.split('/')
             if topic[1] == 'search':
                 if topic[2] == 're-index':
-                    logger.debug('Re-indexing all published jokes')
-                    await reset_meilisearch()
-                    await setup_meilisearch()
-                    search = meilisearch()
-                    async with couchdb() as session:
-                        db = await session['jokes']
-                        buffer = []
-                        async for joke in db.find({'status': 'published'}):
-                            doc = await create_joke_index_doc(session, joke)
-                            if doc:
-                                buffer.append(doc)
-                                if len(buffer) >= 100:
-                                    await search.index_documents('jokes', buffer)
-                                    buffer = []
-                        if len(buffer) > 0:
-                            await search.index_documents('jokes', buffer)
+                    await recreate_search_indexes(client, executor)
 
 
 async def main() -> None:

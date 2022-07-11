@@ -25,6 +25,10 @@
     let editor: Editor;
     let saveBusy = false;
     let mode = 'text';
+    let newJokeTopic = '';
+    let newJokeTopicSuggestions = [];
+    let suggestTopicsDebounce = 0;
+    let newJokeTopicElement: HTMLInputElement;
 
     function sleep(ms: number) {
         return new Promise((resolve) => {
@@ -108,6 +112,58 @@
         }
     }
 
+    function jokeTopicKeyup(ev: KeyboardEvent) {
+        if (selectedJoke) {
+            if (ev.key === 'Enter') {
+                ev.preventDefault();
+                addJokeTopic(newJokeTopic);
+                newJokeTopic = '';
+            } else if (newJokeTopic.trim() !== '') {
+                suggestTopics();
+            }
+        }
+    }
+
+    function suggestTopics() {
+        window.clearTimeout(suggestTopicsDebounce);
+        window.setTimeout(async () => {
+            const response = await window.fetch('/api/suggest/joke_topics?q=' + newJokeTopic);
+            if (response.status === 200) {
+                const data = await response.json();
+                newJokeTopicSuggestions = data.data.filter((suggestion) => {
+                    return selectedJoke.attributes.topics.indexOf(suggestion.id) < 0;
+                });
+            }
+        }, 80);
+    }
+
+    function addJokeTopic(topic: string) {
+        if (!Array.isArray(selectedJoke.attributes.topics)) {
+            selectedJoke.attributes.topics = [];
+        }
+        if (selectedJoke.attributes.topics.indexOf(topic) < 0 && topic.trim() !== '') {
+            selectedJoke.attributes.topics.push(topic);
+            selectedJoke = selectedJoke;
+        }
+    }
+
+    function removeJokeTopic(topic: string) {
+        if (!Array.isArray(selectedJoke.attributes.topics)) {
+            selectedJoke.attributes.topics = [];
+        }
+        if (selectedJoke.attributes.topics.indexOf(topic) >= 0) {
+            selectedJoke.attributes.topics.splice(selectedJoke.attributes.topics.indexOf(topic), 1);
+            selectedJoke = selectedJoke;
+        }
+    }
+
+    function addSuggestedTopic(topic: string) {
+        addJokeTopic(topic);
+        newJokeTopic = '';
+        newJokeTopicSuggestions = [];
+        newJokeTopicElement.focus();
+    }
+
     async function publishJoke(status: 'published' | 'annotated') {
         const updatedJoke = {
             type: 'jokes',
@@ -148,7 +204,7 @@
                     categories: (selectedJoke.attributes as JokeDocumentAttributes).categories,
                 });
             }
-            if ((selectedJoke.attributes as JokeDocumentAttributes).topics !== (originalSelectedJoke.attributes as JokeDocumentAttributes).topics) {
+            if (!deepequal((selectedJoke.attributes as JokeDocumentAttributes).topics, (originalSelectedJoke.attributes as JokeDocumentAttributes).topics)) {
                 actions.push({
                     topics: (selectedJoke.attributes as JokeDocumentAttributes).topics,
                 });
@@ -293,7 +349,29 @@
                             </li>
                         {/each}
                     </ul>
-                    <Input on:change={(ev) => { selectedJoke.attributes.topics = ev.detail; }} type="textarea" value={selectedJoke.attributes.topics ? selectedJoke.attributes.topics : ''}>Topics</Input>
+                    <label class="block mb-4 relative">
+                        <span class="block mb-1 text-sm">Topics</span>
+                        <ul class="flex flex-row flex-wrap w-full bg-gray-200 rounded-t px-4 py-3 text-sm">
+                            {#each selectedJoke.attributes.topics as topic}
+                                <li role="presentation" class="flex-none mr-4">
+                                    <span>{topic}</span>
+                                    <button on:click={() => { removeJokeTopic(topic); }} class="inline-block rounded-full bg-primary text-white" aria-label="Remove topic {topic}">
+                                        <svg aria-hidden="true" viewBox="0 0 24 24" class="w-4 h-4">
+                                            <path fill="currentColor" d="M20 6.91L17.09 4L12 9.09L6.91 4L4 6.91L9.09 12L4 17.09L6.91 20L12 14.91L17.09 20L20 17.09L14.91 12L20 6.91Z" />
+                                        </svg>
+                                    </button>
+                                </li>
+                            {/each}
+                        </ul>
+                        <input bind:this={newJokeTopicElement} bind:value={newJokeTopic} on:keyup={jokeTopicKeyup} class="block w-full bg-gray-200 rounded-b px-4 py-3 focus:outline-primary"/>
+                        {#if newJokeTopicSuggestions.length > 0}
+                            <ol class="absolute l-0 t-0 w-full shadow bg-white z-10 px-4 py-3">
+                                {#each newJokeTopicSuggestions as suggestion}
+                                    <li><button on:click={() => { addSuggestedTopic(suggestion.id); }} class="block w-full text-left text-accent hover:text-primary focus:text-primary py-1">{suggestion.id}</button></li>
+                                {/each}
+                            </ol>
+                        {/if}
+                    </label>
                     <Input on:change={(ev) => { selectedJoke.attributes.language = ev.detail; }} type="select" value={selectedJoke.attributes.language} values={[[null, 'Unknown'], ['en', 'English']]}>Language</Input>
                 </div>
             {/if}

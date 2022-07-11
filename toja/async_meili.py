@@ -123,19 +123,19 @@ class AsyncMeiliClient(object):
         """
         return await self.send_request('POST', f'/indexes/{uid}/settings', settings, sync=sync)
 
-    async def index_documents(self: 'AsyncMeiliClient', index: str, doc: List[dict], sync: bool = False) -> Union[dict, None]:  # noqa: E501
+    async def index_documents(self: 'AsyncMeiliClient', index: str, docs: List[dict], sync: bool = False) -> Union[dict, None]:  # noqa: E501
         """Index a document.
 
         :param index: The unique id of the index to add the document to
         :type index: str
-        :param doc: The list of documents to index
-        :type doc: list
+        :param docs: The list of documents to index
+        :type docs: list
         :param sync: Whether to wait for the operation to complete
         :type sync: bool
         :return: The response from the server, if one is sent
         :return_type: dict or None
         """
-        return await self.send_request('POST', f'/indexes/{index}/documents', doc, sync=sync)
+        return await self.send_request('POST', f'/indexes/{index}/documents', docs, sync=sync)
 
     async def index_document(self: 'AsyncMeiliClient', index: str, doc: List[dict], sync: bool = False) -> Union[dict, None]:  # noqa: E501
         """Index a document.

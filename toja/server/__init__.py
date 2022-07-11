@@ -6,7 +6,7 @@ from tornado.ioloop import IOLoop
 
 from .handlers import (UserCollectionHandler, UserItemHandler, LoginHandler, ResetPasswordHandler, FrontendHandler,
                        SourceCollectionHandler, SourceItemHandler, JokeCollectionHandler, JokeItemHandler,
-                       SearchHandler, SearchExactCountsHandler, AdminSearchHandler)
+                       SearchHandler, SearchExactCountsHandler, SuggestionHandler, AdminSearchHandler)
 from ..utils import config
 
 
@@ -33,6 +33,7 @@ def run_application_server() -> None:
         (r'/api/jokes/([a-z0-9\-]+)', JokeItemHandler),
         ('/api/search', SearchHandler),
         ('/api/search/exhaustive-counts', SearchExactCountsHandler),
+        ('/api/suggest/([a-z_]+)', SuggestionHandler),
         ('/api/admin/search', AdminSearchHandler),
     ]
     if config()['test']:
