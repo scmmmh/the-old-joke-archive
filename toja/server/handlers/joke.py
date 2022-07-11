@@ -531,6 +531,9 @@ class JokeItemHandler(JSONAPIItemHandler):
                 if doc['status'] == 'published':
                     async with mosquitto() as client:
                         await client.publish(f'jokes/{iid}/publish')
+                else:
+                    async with mosquitto() as client:
+                        await client.publish(f'jokes/{iid}/unpublish')
                 doc = await db[iid]
                 return doc
         except aio_exc.NotFoundError:

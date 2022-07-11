@@ -131,21 +131,26 @@ async def create_joke_topics_doc(joke: Document) -> Union[dict, None]:
 async def joke_publish_listener(client: Client, executor: Executor) -> None:
     """Run the publishing process on the final, published joke."""
     search = meilisearch()
-    async with client.filtered_messages('jokes/+/publish') as messages:
+    async with client.filtered_messages('jokes/+/+') as messages:
         await client.subscribe('jokes/+/publish')
-        logger.debug('Publish listener ready')
+        await client.subscribe('jokes/+/unpublish')
+        logger.debug('Un/Publish listener ready')
         async for message in messages:
             topic = message.topic.split('/')
-            async with couchdb() as session:
-                db = await session['jokes']
-                # Index the full joke
-                doc = await create_joke_index_doc(session, await db[topic[1]])
-                if doc:
-                    await search.index_document('jokes', doc)
-                # Index just the topics
-                doc = await create_joke_topics_doc(await db[topic[1]])
-                if doc:
-                    await search.index_document('joke_topics', doc)
+            if topic[2] == 'publish':
+                async with couchdb() as session:
+                    db = await session['jokes']
+                    # Index the full joke
+                    doc = await create_joke_index_doc(session, await db[topic[1]])
+                    if doc:
+                        await search.index_document('jokes', doc)
+                    # Index just the topics
+                    doc = await create_joke_topics_doc(await db[topic[1]])
+                    if doc:
+                        await search.index_document('joke_topics', doc)
+            elif topic[2] == 'unpublish':
+                await search.delete_document('jokes', topic[1])
+                await search.delete_document('joke_topics', topic[1])
 
 
 async def recreate_search_indexes(client: Client, executor: Executor) -> None:
@@ -157,7 +162,9 @@ async def recreate_search_indexes(client: Client, executor: Executor) -> None:
     async with couchdb() as session:
         db = await session['jokes']
         jokes_buffer = []
+        delete_jokes_buffer = []
         topics_buffer = []
+        delete_topics_buffer = []
         async for joke in db.find({'status': 'published'}):
             # Index the full joke
             doc = await create_joke_index_doc(session, joke)
@@ -166,6 +173,11 @@ async def recreate_search_indexes(client: Client, executor: Executor) -> None:
                 if len(jokes_buffer) >= 100:
                     await search.index_documents('jokes', jokes_buffer)
                     jokes_buffer = []
+            else:
+                delete_jokes_buffer.append(joke['_id'])
+                if len(delete_jokes_buffer) >= 100:
+                    await search.delete_documents('jokes', delete_jokes_buffer)
+                    delete_jokes_buffer = []
             # Index just the topics
             doc = await create_joke_topics_doc(joke)
             if doc:
@@ -173,10 +185,19 @@ async def recreate_search_indexes(client: Client, executor: Executor) -> None:
                 if len(topics_buffer) >= 100:
                     await search.index_documents('joke_topics', topics_buffer)
                     topics_buffer = []
+            else:
+                delete_jokes_buffer.append(joke['_id'])
+                if len(delete_topics_buffer) >= 100:
+                    await search.delete_documents('joke_topics', delete_topics_buffer)
+                    delete_topics_buffer = []
         if len(jokes_buffer) > 0:
             await search.index_documents('jokes', jokes_buffer)
+        if len(delete_jokes_buffer) > 0:
+            await search.delete_documents('jokes', delete_jokes_buffer)
         if len(topics_buffer) > 0:
             await search.index_documents('joke_topics', topics_buffer)
+        if len(delete_topics_buffer) > 0:
+            await search.delete_documents('joke_topics', delete_topics_buffer)
 
 
 async def admin_listener(client: Client, executor: Executor) -> None:

@@ -124,7 +124,7 @@ class AsyncMeiliClient(object):
         return await self.send_request('POST', f'/indexes/{uid}/settings', settings, sync=sync)
 
     async def index_documents(self: 'AsyncMeiliClient', index: str, docs: List[dict], sync: bool = False) -> Union[dict, None]:  # noqa: E501
-        """Index a document.
+        """Index multiple document.
 
         :param index: The unique id of the index to add the document to
         :type index: str
@@ -150,6 +150,30 @@ class AsyncMeiliClient(object):
         :return_type: dict or None
         """
         return await self.index_documents(index, [doc], sync=sync)
+
+    async def delete_document(self: 'AsyncMeiliClient', index: str, doc_id: str, sync: bool = False) -> None:
+        """Delete a document.
+
+        :param index: The unique id of the index to delete the document from
+        :type index: str
+        :param doc_id: The id of the document to delete
+        :type doc_id: str
+        :param sync: Whether to wait for the operation to complete
+        :type sync: bool
+        """
+        await self.send_request('DELETE', f'/indexes/{index}/documents/{doc_id}', sync=sync)
+
+    async def delete_documents(self: 'AsyncMeiliClient', index: str, doc_ids: List[str], sync: bool = False) -> None:
+        """Delete multiple document.
+
+        :param index: The unique id of the index to delete the documents from
+        :type index: str
+        :param doc_ids: The ids of the documents to delete
+        :type doc_ids: list
+        :param sync: Whether to wait for the operation to complete
+        :type sync: bool
+        """
+        await self.send_request('POST', f'/indexes/{index}/documents/delete-batch', doc_ids, sync=sync)
 
     async def search(self: 'AsyncMeiliClient', index: str, query: dict) -> dict:
         """Run a search query.
