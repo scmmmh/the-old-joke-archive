@@ -64,6 +64,14 @@ CONFIG_SCHEMA = {
             'host': {
                 'type': 'string',
                 'default': 'localhost'
+            },
+            'username': {
+                'type': 'string',
+                'required': True,
+            },
+            'password': {
+                'type': 'string',
+                'required': True,
             }
         }
     },

@@ -36,7 +36,9 @@ def couchdb() -> CouchDB:
 
 def mosquitto() -> Client:
     """Get a mosquitto client."""
-    return Client(config()['mosquitto']['host'])
+    return Client(config()['mosquitto']['host'],
+                  username=config()['mosquitto']['username'],
+                  password=config()['mosquitto']['password'])
 
 
 def meilisearch() -> AsyncMeiliClient:

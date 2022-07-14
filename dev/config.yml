@@ -4,6 +4,8 @@ database:
   password: ohchieM0iefeuto5
 mosquitto:
   host: localhost
+  username: toja
+  password: ed6eigah5ahph5Ei
 meilisearch:
   server: http://localhost:7700
   auth_token: tho4shoochah4chaimue4aShi5aijac9

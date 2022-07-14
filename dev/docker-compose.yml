@@ -15,6 +15,7 @@ services:
       - "127.0.0.1:1883:1883"
     volumes:
       - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./mosquitto_password_file:/mosquitto/config/password_file
   meilisearch:
     image: getmeili/meilisearch:v0.27.2
     environment:
