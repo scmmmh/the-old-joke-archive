@@ -67,11 +67,11 @@ CONFIG_SCHEMA = {
             },
             'username': {
                 'type': 'string',
-                'required': True,
+                'required': False,
             },
             'password': {
                 'type': 'string',
-                'required': True,
+                'required': False,
             }
         }
     },
