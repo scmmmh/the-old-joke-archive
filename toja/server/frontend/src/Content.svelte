@@ -14,6 +14,7 @@
     import Confirm from './routes/user/Confirm.svelte';
     import Contribute from './routes/contribute/Contribute.svelte';
     import Search from './routes/explore/Search.svelte';
+    import Joke from './routes/explore/Joke.svelte';
 
     const location = useLocation();
     let Admin = null;
@@ -59,6 +60,7 @@
     <Route path="/user/log-in"><Login/></Route>
     <Route path="/user/reset-password"><ResetPassword/></Route>
     <Route path="/search"><Search/></Route>
+    <Route path="/jokes/:joke_id"><Joke/></Route>
     {#if $isGroupAdmin || $isGroupAdminUsers}
         <Route path="/admin/*">{#if Admin}<svelte:component this={Admin}/>{:else}<Loading/>{/if}</Route>
     {/if}

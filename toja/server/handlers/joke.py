@@ -33,6 +33,8 @@ from ...validation import validate, ValidationError, object_schema, type_schema,
 
 logger = logging.getLogger(__name__)
 
+JUDGEMENTS = ['lol', 'eye-roll', 'confused', 'neutral']
+
 
 def coerce_coordinates(value: list) -> list:
     """Coerce the coordinates into an integer bounding box."""
@@ -57,6 +59,11 @@ async def as_jsonapi(doc: Document, user: Union[Document, None]) -> dict:
         image = Attachment(doc, 'image')
         image_data = f'data:image/png;base64,{b64encode(await image.fetch()).decode("utf-8")}'
     full_rights = user and ('admin' in user['groups'] or 'editor' in user['groups'])
+    judgements = {}
+    if 'judgements' in doc:
+        for judgement in JUDGEMENTS:
+            if judgement in doc['judgements']:
+                judgements[judgement] = len(doc['judgements'][judgement])
     return {
         'id': doc['_id'],
         'type': 'jokes',
@@ -72,6 +79,7 @@ async def as_jsonapi(doc: Document, user: Union[Document, None]) -> dict:
             'categories': doc['categories'],
             'topics': doc['topics'] if 'topics' in doc else '',
             'language': doc['language'] if 'language' in doc else None,
+            'judgements': judgements,
             'data': image_data,
             'status': doc['status'],
             'activity': doc['activity'] if full_rights else [action
@@ -391,6 +399,12 @@ class JokeItemHandler(JSONAPIItemHandler):
                                 'type': 'dict'
                             }
                         })
+            actions.append({
+                'toggleJudgement': {
+                    'type': 'string',
+                    'allowed': ['lol', 'eye-roll', 'confused', 'neutral']
+                }
+            })
             # Merge all the actions into the attributes
             attributes['actions'] = {
                 'type': 'list',
@@ -506,6 +520,15 @@ class JokeItemHandler(JSONAPIItemHandler):
                                         doc['title'] = annotation['text']
                                     elif annotation['type'] == 'AttributionMark':
                                         doc['attribution'] = annotation['text']
+                    elif 'toggleJudgement' in action:
+                        if 'judgements' not in doc:
+                            doc['judgements'] = {}
+                        if action['toggleJudgement'] not in doc['judgements']:
+                            doc['judgements'][action['toggleJudgement']] = []
+                        if user['_id'] in doc['judgements'][action['toggleJudgement']]:
+                            doc['judgements'][action['toggleJudgement']].remove(user['_id'])
+                        else:
+                            doc['judgements'][action['toggleJudgement']].append(user['_id'])
                     else:
                         logger.debug(action)
                 doc['updated'] = datetime.utcnow().timestamp()

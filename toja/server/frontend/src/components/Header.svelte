@@ -54,7 +54,7 @@
             <span class="block font-blackriver-bold font-bold text-gray-500 text-2xl pl-8">Are we amused?</span>
         </div>
         <div class="flex-none lg:pl-8">
-            <img src="/app/logo.png" alt="" aria-hidden="true" class="h-16"/>
+            <img src="/app/img/logo.png" alt="" aria-hidden="true" class="h-16"/>
         </div>
     </div>
     <div class="flex-none lg:flex-1"></div>
