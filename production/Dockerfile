@@ -14,10 +14,10 @@ RUN apt-get update && \
     apt-get install -y tini libtesseract-dev libleptonica-dev tesseract-ocr
 
 # Copy the application
-COPY toja-1.0.0b12-py3-none-any.whl /tmp/
+COPY toja-1.0.0b13-py3-none-any.whl /tmp/
 
 # Install the application
-RUN python -m pip install /tmp/toja-1.0.0b12-py3-none-any.whl
+RUN python -m pip install /tmp/toja-1.0.0b13-py3-none-any.whl
 RUN mkdir /etc/toja && \
     chmod 0750 /etc/toja && \
     mkdir /var/lib/toja && \
