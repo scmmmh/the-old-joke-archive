@@ -44,6 +44,7 @@
     let resultFacets = {} as {[facet: string]: {[value: string]: number}};
     let query = deepcopy(DEFAULT_QUERY);
     let isActiveQuery = false;
+    let showFacets = false;
 
     async function search() {
         if (searchCounter > 0) {
@@ -146,8 +147,8 @@
     onDestroy(paramsUnsubscribe);
 </script>
 
-<div class="flex flex-row">
-    <div class="flex-none md:w-1/3 lg:w-1/4 md:order-2">
+<div class="lg:flex lg:flex-row">
+    <div class="flex-none lg:w-1/4 md:order-2">
         <div class="flex flex-row items-top mb-8">
             <h1 class="flex-1 font-blackriver-bold text-2xl">Find something funny</h1>
             {#if isActiveQuery}
@@ -158,7 +159,7 @@
                 </button>
             {/if}
         </div>
-        <label class="block relative mb-8">
+        <label class="block relative lg:mb-8">
             <span class="sr-only">Search for</span>
             <input bind:this={queryElement} type="search" class="block w-full bg-gray-200 rounded px-4 py-3 focus:outline-primary" on:keyup={requestSearch}/>
         </label>
@@ -167,6 +168,10 @@
                 <Busy message="Searching..."/>
             </span>
         {/if}
+        <div class="mb-8 lg:hidden text-right">
+            <button on:click={() => { showFacets = !showFacets; }} class="text-accent hover:text-primary focus:text-primary">{#if showFacets}Hide{:else}Show{/if} filters</button>
+        </div>
+        <div class="{showFacets ? 'block' : 'hidden'} lg:block">
         {#each FACETS as facetDef}
             <section class="mb-8">
                 <h2 class="font-blackriver-bold text-xl mb-2">{facetDef.label}</h2>
@@ -185,8 +190,9 @@
                 {/if}
             </section>
         {/each}
+        </div>
     </div>
-    <div class="flex-1 md:order-1 md:mr-12">
+    <div class="flex-1 md:order-1 lg:mr-12">
         {#if results.length > 0}
             <h2 class="font-blackriver-bold text-4xl mb-8">
                 {#if queryElement.value}

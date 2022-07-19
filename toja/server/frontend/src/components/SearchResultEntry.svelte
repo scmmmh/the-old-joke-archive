@@ -10,9 +10,9 @@
 </script>
 
 {#if joke}
-    <li class="flex flex-row mb-12">
-        <div class="flex-none mr-8">
-            <div class="w-60 h-32 border border-gray-500 rounded-lg overflow-hidden">
+    <li class="lg:flex lg:flex-row mb-12">
+        <div class="flex-none lg:mr-8 mb-8 lg:mb-0">
+            <div class="lg:w-60 h-32 border border-gray-500 rounded-lg overflow-hidden">
                 <button on:click={() => { showPopup = true; }} aria-label="Show a popup with the source in full size">
                     <img src={joke.attributes.data} alt="" class="max-w-none"/>
                 </button>
