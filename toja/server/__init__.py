@@ -6,7 +6,8 @@ from tornado.ioloop import IOLoop
 
 from .handlers import (UserCollectionHandler, UserItemHandler, LoginHandler, ResetPasswordHandler, FrontendHandler,
                        SourceCollectionHandler, SourceItemHandler, JokeCollectionHandler, JokeItemHandler,
-                       SearchHandler, SearchExactCountsHandler, SuggestionHandler, AdminSearchHandler)
+                       JokeDataHandler, joke_html_injector, SearchHandler, SearchExactCountsHandler, SuggestionHandler,
+                       AdminSearchHandler)
 from ..utils import config
 
 
@@ -22,7 +23,7 @@ def run_application_server() -> None:
     logger.debug('Application server starting up...')
     routes = [
         ('/', RedirectHandler, {'permanent': False, 'url': '/app'}),
-        ('/app(.*)', FrontendHandler),
+        ('/app(.*)', FrontendHandler, {'html_injectors': {r'/jokes/([a-z0-9\-]+)': joke_html_injector}}),
         ('/api/users', UserCollectionHandler),
         ('/api/users/_login', LoginHandler),
         ('/api/users/_reset-password', ResetPasswordHandler),
@@ -31,6 +32,7 @@ def run_application_server() -> None:
         (r'/api/sources/([a-z0-9\-]+)', SourceItemHandler),
         ('/api/jokes', JokeCollectionHandler),
         (r'/api/jokes/([a-z0-9\-]+)', JokeItemHandler),
+        (r'/api/jokes/([a-z0-9\-]+)/image', JokeDataHandler),
         ('/api/search', SearchHandler),
         ('/api/search/exhaustive-counts', SearchExactCountsHandler),
         ('/api/suggest/([a-z_]+)', SuggestionHandler),

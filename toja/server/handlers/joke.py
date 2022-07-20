@@ -25,8 +25,8 @@ from PIL import Image
 from typing import Union
 from uuid import uuid1
 
-from .base import JSONAPICollectionHandler, JSONAPIItemHandler, JSONAPIError
-from ...text_utils import annotations
+from .base import BaseHandler, JSONAPICollectionHandler, JSONAPIItemHandler, JSONAPIError
+from ...text_utils import annotations, raw_text
 from ...utils import couchdb, mosquitto
 from ...validation import validate, ValidationError, object_schema, type_schema, one_to_one_relationship_schema
 
@@ -594,3 +594,49 @@ class JokeItemHandler(JSONAPIItemHandler):
     async def as_jsonapi(self: 'JokeItemHandler', doc: Document, user: Union[Document, None]) -> dict:
         """Return a single joke as JSONAPI."""
         return await as_jsonapi(doc, user)
+
+
+class JokeDataHandler(BaseHandler):
+    """Handle requests for the image data."""
+
+    async def get(self: 'JokeDataHandler', joke_id: str) -> None:
+        """Send the joke image data.
+
+        :param joke_id: The id of the joke for which to send the image data
+        :type joke_id: str
+        """
+        try:
+            async with couchdb() as session:
+                db = await session['jokes']
+                doc = await db[joke_id]
+                if doc['status'] == 'published' and 'transcriptions' in doc and 'final' in doc['transcriptions']:
+                    self.set_header('Content-Type', 'image/png')
+                    image = Attachment(doc, 'image')
+                    self.write(await image.fetch())
+                else:
+                    self.send_error(404)
+        except aio_exc.NotFound:
+            self.send_error(404)
+
+
+async def html_injector(joke_id: str) -> str:
+    """Inject HTML into joke requests.
+
+    :param joke_id: The id of the joke for which to inject HTML
+    :type joke_id: str
+    :return: The HTML to inject
+    :rtype: str
+    """
+    try:
+        async with couchdb() as session:
+            db = await session['jokes']
+            doc = await db[joke_id]
+            if doc['status'] == 'published' and 'transcriptions' in doc and 'final' in doc['transcriptions']:
+                return f'''<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:site" content="@OldJokeArchive"/>
+<meta name="twitter:title" content="{doc['title']}">
+<meta name="twitter:description" content="{raw_text(doc['transcriptions']['final'])[:200]}">
+<meta name="twitter:image" content="/api/jokes/{joke_id}/image">'''
+    except Exception:
+        pass
+    return ''

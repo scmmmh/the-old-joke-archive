@@ -99,8 +99,7 @@
                 <div class="my-8 lg:my-16">
                     <img src={joke.attributes.data} alt=""/>
                 </div>
-                <h2 class="font-blackriver-bold text-xl mb-2">Contributors</h2>
-
+                <!--<h2 class="font-blackriver-bold text-xl mb-2">Contributors</h2>-->
             </div>
             <div class="lg:w-1/3 lg:pl-12">
                 <h2 class="font-blackriver-bold text-xl mb-4 mt-8 lg:mt-0 lg:sr-only">Judge this Joke</h2>
