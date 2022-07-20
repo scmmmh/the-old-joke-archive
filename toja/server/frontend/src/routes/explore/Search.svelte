@@ -192,22 +192,22 @@
         {/each}
         </div>
     </div>
-    <div class="flex-1 md:order-1 lg:mr-12">
+    <div class="flex-1 md:order-1 lg:mr-12 relative">
+        <h2 class="font-blackriver-bold text-4xl mb-8">
+            {#if queryElement && queryElement.value}
+                Jokes containing <span class="text-primary">{query.query}</span>
+            {:else}
+                All Jokes
+            {/if}
+        </h2>
         {#if results.length > 0}
-            <h2 class="font-blackriver-bold text-4xl mb-8">
-                {#if queryElement.value}
-                    Jokes containing <span class="text-primary">{query.query}</span>
-                {:else}
-                    All Jokes
-                {/if}
-            </h2>
             <ul>
                 {#each results as joke}
                     <SearchResultEntry joke={joke}/>
                 {/each}
             </ul>
         {:else if searchCounter > 0}
-            <p>The amazing search automaton is looking for something funny.</p>
+            <div class="lg:absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"><Busy message="The amazing search automaton is looking for something funny..."/></div>
         {:else}
             <p>Unfortunately the amazing search automaton couldn't find anything funny for that search.</p>
         {/if}
