@@ -2,7 +2,7 @@
 import re
 
 
-VERSION = '1.0.0b13'
+VERSION = '1.0.0b14'
 
 
 def readlines(filename: str) -> list[str]:
