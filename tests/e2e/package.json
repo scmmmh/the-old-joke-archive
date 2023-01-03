@@ -10,6 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^0.25.0",
-    "testcafe": "^15.1.317922"
+    "testcafe": "^2.2.0"
   }
 }
