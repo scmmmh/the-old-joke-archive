@@ -1,0 +1,16 @@
+{
+  "name": "tests",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test-api && npm run test-functional",
+    "test-api": "py.test api_tests",
+    "test-functional": "py.test functional_tests"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@playwright/test": "^1.29.1"
+  }
+}
