@@ -162,7 +162,7 @@ jobs:
         cd toja/server/frontend
         npm install
         cd ../../../
-        cd tests/e2e
+        cd tests/e2e-old
         npm install
 
     - name: Build the UI
@@ -178,5 +178,5 @@ jobs:
         docker-compose start
         poetry run python -m toja server &
         sleep 5
-        cd e2e
+        cd e2e-old
         ./node_modules/.bin/testcafe ${{ matrix.browser }}
