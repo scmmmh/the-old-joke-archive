@@ -99,7 +99,7 @@ const config: PlaywrightTestConfig = {
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'python -m toja server',
+    command: 'poetry run python -m toja server',
     port: 6543,
   },
 };
