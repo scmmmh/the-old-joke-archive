@@ -88,7 +88,7 @@ jobs:
       - name: Build the UI
         run: |
           cd toja/server/frontend
-          vite build
+          node_modules/.bin/vite build
 
       - name: Run Tests
         run: |
