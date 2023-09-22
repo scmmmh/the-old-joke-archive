@@ -2,7 +2,7 @@ name: Tests
 
 on:
   push:
-    branches: [default, hatch-switch]
+    branches: [default]
   pull_request:
     branches: [default]
 
