@@ -12,6 +12,9 @@ function storeValue(storage: Storage, path: string, value: null | string | numbe
     let current = obj;
     for (let idx = 0; idx < pathElements.length; idx++) {
         const element = pathElements[idx];
+        if (element === "__proto__" || element === "constructor") {
+            break
+        }
         if (idx === pathElements.length - 1) {
             current[element] = value;
         } else {
