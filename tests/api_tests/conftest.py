@@ -1,7 +1,7 @@
 """Fixtures for the API tests."""
 import aiohttp
 import json
-import pytest
+import pytest_asyncio
 
 from aiocouch import CouchDB
 from itertools import chain
@@ -15,9 +15,6 @@ async def create_objects(names: list[str], dbsession: CouchDB) -> dict:
         query = '&'.join([f'obj={name}' for name in names])
         async with http_session.put(f'http://localhost:6543/test?{query}') as response:
             objs = await response.json()
-            # data = (await response.content.read()).decode('utf-8')
-            # print(data)
-            # objs = json.loads(data)
             for dbname, items in objs.items():
                 db = await dbsession[dbname]
                 for obj_name, obj_id in list(items.items()):
@@ -36,7 +33,7 @@ def merge_objects(a: dict, b: dict) -> dict:
     return result
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def empty_database() -> None:
     """Provide an empty database."""
     async with aiohttp.ClientSession() as http_session:
@@ -48,14 +45,14 @@ async def empty_database() -> None:
         yield session
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def minimal_database(empty_database: CouchDB) -> None:
     """Provide a database with a minimal set of data."""
     objs = await create_objects(['users/admin'], empty_database)
     yield empty_database, objs
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def standard_database(minimal_database: CouchDB) -> None:
     """Provide a database with a standard set of data."""
     session, objs = minimal_database
@@ -85,7 +82,7 @@ async def standard_database(minimal_database: CouchDB) -> None:
     yield session, objs
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def http_client() -> None:
     """Provide a HTTP client."""
     client = AsyncHTTPClient()
