@@ -1,5 +1,0 @@
-{% macro format_transcription(transcription) -%}
-{% for para in transcription.content %}
-  <p>{% for element in para.content %}{{ element.text }}{% endfor %}</p>
-{% endfor %}
-{%- endmacro %}
