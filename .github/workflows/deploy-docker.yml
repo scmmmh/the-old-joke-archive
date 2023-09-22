@@ -2,7 +2,6 @@ name: Docker Deployment
 
 on:
   push:
-    branches: [hatch-switch]
     tags:
       - "v*"
 
@@ -21,12 +20,12 @@ jobs:
         with:
           node-version: "16"
 
-      #- name: Branch name
-      #  id: branch_name
-      #  run: |
-      #    echo ::set-output name=SOURCE_NAME::${GITHUB_REF#refs/*/}
-      #    echo ::set-output name=SOURCE_BRANCH::${GITHUB_REF#refs/heads/}
-      #    echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/v}
+      - name: Branch name
+        id: branch_name
+        run: |
+          echo ::set-output name=SOURCE_NAME::${GITHUB_REF#refs/*/}
+          echo ::set-output name=SOURCE_BRANCH::${GITHUB_REF#refs/heads/}
+          echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/v}
 
       - name: Install Base Dependencies
         run: |
@@ -57,4 +56,4 @@ jobs:
         with:
           context: production
           push: false
-          #tags: scmmmh/oldjokearchive:${{ steps.branch_name.outputs.SOURCE_TAG }}
+          tags: scmmmh/oldjokearchive:${{ steps.branch_name.outputs.SOURCE_TAG }}
