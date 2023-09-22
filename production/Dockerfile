@@ -1,4 +1,4 @@
-FROM python:3.9
+FROM python:3.11
 
 ARG TOJA_USER="toja"
 ARG TOJA_UID="10000"

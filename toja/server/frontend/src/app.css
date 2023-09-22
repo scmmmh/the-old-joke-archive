@@ -1,0 +1,97 @@
+@font-face {
+  font-family: 'blackriver-bold';
+  src: url('/app/fonts/blackriver-bold.woff2') format('woff2'),
+    url('/app/fonts/blackriver-bold.woff') format('woff'),
+    url('/app/fonts/blackriver-bold.ttf') format('ttf');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Merriweather-Regular';
+  src: url('/app/fonts/Merriweather-Regular.woff2') format('woff2'),
+    url('/app/fonts/Merriweather-Regular.woff') format('woff'),
+    url('/app/fonts/Merriweather-Regular.ttf') format('ttf');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Merriweather-Italic';
+  src: url('/app/fonts/Merriweather-Italic.woff2') format('woff2'),
+    url('/app/fonts/Merriweather-Italic.woff') format('woff'),
+    url('/app/fonts/Merriweather-Italic.ttf') format('ttf');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Merriweather-Bold';
+  src: url('/app/fonts/Merriweather-Bold.woff2') format('woff2'),
+    url('/app/fonts/Merriweather-Bold.woff') format('woff'),
+    url('/app/fonts/Merriweather-Bold.ttf') format('ttf');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Merriweather-BoldItalic';
+  src: url('/app/fonts/Merriweather-BoldItalic.woff2') format('woff2'),
+    url('/app/fonts/Merriweather-BoldItalic.woff') format('woff'),
+    url('/app/fonts/Merriweather-BoldItalic.ttf') format('ttf');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .border-brand {
+    border-image: url('/app/img/body-border-brand.svg') 5 75 75 fill stretch;
+    border-width: 5px 75px 75px;
+    border-style: solid;
+  }
+
+  .flex-basis-full {
+    flex-basis: 100%;
+  }
+}
+
+@layer components {
+
+  [type=TitleMark],
+  [type=AsideMark],
+  [type=AttributionMark],
+  [type=PersonMark],
+  [type=SpokenTextMark],
+  [type=LocationMark],
+  [type=ObjectMark],
+  [type=QuestionMark],
+  [type=AnswerMark] {
+    @apply inline-block px-1 bg-gray-100 border border-accent;
+  }
+}
+
+html {
+  @apply font-merriweather-regular;
+  font-size: 11pt;
+}
+
+body {
+  @apply bg-gray-900;
+}
+
+a {
+  @apply rounded outline-primary;
+}
+
+p {
+  @apply mb-2;
+}

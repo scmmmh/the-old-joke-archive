@@ -28,15 +28,17 @@ class FrontendHandler(RequestHandler):
         if not path.strip():
             path = '/'
         base = resources.files('toja')
-        public = base / 'server' / 'frontend' / 'public'
+        public = base / 'server' / 'frontend' / 'dist'
         try:
             logger.debug(f'Attempting to send {path}')
             await self._get_resource(public, path.split('/')[1:])
         except FileNotFoundError:
             logger.debug('Sending index.html')
-            await self._get_resource(public, ('index.html', ), orig_path=path)
+            await self._get_resource(public, ('index.html',), orig_path=path)
 
-    async def _get_resource(self: 'FrontendHandler', resource: Traversable, path: list[str], orig_path: str = None) -> None:  # noqa: E501
+    async def _get_resource(
+        self: 'FrontendHandler', resource: Traversable, path: list[str], orig_path: str = None
+    ) -> None:  # noqa: E501
         """Send a file.
 
         Performs mimetype guessing and sets the appropriate Content-Type header.

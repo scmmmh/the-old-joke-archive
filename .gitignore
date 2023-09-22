@@ -1,4 +1,5 @@
 .venv
+.venvs
 node_modules
 production.ini
 development.ini
