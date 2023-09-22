@@ -1,6 +1,6 @@
 """Fixtures for the API tests."""
 import bcrypt
-import pytest
+import pytest_asyncio
 import yaml
 
 from aiocouch import CouchDB, exception
@@ -16,7 +16,7 @@ ADMIN_PWD = bcrypt.hashpw(b'admin1pwd', bcrypt.gensalt()).decode('utf-8')
 USER1_PWD = bcrypt.hashpw(b'user1pwd', bcrypt.gensalt()).decode('utf-8')
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def config() -> None:
     """Load and set the configuration."""
     with open('config.yml') as in_f:
@@ -25,7 +25,7 @@ async def config() -> None:
     set_config(normalised)
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def empty_database(config: None) -> None:
     """Provide an empty database."""
     async with CouchDB('http://localhost:5984', 'main', 'aiZiojoh7Eux') as session:
@@ -45,7 +45,7 @@ async def empty_database(config: None) -> None:
         await db.delete()
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def minimal_database(empty_database: CouchDB) -> None:
     """Provide a database with a minimal set of data."""
     users = await empty_database['users']
@@ -62,7 +62,7 @@ async def minimal_database(empty_database: CouchDB) -> None:
     yield empty_database, {'admin': admin}
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def standard_database(minimal_database: CouchDB) -> None:
     """Provide a database with a standard set of data."""
     session, objs = minimal_database
