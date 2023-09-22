@@ -1,40 +1,169 @@
-[tool.poetry]
-name = "toja"
-version = "1.0.0b15"
-description = "The Old Joke Archive"
-authors = ["Mark Hall <mark.hall@work.room3b.eu>"]
-license = "MIT"
-include = ["toja/server/frontend/public/build/*.*"]
-exclude = ["toja/server/frontend/src", "toja/server/frontend/*.*"]
-
-[tool.poetry.dependencies]
-python = "^3.9"
-click = "^8.0.0"
-cerberus = "^1.3.2"
-email-validator = "^1.1.3"
-pillow = "^9.3.0"
-tesserocr = "^2.5.1"
-PyYAML = "^5.4.1"
-tornado = "^6.3"
-aiocouch = "^2.1.0"
-bcrypt = "^3.2.0"
-asyncio-mqtt = "^0.12.1"
-
-[tool.poetry.extras]
-postgresql = ["psycopg2"]
-
-[tool.poetry.group.dev.dependencies]
-flake8 = "^3.8.4"
-flake8-print = "^3.1.4"
-pre-commit = "^2.7.1"
-tox = "^3.20.1"
-flake8-docstrings = "^1.6.0"
-flake8-annotations = "^2.6.2"
-pytest = "^7.2.0"
-pytest-asyncio = "^0.15.1"
-aiohttp = "^3.8.1"
-Jinja2 = "^3.0.0"
-
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "toja"
+dynamic = ["version"]
+description = 'Old Joke Archive'
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+keywords = []
+authors = [
+  { name = "Mark Hall", email = "mark.hall@work.room3b.eu" },
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = [
+  "click>=8.0.0,<9",
+  "cerberus>=1.3.2,<2",
+  "email-validator>=1.1.3,<2",
+  "pillow>=9.3.0,<10",
+  "tesserocr>=2.5.1,<3",
+  "PyYAML>=5.4.1,<6",
+  "tornado>=6.3,<7",
+  "aiocouch>=2.1.0,<3",
+  "bcrypt>=3.2.0,<4",
+  "asyncio-mqtt>=0.12.1",
+  "psycopg2-binary",
+]
+
+[project.urls]
+Documentation = "https://github.com/unknown/toja#readme"
+Issues = "https://github.com/unknown/toja/issues"
+Source = "https://github.com/unknown/toja"
+
+[tool.hatch.version]
+path = "toja/__about__.py"
+
+[tool.hatch.envs.default]
+extra-dependencies = [
+  "coverage[toml]>=6.5",
+  "pytest",
+  "pytest-asyncio>=0.15.1",
+  "aiohttp>=3.8.1,<4",
+  "Jinja2>=3.0.0,<4",
+]
+[tool.hatch.envs.default.scripts]
+server = "python -m toja {args}"
+test = "pytest {args:tests}"
+test-cov = "coverage run -m pytest {args:tests}"
+cov-report = [
+  "- coverage combine",
+  "coverage report",
+]
+cov = [
+  "test-cov",
+  "cov-report",
+]
+
+[[tool.hatch.envs.all.matrix]]
+python = ["3.11"]
+
+[tool.hatch.envs.lint]
+detached = true
+dependencies = [
+  "black>=23.1.0",
+  "mypy>=1.0.0",
+  "ruff>=0.0.243",
+]
+[tool.hatch.envs.lint.scripts]
+typing = "mypy --install-types --non-interactive {args:toja tests}"
+style = [
+  "ruff {args:.}",
+  "black --check --diff {args:.}",
+]
+fmt = [
+  "black {args:.}",
+  "ruff --fix {args:.}",
+  "style",
+]
+all = [
+  "style",
+  "typing",
+]
+
+[tool.black]
+target-version = ["py37"]
+line-length = 120
+skip-string-normalization = true
+
+[tool.ruff]
+target-version = "py37"
+line-length = 120
+select = [
+  "A",
+  "ARG",
+  "B",
+  "C",
+  "DTZ",
+  "E",
+  "EM",
+  "F",
+  "FBT",
+  "I",
+  "ICN",
+  "ISC",
+  "N",
+  "PLC",
+  "PLE",
+  "PLR",
+  "PLW",
+  "Q",
+  "RUF",
+  "S",
+  "T",
+  "TID",
+  "UP",
+  "W",
+  "YTT",
+]
+ignore = [
+  # Allow non-abstract empty methods in abstract base classes
+  "B027",
+  # Allow boolean positional values in function calls, like `dict.get(... True)`
+  "FBT003",
+  # Ignore checks for possible passwords
+  "S105", "S106", "S107",
+  # Ignore complexity
+  "C901", "PLR0911", "PLR0912", "PLR0913", "PLR0915",
+]
+unfixable = [
+  # Don't touch unused imports
+  "F401",
+]
+
+[tool.ruff.isort]
+known-first-party = ["toja"]
+
+[tool.ruff.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.per-file-ignores]
+# Tests can use magic values, assertions, and relative imports
+"tests/**/*" = ["PLR2004", "S101", "TID252"]
+
+[tool.coverage.run]
+source_pkgs = ["toja", "tests"]
+branch = true
+parallel = true
+omit = [
+  "toja/__about__.py",
+]
+
+[tool.coverage.paths]
+toja = ["toja", "*/toja/toja"]
+tests = ["tests", "*/toja/tests"]
+
+[tool.coverage.report]
+exclude_lines = [
+  "no cov",
+  "if __name__ == .__main__.:",
+  "if TYPE_CHECKING:",
+]
