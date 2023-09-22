@@ -1,4 +1,5 @@
 /// <reference types="svelte" />
+/// <reference types="vite/client" />
 
 /**
  * Generic JSONAPI types.
@@ -12,7 +13,7 @@ type JsonApiObject = {
     type: string,
     id?: string,
     attributes?: JsonApiAttributeDict,
-    relationships?: {[key: string]: JsonApiObjectRelationship}
+    relationships?: { [key: string]: JsonApiObjectRelationship }
 };
 
 type JsonApiAttributeDict = {
@@ -76,8 +77,8 @@ type SourceDocumentAttributes = {
 };
 
 type SourceDocumentRelationships = {
-    creator: {data: UserDocumentReference},
-    jokes: {data: JokeDocumentReference[]},
+    creator: { data: UserDocumentReference },
+    jokes: { data: JokeDocumentReference[] },
 };
 
 /**
@@ -147,5 +148,5 @@ type TiptapNode = {
 };
 
 type JokeDocumentRelationships = {
-    source: {data: SourceDocumentReference},
+    source: { data: SourceDocumentReference },
 };

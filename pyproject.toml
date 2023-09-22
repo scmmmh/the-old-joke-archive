@@ -51,14 +51,10 @@ exclude = [
   ".gitignore",
   ".pre-commit-config.yaml",
   "prepare_release.py",
-  "toja/server/frontend/src",
-  "toja/server/frontend/.gitignore",
-  "toja/server/frontend/*.json",
-  "toja/server/frontend/*.md",
-  "toja/server/frontend/*.js",
+  "toja/server/frontend",
 ]
 artifacts = [
-  "toja/server/frontend/public/build",
+  "toja/server/frontend/dist",
 ]
 
 [tool.hatch.envs.default]
