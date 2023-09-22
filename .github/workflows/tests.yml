@@ -52,7 +52,7 @@ jobs:
           docker-compose up --no-start
           docker-compose start
           sleep 5
-          hatch run test functional-tests/
+          hatch run test functional_tests/
 
   e2e-tests:
     runs-on: ubuntu-latest
