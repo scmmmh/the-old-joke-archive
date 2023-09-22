@@ -51,7 +51,8 @@ extra-dependencies = [
   "Jinja2>=3.0.0,<4",
 ]
 [tool.hatch.envs.default.scripts]
-test = "pytest {args:tests}"
+test-server = "cd tests && python -m toja server"
+test = "cd tests && pytest"
 test-cov = "coverage run -m pytest {args:tests}"
 cov-report = [
   "- coverage combine",

@@ -24,13 +24,12 @@ jobs:
 
       - name: Run Tests
         run: |
-          hatch shell
           cd tests
           docker-compose up --no-start
           docker-compose start
-          python -m toja server &
+          hatch run test-server &
           sleep 5
-          pytest
+          hatch run test
 
   functional-tests:
     runs-on: ubuntu-latest
