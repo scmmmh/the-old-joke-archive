@@ -88,7 +88,7 @@ jobs:
       - name: Build the UI
         run: |
           cd toja/server/frontend
-          ./node_modules/.bin/rollup -c
+          vite build
 
       - name: Run Tests
         run: |
