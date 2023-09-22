@@ -52,7 +52,7 @@ extra-dependencies = [
 ]
 [tool.hatch.envs.default.scripts]
 test-server = "cd tests && python -m toja server"
-test = "cd tests && pytest"
+test = "cd tests && pytest {args}"
 test-cov = "coverage run -m pytest {args:tests}"
 cov-report = [
   "- coverage combine",
