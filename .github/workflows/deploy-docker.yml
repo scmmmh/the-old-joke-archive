@@ -55,5 +55,5 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: production
-          push: false
+          push: true
           tags: scmmmh/oldjokearchive:${{ steps.branch_name.outputs.SOURCE_TAG }}
